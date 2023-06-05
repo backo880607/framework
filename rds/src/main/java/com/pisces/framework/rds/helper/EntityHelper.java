@@ -28,12 +28,11 @@ import com.pisces.framework.core.exception.SystemException;
 import com.pisces.framework.rds.entity.Config;
 import com.pisces.framework.rds.entity.EntityColumn;
 import com.pisces.framework.rds.entity.EntityTable;
-import com.pisces.framework.rds.helper.resolve.DefaultEntityResolve;
-import com.pisces.framework.rds.helper.resolve.EntityResolve;
-import com.pisces.framework.rds.utils.MetaObjectUtil;
-import org.apache.ibatis.mapping.MappedStatement;
+import com.pisces.framework.rds.provider.resolve.DefaultEntityResolve;
+import com.pisces.framework.rds.provider.resolve.EntityResolve;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -48,7 +47,7 @@ public class EntityHelper {
     /**
      * 实体类 => 表对象
      */
-    private static final Map<Class<?>, EntityTable> entityTableMap = new ConcurrentHashMap<Class<?>, EntityTable>();
+    private static final Map<Class<?>, EntityTable> entityTableMap = new ConcurrentHashMap<>();
 
     private static final EntityResolve DEFAULT = new DefaultEntityResolve();
 
@@ -60,8 +59,8 @@ public class EntityHelper {
     /**
      * 获取表对象
      *
-     * @param entityClass
-     * @return
+     * @param entityClass 实体类
+     * @return {@link EntityTable}
      */
     public static EntityTable getEntityTable(Class<?> entityClass) {
         EntityTable entityTable = entityTableMap.get(entityClass);
@@ -72,47 +71,10 @@ public class EntityHelper {
     }
 
     /**
-     * 获取默认的orderby语句
-     *
-     * @param entityClass
-     * @return
-     */
-    public static String getOrderByClause(Class<?> entityClass) {
-        EntityTable table = getEntityTable(entityClass);
-        if (table.getOrderByClause() != null) {
-            return table.getOrderByClause();
-        }
-
-        List<EntityColumn> orderEntityColumns = new ArrayList<EntityColumn>();
-        for (EntityColumn column : table.getEntityClassColumns()) {
-            if (column.getOrderBy() != null) {
-                orderEntityColumns.add(column);
-            }
-        }
-
-        Collections.sort(orderEntityColumns, new Comparator<EntityColumn>() {
-            @Override
-            public int compare(EntityColumn o1, EntityColumn o2) {
-                return o1.getOrderPriority() - o2.getOrderPriority();
-            }
-        });
-
-        StringBuilder orderBy = new StringBuilder();
-        for (EntityColumn column : orderEntityColumns) {
-            if (orderBy.length() != 0) {
-                orderBy.append(",");
-            }
-            orderBy.append(column.getColumn()).append(" ").append(column.getOrderBy());
-        }
-        table.setOrderByClause(orderBy.toString());
-        return table.getOrderByClause();
-    }
-
-    /**
      * 获取全部列
      *
-     * @param entityClass
-     * @return
+     * @param entityClass 实体类
+     * @return {@link Set}<{@link EntityColumn}>
      */
     public static Set<EntityColumn> getColumns(Class<?> entityClass) {
         return getEntityTable(entityClass).getEntityClassColumns();
@@ -121,8 +83,8 @@ public class EntityHelper {
     /**
      * 获取主键信息
      *
-     * @param entityClass
-     * @return
+     * @param entityClass 实体类
+     * @return {@link Set}<{@link EntityColumn}>
      */
     public static Set<EntityColumn> getPKColumns(Class<?> entityClass) {
         return getEntityTable(entityClass).getEntityClassPKColumns();
@@ -131,8 +93,8 @@ public class EntityHelper {
     /**
      * 获取查询的Select
      *
-     * @param entityClass
-     * @return
+     * @param entityClass 实体类
+     * @return {@link String}
      */
     public static String getSelectColumns(Class<?> entityClass) {
         EntityTable entityTable = getEntityTable(entityClass);
@@ -162,8 +124,8 @@ public class EntityHelper {
     /**
      * 初始化实体属性
      *
-     * @param entityClass
-     * @param config
+     * @param entityClass 实体类
+     * @param config      配置
      */
     public static synchronized void initEntityNameMap(Class<?> entityClass, Config config) {
         if (entityTableMap.get(entityClass) != null) {
@@ -177,28 +139,9 @@ public class EntityHelper {
     /**
      * 设置实体类解析器
      *
-     * @param resolve
+     * @param resolve 实体类解析器
      */
     static void setResolve(EntityResolve resolve) {
         EntityHelper.resolve = resolve;
-    }
-
-    /**
-     * 通过反射设置MappedStatement的keyProperties字段值
-     *
-     * @param pkColumns 所有的主键字段
-     * @param ms        MappedStatement
-     */
-    public static void setKeyProperties(Set<EntityColumn> pkColumns, MappedStatement ms) {
-        if (pkColumns == null || pkColumns.isEmpty()) {
-            return;
-        }
-
-        List<String> keyProperties = new ArrayList<String>(pkColumns.size());
-        for (EntityColumn column : pkColumns) {
-            keyProperties.add(column.getProperty());
-        }
-
-        MetaObjectUtil.forObject(ms).setValue("keyProperties", keyProperties.toArray(new String[]{}));
     }
 }

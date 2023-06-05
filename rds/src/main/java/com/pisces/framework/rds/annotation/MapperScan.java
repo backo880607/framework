@@ -15,8 +15,6 @@ public @interface MapperScan {
 
     String[] basePackages() default {};
 
-    Class<?>[] basePackageClasses() default {};
-
     Class<? extends BeanNameGenerator> nameGenerator() default BeanNameGenerator.class;
 
     Class<? extends Annotation> annotationClass() default Annotation.class;
@@ -28,15 +26,4 @@ public @interface MapperScan {
     String sqlSessionFactoryRef() default "";
 
     Class<? extends MapperFactoryBean> factoryBean() default MapperFactoryBean.class;
-
-    String[] properties() default {};
-
-    String mapperHelperRef() default "";
-
-    /**
-     * Whether enable lazy initialization of mapper bean.
-     * Default is {@code false}.
-     * @return set {@code true} to enable lazy initialization
-     */
-    String lazyInitialization() default "";
 }

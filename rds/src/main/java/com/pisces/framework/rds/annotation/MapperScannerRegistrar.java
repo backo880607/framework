@@ -15,7 +15,6 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.annotation.Annotation;
@@ -38,6 +37,7 @@ public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
             scanner.setResourceLoader(resourceLoader);
         }
 
+        assert annoAttrs != null;
         Class<? extends Annotation> annotationClass = annoAttrs.getClass("annotationClass");
         if (!Annotation.class.equals(annotationClass)) {
             scanner.setAnnotationClass(annotationClass);
@@ -72,29 +72,12 @@ public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
                 basePackages.add(pkg);
             }
         }
-        for (Class<?> clazz : annoAttrs.getClassArray("basePackageClasses")) {
-            basePackages.add(ClassUtils.getPackageName(clazz));
-        }
-        //优先级 mapperHelperRef > properties > springboot
-        String mapperHelperRef = annoAttrs.getString("mapperHelperRef");
-        String[] properties = annoAttrs.getStringArray("properties");
-        if (StringUtils.hasText(mapperHelperRef)) {
-            scanner.setMapperHelperBeanName(mapperHelperRef);
-        } else if (properties.length > 0) {
-            scanner.setMapperProperties(properties);
-        } else {
-            try {
-                scanner.setMapperProperties(this.environment);
-            } catch (Exception e) {
-                LOGGER.warn("只有 Spring Boot 环境中可以通过 Environment(配置文件,环境变量,运行参数等方式) 配置通用 Mapper，" +
-                        "其他环境请通过 @MapperScan 注解中的 mapperHelperRef 或 properties 参数进行配置!" +
-                        "如果你使用 tk.mybatis.mapper.session.Configuration 配置的通用 Mapper，你可以忽略该错误!", e);
-            }
-        }
-
-        String lazyInitialization = annoAttrs.getString("lazyInitialization");
-        if (StringUtils.hasText(lazyInitialization)) {
-            scanner.setLazyInitialization(Boolean.parseBoolean(lazyInitialization));
+        try {
+            scanner.setMapperProperties(this.environment);
+        } catch (Exception e) {
+            LOGGER.warn("只有 Spring Boot 环境中可以通过 Environment(配置文件,环境变量,运行参数等方式) 配置通用 Mapper，" +
+                    "其他环境请通过 @MapperScan 注解中的 mapperHelperRef 或 properties 参数进行配置!" +
+                    "如果你使用 tk.mybatis.mapper.session.Configuration 配置的通用 Mapper，你可以忽略该错误!", e);
         }
 
         scanner.registerFilters();

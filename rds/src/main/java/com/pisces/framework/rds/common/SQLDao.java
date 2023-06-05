@@ -23,10 +23,6 @@ public class SQLDao<T extends BaseObject> extends SqlSessionDaoSupport implement
     @Autowired
     private RdsMapper<T> mapper;
 
-    protected RdsMapper<T> getMapper() {
-        return mapper;
-    }
-
     @Override
     @Autowired
     public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
@@ -45,8 +41,7 @@ public class SQLDao<T extends BaseObject> extends SqlSessionDaoSupport implement
 
     @Override
     public T getById(Long id) {
-        return null;
-//        return mapper.selectOneById(id);
+        return mapper.selectById(id);
     }
 
     @Override
@@ -67,8 +62,7 @@ public class SQLDao<T extends BaseObject> extends SqlSessionDaoSupport implement
 
     @Override
     public int insert(T item) {
-        return 1;
-//        return mapper.insert(item);
+        return mapper.insert(item);
     }
 
     @Override

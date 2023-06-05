@@ -1,12 +1,47 @@
 package com.pisces.framework.core.utils.lang;
 
+import com.pisces.framework.core.entity.BaseObject;
+import com.pisces.framework.core.entity.Duration;
+import com.pisces.framework.core.entity.MultiEnum;
+import com.pisces.framework.core.enums.PROPERTY_TYPE;
+
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class ClassUtils {
+
+    public static PROPERTY_TYPE getPropertyType(Class<?> clazz) {
+        PROPERTY_TYPE type;
+        if (clazz == Boolean.class || clazz == boolean.class) {
+            type = PROPERTY_TYPE.BOOLEAN;
+        } else if (clazz == Short.class || clazz == short.class) {
+            type = PROPERTY_TYPE.SHORT;
+        } else if (clazz == Integer.class || clazz == int.class) {
+            type = PROPERTY_TYPE.INTEGER;
+        } else if (clazz == Long.class || clazz == long.class) {
+            type = PROPERTY_TYPE.LONG;
+        } else if (clazz == Double.class || clazz == double.class) {
+            type = PROPERTY_TYPE.DOUBLE;
+        } else if (clazz == String.class) {
+            type = PROPERTY_TYPE.STRING;
+        } else if (clazz == Date.class) {
+            type = PROPERTY_TYPE.DATE_TIME;
+        } else if (clazz == Duration.class) {
+            type = PROPERTY_TYPE.DURATION;
+        } else if (Enum.class.isAssignableFrom(clazz)) {
+            type = PROPERTY_TYPE.ENUM;
+        } else if (MultiEnum.class.isAssignableFrom(clazz)) {
+            type = PROPERTY_TYPE.MULTI_ENUM;
+        } else if (BaseObject.class.isAssignableFrom(clazz)) {
+            type = PROPERTY_TYPE.ENTITY;
+        } else if (Collection.class.isAssignableFrom(clazz)) {
+            type = PROPERTY_TYPE.LIST;
+        } else {
+            throw new UnsupportedOperationException("not support type: " + clazz.getName());
+        }
+        return type;
+    }
 
     public static boolean isArray(Class<?> clazz) {
         return clazz.isArray()

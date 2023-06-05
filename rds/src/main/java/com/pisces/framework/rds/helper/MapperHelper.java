@@ -28,8 +28,8 @@ import com.pisces.framework.core.exception.SystemException;
 import com.pisces.framework.core.utils.lang.StringUtils;
 import com.pisces.framework.rds.annotation.RegisterMapper;
 import com.pisces.framework.rds.entity.Config;
-import com.pisces.framework.rds.helper.resolve.EntityResolve;
 import com.pisces.framework.rds.provider.EmptyProvider;
+import com.pisces.framework.rds.provider.resolve.EntityResolve;
 import org.apache.ibatis.annotations.DeleteProvider;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -60,12 +60,12 @@ public class MapperHelper {
     /**
      * 注册的接口
      */
-    private List<Class<?>> registerClass = new ArrayList<Class<?>>();
+    private final List<Class<?>> registerClass = new ArrayList<>();
 
     /**
      * 注册的通用Mapper接口
      */
-    private Map<Class<?>, MapperTemplate> registerMapper = new ConcurrentHashMap<Class<?>, MapperTemplate>();
+    private final Map<Class<?>, MapperTemplate> registerMapper = new ConcurrentHashMap<>();
 
     /**
      * 通用Mapper配置
@@ -81,7 +81,7 @@ public class MapperHelper {
     /**
      * 带配置的构造方法
      *
-     * @param properties
+     * @param properties 属性
      */
     public MapperHelper(Properties properties) {
         this();
@@ -91,15 +91,14 @@ public class MapperHelper {
     /**
      * 通过通用Mapper接口获取对应的MapperTemplate
      *
-     * @param mapperClass
-     * @return
-     * @throws Exception
+     * @param mapperClass mapper类
+     * @return {@link MapperTemplate}
      */
     private MapperTemplate fromMapperClass(Class<?> mapperClass) {
         Method[] methods = mapperClass.getDeclaredMethods();
         Class<?> templateClass = null;
         Class<?> tempClass = null;
-        Set<String> methodSet = new HashSet<String>();
+        Set<String> methodSet = new HashSet<>();
         for (Method method : methods) {
             if (method.isAnnotationPresent(SelectProvider.class)) {
                 SelectProvider provider = method.getAnnotation(SelectProvider.class);
@@ -128,7 +127,7 @@ public class MapperHelper {
         if (templateClass == null || !MapperTemplate.class.isAssignableFrom(templateClass)) {
             templateClass = EmptyProvider.class;
         }
-        MapperTemplate mapperTemplate = null;
+        MapperTemplate mapperTemplate;
         try {
             mapperTemplate = (MapperTemplate) templateClass.getConstructor(Class.class, MapperHelper.class).newInstance(mapperClass, this);
         } catch (Exception e) {
@@ -150,7 +149,7 @@ public class MapperHelper {
     /**
      * 注册通用Mapper接口
      *
-     * @param mapperClass
+     * @param mapperClass mapper类
      */
     public void registerMapper(Class<?> mapperClass) {
         if (!registerMapper.containsKey(mapperClass)) {
@@ -159,17 +158,15 @@ public class MapperHelper {
         }
         //自动注册继承的接口
         Class<?>[] interfaces = mapperClass.getInterfaces();
-        if (interfaces != null && interfaces.length > 0) {
-            for (Class<?> anInterface : interfaces) {
-                registerMapper(anInterface);
-            }
+        for (Class<?> anInterface : interfaces) {
+            registerMapper(anInterface);
         }
     }
 
     /**
      * 注册通用Mapper接口
      *
-     * @param mapperClass
+     * @param mapperClass mapper类
      */
     public void registerMapper(String mapperClass) {
         try {
@@ -183,8 +180,8 @@ public class MapperHelper {
     /**
      * 判断当前的接口方法是否需要进行拦截
      *
-     * @param msId
-     * @return
+     * @param msId 女士id
+     * @return {@link MapperTemplate}
      */
     public MapperTemplate isMapperMethod(String msId) {
         MapperTemplate mapperTemplate = getMapperTemplateByMsId(msId);
@@ -205,8 +202,8 @@ public class MapperHelper {
     /**
      * 根据 msId 获取 MapperTemplate
      *
-     * @param msId
-     * @return
+     * @param msId 女士id
+     * @return {@link MapperTemplate}
      */
     public MapperTemplate getMapperTemplateByMsId(String msId) {
         for (Map.Entry<Class<?>, MapperTemplate> entry : registerMapper.entrySet()) {
@@ -218,10 +215,10 @@ public class MapperHelper {
     }
 
     /**
-     * 判断接口是否包含通用接口，
+     * 判断接口是否包含通用接口
      *
-     * @param mapperInterface
-     * @return
+     * @param mapperInterface 映射器接口
+     * @return boolean
      */
     public boolean isExtendCommonMapper(Class<?> mapperInterface) {
         for (Class<?> mapperClass : registerClass) {
@@ -236,27 +233,25 @@ public class MapperHelper {
     /**
      * 增加通过 @RegisterMapper 注解自动注册的功能
      *
-     * @param mapperInterface
-     * @return
+     * @param mapperInterface 映射器接口
+     * @return boolean
      */
     private boolean hasRegisterMapper(Class<?> mapperInterface) {
         //如果一个都没匹配上，很可能是还没有注册 mappers，此时通过 @RegisterMapper 注解进行判断
         Class<?>[] interfaces = mapperInterface.getInterfaces();
         boolean hasRegisterMapper = false;
-        if (interfaces != null && interfaces.length > 0) {
-            for (Class<?> anInterface : interfaces) {
-                //自动注册标记了 @RegisterMapper 的接口
-                if (anInterface.isAnnotationPresent(RegisterMapper.class)) {
-                    hasRegisterMapper = true;
-                    //如果已经注册过，就避免在反复调用下面会迭代的方法
-                    if (!registerMapper.containsKey(anInterface)) {
-                        registerMapper(anInterface);
-                    }
+        for (Class<?> anInterface : interfaces) {
+            //自动注册标记了 @RegisterMapper 的接口
+            if (anInterface.isAnnotationPresent(RegisterMapper.class)) {
+                hasRegisterMapper = true;
+                //如果已经注册过，就避免在反复调用下面会迭代的方法
+                if (!registerMapper.containsKey(anInterface)) {
+                    registerMapper(anInterface);
                 }
-                //如果父接口的父接口存在注解，也可以注册
-                else if (hasRegisterMapper(anInterface)) {
-                    hasRegisterMapper = true;
-                }
+            }
+            //如果父接口的父接口存在注解，也可以注册
+            else if (hasRegisterMapper(anInterface)) {
+                hasRegisterMapper = true;
             }
         }
         return hasRegisterMapper;
@@ -266,7 +261,7 @@ public class MapperHelper {
      * 配置完成后，执行下面的操作
      * <br>处理configuration中全部的MappedStatement
      *
-     * @param configuration
+     * @param configuration 配置
      */
     public void processConfiguration(Configuration configuration) {
         processConfiguration(configuration, null);
@@ -275,8 +270,8 @@ public class MapperHelper {
     /**
      * 配置指定的接口
      *
-     * @param configuration
-     * @param mapperInterface
+     * @param configuration   配置
+     * @param mapperInterface 映射器接口
      */
     public void processConfiguration(Configuration configuration, Class<?> mapperInterface) {
         String prefix;
@@ -298,7 +293,7 @@ public class MapperHelper {
     /**
      * 处理 MappedStatement
      *
-     * @param ms
+     * @param ms 女士
      */
     public void processMappedStatement(MappedStatement ms) {
         MapperTemplate mapperTemplate = isMapperMethod(ms.getId());
@@ -310,7 +305,7 @@ public class MapperHelper {
     /**
      * 获取通用Mapper配置
      *
-     * @return
+     * @return {@link Config}
      */
     public Config getConfig() {
         return config;
@@ -319,7 +314,7 @@ public class MapperHelper {
     /**
      * 设置通用Mapper配置
      *
-     * @param config
+     * @param config 配置
      */
     public void setConfig(Config config) {
         this.config = config;
@@ -334,7 +329,7 @@ public class MapperHelper {
             }
         }
         if (config.getMappers() != null && config.getMappers().size() > 0) {
-            for (Class mapperClass : config.getMappers()) {
+            for (Class<?> mapperClass : config.getMappers()) {
                 registerMapper(mapperClass);
             }
         }
@@ -343,7 +338,7 @@ public class MapperHelper {
     /**
      * 配置属性
      *
-     * @param properties
+     * @param properties 属性
      */
     public void setProperties(Properties properties) {
         config.setProperties(properties);
@@ -378,8 +373,8 @@ public class MapperHelper {
      * <p/>
      * 执行该方法前必须使用isMapperMethod判断，否则msIdCache会空
      *
-     * @param ms
-     * @param mapperTemplate
+     * @param ms             女士
+     * @param mapperTemplate mapper模板
      */
     public void setSqlSource(MappedStatement ms, MapperTemplate mapperTemplate) {
         try {

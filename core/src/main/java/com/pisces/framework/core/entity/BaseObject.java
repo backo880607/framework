@@ -10,20 +10,20 @@ import java.util.Date;
 @Setter
 public class BaseObject implements Comparable<BaseObject> {
 
+    private Long id;
     private String createBy;
     private Date createDate;
     private String updateBy;
     private Date updateDate;
     private Long dataSetId;
-    private Long id;
 
     public void init() {
+        id = IDGenerator.instance.getID();
         createBy = "";
         updateBy = "";
         createDate = new Date();
         updateDate = createDate;
         dataSetId = 0L;
-        id = IDGenerator.instance.getID();
     }
 
     @Override

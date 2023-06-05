@@ -1,6 +1,6 @@
 package com.pisces.framework.rds.provider.base;
 
-import com.pisces.framework.core.entity.PROPERTY_TYPE;
+import com.pisces.framework.core.enums.PROPERTY_TYPE;
 import com.pisces.framework.rds.entity.EntityColumn;
 import org.apache.ibatis.type.JdbcType;
 

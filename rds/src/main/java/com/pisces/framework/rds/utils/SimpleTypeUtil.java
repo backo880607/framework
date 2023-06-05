@@ -50,11 +50,8 @@ public class SimpleTypeUtil {
             "java.time.Month",
             "java.time.YearMonth"
     };
-    private static final Set<Class<?>> SIMPLE_TYPE_SET = new HashSet<Class<?>>();
+    private static final Set<Class<?>> SIMPLE_TYPE_SET = new HashSet<>();
 
-    /**
-     * 特别注意：由于基本类型有默认值，因此在实体类中不建议使用基本类型作为数据库字段类型
-     */
     static {
         SIMPLE_TYPE_SET.add(byte[].class);
         SIMPLE_TYPE_SET.add(String.class);
@@ -80,7 +77,7 @@ public class SimpleTypeUtil {
     /**
      * 注册新的类型
      *
-     * @param clazz
+     * @param clazz clazz
      */
     public static void registerSimpleType(Class<?> clazz) {
         SIMPLE_TYPE_SET.add(clazz);
@@ -100,11 +97,6 @@ public class SimpleTypeUtil {
         registerSimpleType(double.class);
     }
 
-    /**
-     * 注册新的类型
-     *
-     * @param classes
-     */
     public static void registerSimpleType(String classes) {
         if (StringUtils.isNotEmpty(classes)) {
             String[] cls = classes.split(",");
@@ -118,11 +110,6 @@ public class SimpleTypeUtil {
         }
     }
 
-    /**
-     * 注册新的类型，不存在时不抛出异常
-     *
-     * @param clazz
-     */
     private static void registerSimpleTypeSilence(String clazz) {
         try {
             SIMPLE_TYPE_SET.add(Class.forName(clazz));

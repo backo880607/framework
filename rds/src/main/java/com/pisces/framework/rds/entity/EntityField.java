@@ -29,6 +29,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 /**
  * 封装字段和方法，统一调用某些方法
@@ -65,7 +66,7 @@ public class EntityField {
     /**
      * 先创建field，然后可以通过该方法获取property等属性
      *
-     * @param other
+     * @param other 其他
      */
     public void copyFromPropertyDescriptor(EntityField other) {
         this.setter = other.setter;
@@ -77,8 +78,8 @@ public class EntityField {
     /**
      * 是否有该注解
      *
-     * @param annotationClass
-     * @return
+     * @param annotationClass 注释类
+     * @return boolean
      */
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
         boolean result = false;
@@ -97,9 +98,8 @@ public class EntityField {
     /**
      * 获取指定的注解
      *
-     * @param annotationClass
-     * @param <T>
-     * @return
+     * @param annotationClass 注解类
+     * @return {@link T}
      */
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         T result = null;
@@ -118,10 +118,10 @@ public class EntityField {
     /**
      * 反射获取值
      *
-     * @param object
-     * @return
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
+     * @param object 对象
+     * @return {@link Object}
+     * @throws IllegalAccessException    非法访问异常
+     * @throws InvocationTargetException 调用目标异常
      */
     public Object getValue(Object object) throws IllegalAccessException, InvocationTargetException {
         Object result = null;
@@ -142,9 +142,7 @@ public class EntityField {
         if (o == null || getClass() != o.getClass()) return false;
 
         EntityField that = (EntityField) o;
-
-        return !(name != null ? !name.equals(that.name) : that.name != null);
-
+        return Objects.equals(name, that.name);
     }
 
     @Override
@@ -155,16 +153,17 @@ public class EntityField {
     /**
      * 获取javaType
      *
-     * @return
+     * @return {@link Class}<{@link ?}>
      */
     public Class<?> getJavaType() {
         return javaType;
     }
 
+
     /**
      * 设置javaType
      *
-     * @param javaType
+     * @param javaType java类型
      */
     public void setJavaType(Class<?> javaType) {
         this.javaType = javaType;
@@ -173,7 +172,7 @@ public class EntityField {
     /**
      * 字段属性名
      *
-     * @return
+     * @return {@link String}
      */
     public String getName() {
         return name;

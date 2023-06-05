@@ -28,6 +28,8 @@ import com.pisces.framework.core.utils.lang.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
+import java.util.Objects;
+
 /**
  * 数据库表对应的列
  *
@@ -42,18 +44,12 @@ public class EntityColumn {
     private Class<? extends TypeHandler<?>> typeHandler;
     private boolean id = false;
     private boolean identity = false;
-    private Class<? extends GenId> genIdClass;
     //字段是否为 blob
     private boolean blob;
-    private String generator;
-    //排序
-    private String orderBy;
-    private int orderPriority;
     //可插入
     private boolean insertable = true;
     //可更新
     private boolean updatable = true;
-    private ORDER order = ORDER.DEFAULT;
     //是否设置 javaType
     private boolean useJavaType;
     /**
@@ -73,8 +69,8 @@ public class EntityColumn {
     /**
      * 返回格式如:colum = #{entityName.age,jdbcType=NUMERIC,typeHandler=MyTypeHandler}
      *
-     * @param entityName
-     * @return
+     * @param entityName 实体名称
+     * @return {@link String}
      */
     public String getColumnEqualsHolder(String entityName) {
         return this.column + " = " + getColumnHolder(entityName);
@@ -83,8 +79,8 @@ public class EntityColumn {
     /**
      * 返回格式如:#{entityName.age,jdbcType=NUMERIC,typeHandler=MyTypeHandler}
      *
-     * @param entityName
-     * @return
+     * @param entityName 实体名称
+     * @return {@link String}
      */
     public String getColumnHolder(String entityName) {
         return getColumnHolder(entityName, null);
@@ -93,9 +89,9 @@ public class EntityColumn {
     /**
      * 返回格式如:#{entityName.age+suffix,jdbcType=NUMERIC,typeHandler=MyTypeHandler}
      *
-     * @param entityName
-     * @param suffix
-     * @return
+     * @param entityName 实体名称
+     * @param suffix     后缀
+     * @return {@link String}
      */
     public String getColumnHolder(String entityName, String suffix) {
         return getColumnHolder(entityName, null, null);
@@ -104,9 +100,9 @@ public class EntityColumn {
     /**
      * 返回格式如:#{entityName.age+suffix,jdbcType=NUMERIC,typeHandler=MyTypeHandler},
      *
-     * @param entityName
-     * @param suffix
-     * @return
+     * @param entityName 实体名称
+     * @param suffix     后缀
+     * @return {@link String}
      */
     public String getColumnHolderWithComma(String entityName, String suffix) {
         return getColumnHolder(entityName, suffix, ",");
@@ -115,10 +111,10 @@ public class EntityColumn {
     /**
      * 返回格式如:#{entityName.age+suffix,jdbcType=NUMERIC,typeHandler=MyTypeHandler}+separator
      *
-     * @param entityName
-     * @param suffix
-     * @param separator
-     * @return
+     * @param entityName 实体名称
+     * @param suffix     后缀
+     * @param separator  分隔符
+     * @return {@link String}
      */
     public String getColumnHolder(String entityName, String suffix, String separator) {
         StringBuffer sb = new StringBuffer("#{");
@@ -162,15 +158,12 @@ public class EntityColumn {
 
         if (id != that.id) return false;
         if (identity != that.identity) return false;
-        if (table != null ? !table.equals(that.table) : that.table != null) return false;
-        if (property != null ? !property.equals(that.property) : that.property != null) return false;
-        if (column != null ? !column.equals(that.column) : that.column != null) return false;
-        if (javaType != null ? !javaType.equals(that.javaType) : that.javaType != null) return false;
+        if (!Objects.equals(table, that.table)) return false;
+        if (!Objects.equals(property, that.property)) return false;
+        if (!Objects.equals(column, that.column)) return false;
+        if (!Objects.equals(javaType, that.javaType)) return false;
         if (jdbcType != that.jdbcType) return false;
-        if (typeHandler != null ? !typeHandler.equals(that.typeHandler) : that.typeHandler != null) return false;
-        if (generator != null ? !generator.equals(that.generator) : that.generator != null) return false;
-        return !(orderBy != null ? !orderBy.equals(that.orderBy) : that.orderBy != null);
-
+        return Objects.equals(typeHandler, that.typeHandler);
     }
 
     @Override
@@ -183,8 +176,6 @@ public class EntityColumn {
         result = 31 * result + (typeHandler != null ? typeHandler.hashCode() : 0);
         result = 31 * result + (id ? 1 : 0);
         result = 31 * result + (identity ? 1 : 0);
-        result = 31 * result + (generator != null ? generator.hashCode() : 0);
-        result = 31 * result + (orderBy != null ? orderBy.hashCode() : 0);
         return result;
     }
 
@@ -199,7 +190,7 @@ public class EntityColumn {
     /**
      * 返回格式如:colum = #{age,jdbcType=NUMERIC,typeHandler=MyTypeHandler}
      *
-     * @return
+     * @return {@link String}
      */
     public String getColumnEqualsHolder() {
         return getColumnEqualsHolder(null);
@@ -208,7 +199,7 @@ public class EntityColumn {
     /**
      * 返回格式如:#{age,jdbcType=NUMERIC,typeHandler=MyTypeHandler}
      *
-     * @return
+     * @return {@link String}
      */
     public String getColumnHolder() {
         return getColumnHolder(null);
@@ -220,14 +211,6 @@ public class EntityColumn {
 
     public void setEntityField(EntityField entityField) {
         this.entityField = entityField;
-    }
-
-    public String getGenerator() {
-        return generator;
-    }
-
-    public void setGenerator(String generator) {
-        this.generator = generator;
     }
 
     public Class<?> getJavaType() {
@@ -244,14 +227,6 @@ public class EntityColumn {
 
     public void setJdbcType(JdbcType jdbcType) {
         this.jdbcType = jdbcType;
-    }
-
-    public String getOrderBy() {
-        return orderBy;
-    }
-
-    public void setOrderBy(String orderBy) {
-        this.orderBy = orderBy;
     }
 
     public String getProperty() {
@@ -294,14 +269,6 @@ public class EntityColumn {
         this.identity = identity;
     }
 
-    public Class<? extends GenId> getGenIdClass() {
-        return genIdClass;
-    }
-
-    public void setGenIdClass(Class<? extends GenId> genIdClass) {
-        this.genIdClass = genIdClass;
-    }
-
     public boolean isInsertable() {
         return insertable;
     }
@@ -316,14 +283,6 @@ public class EntityColumn {
 
     public void setUpdatable(boolean updatable) {
         this.updatable = updatable;
-    }
-
-    public ORDER getOrder() {
-        return order;
-    }
-
-    public void setOrder(ORDER order) {
-        this.order = order;
     }
 
     public boolean isBlob() {
@@ -342,14 +301,6 @@ public class EntityColumn {
         this.useJavaType = useJavaType;
     }
 
-    public int getOrderPriority() {
-        return orderPriority;
-    }
-
-    public void setOrderPriority(int orderPriority) {
-        this.orderPriority = orderPriority;
-    }
-
     @Override
     public String toString() {
         return "EntityColumn{" +
@@ -362,12 +313,8 @@ public class EntityColumn {
                 ", id=" + id +
                 ", identity=" + identity +
                 ", blob=" + blob +
-                ", generator='" + generator + '\'' +
-                ", orderBy='" + orderBy + '\'' +
-                ", orderPriority='" + orderPriority + '\'' +
                 ", insertable=" + insertable +
                 ", updatable=" + updatable +
-                ", order=" + order +
                 '}';
     }
 }

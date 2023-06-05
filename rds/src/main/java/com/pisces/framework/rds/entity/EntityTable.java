@@ -51,7 +51,6 @@ public class EntityTable {
     private String name;
     private String catalog;
     private String schema;
-    private String orderByClause;
     private String baseSelect;
     //实体类 => 全部列属性
     private LinkedHashSet<EntityColumn> entityClassColumns;
@@ -63,7 +62,7 @@ public class EntityTable {
     //resultMap对象
     private ResultMap resultMap;
     //类
-    private Class<?> entityClass;
+    private final Class<?> entityClass;
 
     public EntityTable(Class<?> entityClass) {
         this.entityClass = entityClass;
@@ -71,9 +70,6 @@ public class EntityTable {
 
     /**
      * 生成当前实体的resultMap对象
-     *
-     * @param configuration
-     * @return
      */
     public ResultMap getResultMap(Configuration configuration) {
         if (this.resultMap != null) {
@@ -82,7 +78,7 @@ public class EntityTable {
         if (entityClassColumns == null || entityClassColumns.size() == 0) {
             return null;
         }
-        List<ResultMapping> resultMappings = new ArrayList<ResultMapping>();
+        List<ResultMapping> resultMappings = new ArrayList<>();
         for (EntityColumn entityColumn : entityClassColumns) {
             String column = entityColumn.getColumn();
             //去掉可能存在的分隔符
@@ -117,7 +113,7 @@ public class EntityTable {
      * 初始化 - Example 会使用
      */
     public void initPropertyMap() {
-        propertyMap = new HashMap<String, EntityColumn>(getEntityClassColumns().size());
+        propertyMap = new HashMap<>(getEntityClassColumns().size());
         for (EntityColumn column : getEntityClassColumns()) {
             propertyMap.put(column.getProperty(), column);
         }
@@ -126,9 +122,6 @@ public class EntityTable {
     /**
      * 实例化TypeHandler
      *
-     * @param javaTypeClass
-     * @param typeHandlerClass
-     * @return
      */
     @SuppressWarnings("unchecked")
     public <T> TypeHandler<T> getInstance(Class<?> javaTypeClass, Class<?> typeHandlerClass) {
@@ -195,7 +188,7 @@ public class EntityTable {
 
     public void setKeyColumns(String keyColumn) {
         if (this.keyColumns == null) {
-            this.keyColumns = new ArrayList<String>();
+            this.keyColumns = new ArrayList<>();
             this.keyColumns.add(keyColumn);
         } else {
             this.keyColumns.add(keyColumn);
@@ -211,7 +204,7 @@ public class EntityTable {
 
     public void setKeyProperties(String keyProperty) {
         if (this.keyProperties == null) {
-            this.keyProperties = new ArrayList<String>();
+            this.keyProperties = new ArrayList<>();
             this.keyProperties.add(keyProperty);
         } else {
             this.keyProperties.add(keyProperty);
@@ -224,14 +217,6 @@ public class EntityTable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getOrderByClause() {
-        return orderByClause;
-    }
-
-    public void setOrderByClause(String orderByClause) {
-        this.orderByClause = orderByClause;
     }
 
     public String getPrefix() {

@@ -59,8 +59,8 @@ import static com.pisces.framework.rds.utils.MsUtil.getMethodName;
  */
 public abstract class MapperTemplate {
     private static final XMLLanguageDriver languageDriver = new XMLLanguageDriver();
-    protected Map<String, Method> methodMap = new ConcurrentHashMap<String, Method>();
-    protected Map<String, Class<?>> entityClassMap = new ConcurrentHashMap<String, Class<?>>();
+    protected Map<String, Method> methodMap = new ConcurrentHashMap<>();
+    protected Map<String, Class<?>> entityClassMap = new ConcurrentHashMap<>();
     protected Class<?> mapperClass;
     protected MapperHelper mapperHelper;
 
@@ -72,8 +72,8 @@ public abstract class MapperTemplate {
     /**
      * 该方法仅仅用来初始化ProviderSqlSource
      *
-     * @param record
-     * @return
+     * @param record 记录
+     * @return {@link String}
      */
     public String dynamicSQL(Object record) {
         return "dynamicSQL";
@@ -82,8 +82,8 @@ public abstract class MapperTemplate {
     /**
      * 添加映射方法
      *
-     * @param methodName
-     * @param method
+     * @param methodName 方法名称
+     * @param method     方法
      */
     public void addMethodMap(String methodName, Method method) {
         methodMap.put(methodName, method);
@@ -92,8 +92,8 @@ public abstract class MapperTemplate {
     /**
      * 获取IDENTITY值的表达式
      *
-     * @param column
-     * @return
+     * @param column 列
+     * @return {@link String}
      */
     public String getIDENTITY(EntityColumn column) {
         return MessageFormat.format(mapperHelper.getConfig().getIDENTITY(), column.getColumn(), column.getProperty(), column.getTable().getName());
@@ -102,12 +102,12 @@ public abstract class MapperTemplate {
     /**
      * 是否支持该通用方法
      *
-     * @param msId
-     * @return
+     * @param msId 女士id
+     * @return boolean
      */
     public boolean supportMethod(String msId) {
         Class<?> mapperClass = getMapperClass(msId);
-        if (mapperClass != null && this.mapperClass.isAssignableFrom(mapperClass)) {
+        if (this.mapperClass.isAssignableFrom(mapperClass)) {
             String methodName = getMethodName(msId);
             return methodMap.get(methodName) != null;
         }
@@ -117,12 +117,12 @@ public abstract class MapperTemplate {
     /**
      * 设置返回值类型 - 为了让typeHandler在select时有效，改为设置resultMap
      *
-     * @param ms
-     * @param entityClass
+     * @param ms          女士
+     * @param entityClass 实体类
      */
     protected void setResultType(MappedStatement ms, Class<?> entityClass) {
         EntityTable entityTable = EntityHelper.getEntityTable(entityClass);
-        List<ResultMap> resultMaps = new ArrayList<ResultMap>();
+        List<ResultMap> resultMaps = new ArrayList<>();
         resultMaps.add(entityTable.getResultMap(ms.getConfiguration()));
         MetaObject metaObject = MetaObjectUtil.forObject(ms);
         metaObject.setValue("resultMaps", Collections.unmodifiableList(resultMaps));
@@ -131,8 +131,8 @@ public abstract class MapperTemplate {
     /**
      * 重新设置SqlSource
      *
-     * @param ms
-     * @param sqlSource
+     * @param ms        女士
+     * @param sqlSource sql源
      */
     protected void setSqlSource(MappedStatement ms, SqlSource sqlSource) {
         MetaObject msObject = MetaObjectUtil.forObject(ms);
@@ -142,9 +142,9 @@ public abstract class MapperTemplate {
     /**
      * 通过xmlSql创建sqlSource
      *
-     * @param ms
-     * @param xmlSql
-     * @return
+     * @param ms     女士
+     * @param xmlSql xmlsql
+     * @return {@link SqlSource}
      */
     public SqlSource createSqlSource(MappedStatement ms, String xmlSql) {
         return languageDriver.createSqlSource(ms.getConfiguration(), "<script>\n\t" + xmlSql + "</script>", null);
@@ -153,8 +153,8 @@ public abstract class MapperTemplate {
     /**
      * 获取返回值类型 - 实体类型
      *
-     * @param ms
-     * @return
+     * @param ms 女士
+     * @return {@link Class}<{@link ?}>
      */
     public Class<?> getEntityClass(MappedStatement ms) {
         String msId = ms.getId();
@@ -182,8 +182,8 @@ public abstract class MapperTemplate {
     /**
      * 获取实体类的表名
      *
-     * @param entityClass
-     * @return
+     * @param entityClass 实体类
+     * @return {@link String}
      */
     protected String tableName(Class<?> entityClass) {
         EntityTable entityTable = EntityHelper.getEntityTable(entityClass);
@@ -221,9 +221,8 @@ public abstract class MapperTemplate {
     /**
      * 重新设置SqlSource
      *
-     * @param ms
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
+     * @param ms 女士
+     * @throws Exception 异常
      */
     public void setSqlSource(MappedStatement ms) throws Exception {
         if (this.mapperClass == getMapperClass(ms.getId())) {

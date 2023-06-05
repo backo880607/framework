@@ -41,11 +41,11 @@ public class MsUtil {
     /**
      * 根据msId获取接口类
      *
-     * @param msId
-     * @return
+     * @param msId 女士id
+     * @return {@link Class}<{@link ?}>
      */
     public static Class<?> getMapperClass(String msId) {
-        if (msId.indexOf(".") == -1) {
+        if (!msId.contains(".")) {
             throw new SystemException("当前MappedStatement的id=" + msId + ",不符合MappedStatement的规则!");
         }
         String mapperClassStr = msId.substring(0, msId.lastIndexOf("."));
@@ -60,9 +60,7 @@ public class MsUtil {
             if (null != cl) {
                 try {
                     mapperClass = Class.forName(mapperClassStr, true, cl);
-                    if (mapperClass != null) {
-                        break;
-                    }
+                    break;
                 } catch (ClassNotFoundException e) {
                     // we'll ignore this until all class loaders fail to locate the class
                 }
@@ -82,8 +80,8 @@ public class MsUtil {
     /**
      * 获取执行的方法名
      *
-     * @param ms
-     * @return
+     * @param ms 女士
+     * @return {@link String}
      */
     public static String getMethodName(MappedStatement ms) {
         return getMethodName(ms.getId());
@@ -92,8 +90,8 @@ public class MsUtil {
     /**
      * 获取执行的方法名
      *
-     * @param msId
-     * @return
+     * @param msId 女士id
+     * @return {@link String}
      */
     public static String getMethodName(String msId) {
         return msId.substring(msId.lastIndexOf(".") + 1);

@@ -15,10 +15,10 @@
  */
 package com.pisces.framework.rds.config;
 
-import com.pisces.framework.core.exception.SystemException;
 import com.pisces.framework.core.utils.SpringBootBindUtil;
 import com.pisces.framework.rds.entity.Config;
 import com.pisces.framework.rds.helper.MapperHelper;
+import jakarta.validation.constraints.NotNull;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
@@ -41,7 +41,6 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
-import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -62,8 +61,6 @@ import java.util.Set;
 public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
 
     private boolean addToConfig = true;
-
-    private boolean lazyInitialization;
 
     private SqlSessionFactory sqlSessionFactory;
 
@@ -114,25 +111,17 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
 
         if (acceptAllInterfaces) {
             // default include filter that accepts all classes
-            addIncludeFilter(new TypeFilter() {
-                @Override
-                public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
-                    return true;
-                }
-            });
+            addIncludeFilter((metadataReader, metadataReaderFactory) -> true);
         }
 
         // exclude package-info.java
-        addExcludeFilter(new TypeFilter() {
-            @Override
-            public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
-                String className = metadataReader.getClassMetadata().getClassName();
-                if (className.endsWith("package-info")) {
-                    return true;
-                }
-                return metadataReader.getAnnotationMetadata()
-                        .hasAnnotation("tk.mybatis.mapper.annotation.RegisterMapper");
+        addExcludeFilter((metadataReader, metadataReaderFactory) -> {
+            String className = metadataReader.getClassMetadata().getClassName();
+            if (className.endsWith("package-info")) {
+                return true;
             }
+            return metadataReader.getAnnotationMetadata()
+                    .hasAnnotation("tk.mybatis.mapper.annotation.RegisterMapper");
         });
     }
 
@@ -144,7 +133,6 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
     @Override
     public Set<BeanDefinitionHolder> doScan(String... basePackages) {
         Set<BeanDefinitionHolder> beanDefinitions = super.doScan(basePackages);
-
         if (beanDefinitions.isEmpty()) {
             logger.warn("No MyBatis mapper was found in '" + Arrays.toString(basePackages) + "' package. Please check your configuration.");
         } else {
@@ -158,11 +146,6 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
         GenericBeanDefinition definition;
         for (BeanDefinitionHolder holder : beanDefinitions) {
             definition = (GenericBeanDefinition) holder.getBeanDefinition();
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Creating MapperFactoryBean with name '" + holder.getBeanName()
-                        + "' and '" + definition.getBeanClassName() + "' mapperInterface");
-            }
 
             // the mapper interface is the original class of the bean
             // but, the actual class of the bean is MapperFactoryBean
@@ -205,13 +188,10 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
             }
 
             if (!explicitFactoryUsed) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Enabling autowire by type for MapperFactoryBean with name '" + holder.getBeanName() + "'.");
-                }
                 definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
             }
 
-            definition.setLazyInit(lazyInitialization);
+            definition.setLazyInit(false);
         }
     }
 
@@ -227,7 +207,7 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
      * {@inheritDoc}
      */
     @Override
-    protected boolean checkCandidate(String beanName, BeanDefinition beanDefinition) {
+    protected boolean checkCandidate(@NotNull String beanName, @NotNull BeanDefinition beanDefinition) {
         if (super.checkCandidate(beanName, beanDefinition)) {
             return true;
         } else {
@@ -254,14 +234,10 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
         this.annotationClass = annotationClass;
     }
 
-    public void setLazyInitialization(boolean lazyInitialization) {
-        this.lazyInitialization = lazyInitialization;
-    }
-
     /**
      * 配置通用 Mapper
      *
-     * @param config
+     * @param config 配置
      */
     public void setConfig(Config config) {
         if (mapperHelper == null) {
@@ -281,7 +257,7 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
     /**
      * 从环境变量中获取 mapper 配置信息
      *
-     * @param environment
+     * @param environment 环境
      */
     public void setMapperProperties(Environment environment) {
         Config config = SpringBootBindUtil.bind(environment, Config.class, Config.PREFIX);
@@ -291,33 +267,6 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
         if (config != null) {
             mapperHelper.setConfig(config);
         }
-    }
-
-    /**
-     * 从 properties 数组获取 mapper 配置信息
-     *
-     * @param properties
-     */
-    public void setMapperProperties(String[] properties) {
-        if (mapperHelper == null) {
-            mapperHelper = new MapperHelper();
-        }
-        Properties props = new Properties();
-        for (String property : properties) {
-            property = property.trim();
-            int index = property.indexOf("=");
-            if (index < 0) {
-                throw new SystemException("通过 @MapperScan 注解的 properties 参数配置出错:" + property + " !\n"
-                        + "请保证配置项按 properties 文件格式要求进行配置，例如：\n"
-                        + "properties = {\n"
-                        + "\t\"mappers=tk.mybatis.mapper.common.Mapper\",\n"
-                        + "\t\"notEmpty=true\"\n"
-                        + "}"
-                );
-            }
-            props.put(property.substring(0, index).trim(), property.substring(index + 1).trim());
-        }
-        mapperHelper.setProperties(props);
     }
 
     public void setMarkerInterface(Class<?> markerInterface) {

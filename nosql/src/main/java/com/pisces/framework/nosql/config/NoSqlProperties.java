@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author jason
  * @date 2022/12/08
  */
-@ConfigurationProperties(prefix = "pisces.platform.nosql")
+@ConfigurationProperties(prefix = "pisces.framework.nosql")
 public class NoSqlProperties extends BaseProperties {
     public NoSqlProperties() {
         super(NoSqlConstant.IDENTIFY);

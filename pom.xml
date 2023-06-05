@@ -31,6 +31,8 @@
         <java.target.version>17</java.target.version>
 
         <mybatis.boot.version>3.0.1</mybatis.boot.version>
+        <p6spy.version>3.9.1</p6spy.version>
+        <seata.version>1.6.1</seata.version>
 
     </properties>
 
@@ -75,6 +77,22 @@
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
                 <version>${mybatis.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>p6spy</groupId>
+                <artifactId>p6spy</artifactId>
+                <version>${p6spy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.seata</groupId>
+                <artifactId>seata-rm-datasource</artifactId>
+                <version>${seata.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>druid</artifactId>
+                        <groupId>com.alibaba</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>

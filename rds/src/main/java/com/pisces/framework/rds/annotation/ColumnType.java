@@ -47,7 +47,7 @@ public @interface ColumnType {
     /**
      * 是否为 BLOB 字段
      *
-     * @return
+     * @return true为BLOB字段
      */
     boolean isBlob() default false;
 

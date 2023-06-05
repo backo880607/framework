@@ -24,10 +24,9 @@
 
 package com.pisces.framework.rds.entity;
 
-import com.pisces.framework.core.entity.Style;
-import com.pisces.framework.core.exception.SystemException;
 import com.pisces.framework.core.utils.lang.StringUtils;
-import com.pisces.framework.rds.helper.resolve.EntityResolve;
+import com.pisces.framework.rds.enums.IdentityDialect;
+import com.pisces.framework.rds.provider.resolve.EntityResolve;
 import com.pisces.framework.rds.utils.SimpleTypeUtil;
 
 import java.util.ArrayList;
@@ -42,7 +41,7 @@ import java.util.Properties;
 public class Config {
     public static final String PREFIX = "mapper";
 
-    private List<Class> mappers = new ArrayList<Class>();
+    private List<Class<?>> mappers = new ArrayList<>();
     private String IDENTITY;
     private boolean BEFORE;
     private String seqFormat;
@@ -56,19 +55,11 @@ public class Config {
     /**
      * @since 3.5.0
      */
-    private boolean enumAsSimpleType;
-    /**
-     * 是否支持方法上的注解，默认false
-     */
-    private boolean enableMethodAnnotation;
+    private boolean enumAsSimpleType = true;
     /**
      * 对于一般的getAllIfColumnNode，是否判断!=''，默认不判断
      */
     private boolean notEmpty;
-    /**
-     * 字段转换风格，默认驼峰转下划线
-     */
-    private Style style;
     /**
      * 处理关键字，默认空，mysql可以设置为 `{0}`, sqlserver 为 [{0}]，{0} 代表的列名
      */
@@ -96,8 +87,6 @@ public class Config {
 
     /**
      * 设置全局的catalog,默认为空，如果设置了值，操作表时的sql会是catalog.tablename
-     *
-     * @param catalog
      */
     public void setCatalog(String catalog) {
         this.catalog = catalog;
@@ -105,8 +94,6 @@ public class Config {
 
     /**
      * 获取主键自增回写SQL
-     *
-     * @return
      */
     public String getIDENTITY() {
         if (StringUtils.isNotEmpty(this.IDENTITY)) {
@@ -118,8 +105,6 @@ public class Config {
 
     /**
      * 主键自增回写方法,默认值MYSQL,详细说明请看文档
-     *
-     * @param IDENTITY
      */
     public void setIDENTITY(String IDENTITY) {
         IdentityDialect identityDialect = IdentityDialect.getDatabaseDialect(IDENTITY);
@@ -132,8 +117,6 @@ public class Config {
 
     /**
      * 获取表前缀，带catalog或schema
-     *
-     * @return
      */
     public String getPrefix() {
         if (StringUtils.isNotEmpty(this.catalog)) {
@@ -152,8 +135,6 @@ public class Config {
     /**
      * 设置全局的schema,默认为空，如果设置了值，操作表时的sql会是schema.tablename
      * <br>如果同时设置了catalog,优先使用catalog.tablename
-     *
-     * @param schema
      */
     public void setSchema(String schema) {
         this.schema = schema;
@@ -161,8 +142,6 @@ public class Config {
 
     /**
      * 获取序列格式化模板
-     *
-     * @return
      */
     public String getSeqFormat() {
         if (StringUtils.isNotEmpty(this.seqFormat)) {
@@ -174,19 +153,9 @@ public class Config {
     /**
      * 序列的获取规则,使用{num}格式化参数，默认值为{0}.nextval，针对Oracle
      * <br>可选参数一共3个，对应0,1,2,3分别为SequenceName，ColumnName, PropertyName，TableName
-     *
-     * @param seqFormat
      */
     public void setSeqFormat(String seqFormat) {
         this.seqFormat = seqFormat;
-    }
-
-    public Style getStyle() {
-        return this.style == null ? Style.camelhump : this.style;
-    }
-
-    public void setStyle(Style style) {
-        this.style = style;
     }
 
     public String getWrapKeyword() {
@@ -200,7 +169,7 @@ public class Config {
     /**
      * 获取SelectKey的Order
      *
-     * @return
+     * @return boolean
      */
     public boolean isBEFORE() {
         return BEFORE;
@@ -216,14 +185,6 @@ public class Config {
 
     public void setCheckExampleEntityClass(boolean checkExampleEntityClass) {
         this.checkExampleEntityClass = checkExampleEntityClass;
-    }
-
-    public boolean isEnableMethodAnnotation() {
-        return enableMethodAnnotation;
-    }
-
-    public void setEnableMethodAnnotation(boolean enableMethodAnnotation) {
-        this.enableMethodAnnotation = enableMethodAnnotation;
     }
 
     public boolean isEnumAsSimpleType() {
@@ -267,11 +228,11 @@ public class Config {
         setIDENTITY(identity);
     }
 
-    public List<Class> getMappers() {
+    public List<Class<?>> getMappers() {
         return mappers;
     }
 
-    public void setMappers(List<Class> mappers) {
+    public void setMappers(List<Class<?>> mappers) {
         this.mappers = mappers;
     }
 
@@ -318,12 +279,10 @@ public class Config {
     /**
      * 配置属性
      *
-     * @param properties
+     * @param properties 属性
      */
     public void setProperties(Properties properties) {
         if (properties == null) {
-            //默认驼峰
-            this.style = Style.camelhump;
             return;
         }
         String IDENTITY = properties.getProperty("IDENTITY");
@@ -354,38 +313,25 @@ public class Config {
         }
         ORDER = properties.getProperty("before");
         if (StringUtils.isNotEmpty(ORDER)) {
-            setBefore(Boolean.valueOf(ORDER));
+            setBefore(Boolean.parseBoolean(ORDER));
         }
 
-
-        this.notEmpty = Boolean.valueOf(properties.getProperty("notEmpty"));
-        this.enableMethodAnnotation = Boolean.valueOf(properties.getProperty("enableMethodAnnotation"));
-        this.checkExampleEntityClass = Boolean.valueOf(properties.getProperty("checkExampleEntityClass"));
+        this.notEmpty = Boolean.parseBoolean(properties.getProperty("notEmpty"));
+        this.checkExampleEntityClass = Boolean.parseBoolean(properties.getProperty("checkExampleEntityClass"));
         //默认值 true，所以要特殊判断
         String useSimpleTypeStr = properties.getProperty("useSimpleType");
         if (StringUtils.isNotEmpty(useSimpleTypeStr)) {
-            this.useSimpleType = Boolean.valueOf(useSimpleTypeStr);
+            this.useSimpleType = Boolean.parseBoolean(useSimpleTypeStr);
         }
-        this.enumAsSimpleType = Boolean.valueOf(properties.getProperty("enumAsSimpleType"));
+        this.enumAsSimpleType = Boolean.parseBoolean(properties.getProperty("enumAsSimpleType"));
         //注册新的基本类型，以逗号隔开，使用全限定类名
         String simpleTypes = properties.getProperty("simpleTypes");
         if (StringUtils.isNotEmpty(simpleTypes)) {
             SimpleTypeUtil.registerSimpleType(simpleTypes);
         }
         //使用 8 种基本类型
-        if (Boolean.valueOf(properties.getProperty("usePrimitiveType"))) {
+        if (Boolean.parseBoolean(properties.getProperty("usePrimitiveType"))) {
             SimpleTypeUtil.registerPrimitiveTypes();
-        }
-        String styleStr = properties.getProperty("style");
-        if (StringUtils.isNotEmpty(styleStr)) {
-            try {
-                this.style = Style.valueOf(styleStr);
-            } catch (IllegalArgumentException e) {
-                throw new SystemException(styleStr + "不是合法的Style值!");
-            }
-        } else {
-            //默认驼峰
-            this.style = Style.camelhump;
         }
         //处理关键字
         String wrapKeyword = properties.getProperty("wrapKeyword");
@@ -393,10 +339,10 @@ public class Config {
             this.wrapKeyword = wrapKeyword;
         }
         //安全删除
-        this.safeDelete = Boolean.valueOf(properties.getProperty("safeDelete"));
+        this.safeDelete = Boolean.parseBoolean(properties.getProperty("safeDelete"));
         //安全更新
-        this.safeUpdate = Boolean.valueOf(properties.getProperty("safeUpdate"));
+        this.safeUpdate = Boolean.parseBoolean(properties.getProperty("safeUpdate"));
         //是否设置 javaType，true 时如 {id, javaType=java.lang.Long}
-        this.useJavaType = Boolean.valueOf(properties.getProperty("useJavaType"));
+        this.useJavaType = Boolean.parseBoolean(properties.getProperty("useJavaType"));
     }
 }
