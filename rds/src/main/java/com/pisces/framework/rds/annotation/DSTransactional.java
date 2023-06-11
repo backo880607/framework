@@ -15,7 +15,7 @@
  */
 package com.pisces.framework.rds.annotation;
 
-import com.pisces.framework.rds.tx.DsPropagation;
+import com.pisces.framework.rds.datasource.tx.DsPropagation;
 
 import java.lang.annotation.*;
 

@@ -353,7 +353,7 @@ public class CharUtils {
      */
     public static boolean isEmoji(char c) {
         //noinspection ConstantConditions
-        return false == ((c == 0x0) || //
+        return !((c == 0x0) || //
                 (c == 0x9) || //
                 (c == 0xA) || //
                 (c == 0xD) || //

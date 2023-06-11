@@ -1,12 +1,12 @@
 package com.pisces.framework.rds.config;
 
 import com.pisces.framework.core.config.BaseProperties;
-import com.pisces.framework.rds.datasource.DynamicDatasourceAopProperties;
-import com.pisces.framework.rds.datasource.creator.DataSourceProperty;
+import com.pisces.framework.rds.datasource.config.DynamicDatasourceAopProperties;
+import com.pisces.framework.rds.datasource.config.DataSourceProperty;
 import com.pisces.framework.rds.datasource.creator.hikaricp.HikariCpConfig;
 import com.pisces.framework.rds.datasource.strategy.DynamicDataSourceStrategy;
 import com.pisces.framework.rds.datasource.strategy.LoadBalanceDynamicDataSourceStrategy;
-import com.pisces.framework.rds.enums.SeataMode;
+import com.pisces.framework.rds.datasource.SeataMode;
 import com.pisces.framework.rds.utils.CryptoUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,8 +23,10 @@ import java.util.Map;
  */
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "pisces.framework.rds")
+@ConfigurationProperties(prefix = RdsProperties.PREFIX)
 public class RdsProperties extends BaseProperties {
+    public static final String PREFIX = "pisces.framework.rds";
+
     public RdsProperties() {
         super(RdsConstant.IDENTIFY);
     }

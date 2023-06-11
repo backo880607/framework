@@ -48,8 +48,8 @@ public class GroupDataSource {
      * @param ds         the name of the datasource
      * @param dataSource datasource
      */
-    public DataSource addDatasource(String ds, DataSource dataSource) {
-        return dataSourceMap.put(ds, dataSource);
+    public void addDatasource(String ds, DataSource dataSource) {
+        dataSourceMap.put(ds, dataSource);
     }
 
     /**

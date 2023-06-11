@@ -19,7 +19,7 @@ import com.pisces.framework.core.utils.lang.StringUtils;
 import com.pisces.framework.rds.config.RdsContext;
 import com.pisces.framework.rds.datasource.creator.ConfigMergeCreator;
 import com.pisces.framework.rds.datasource.creator.DataSourceCreator;
-import com.pisces.framework.rds.datasource.creator.DataSourceProperty;
+import com.pisces.framework.rds.datasource.config.DataSourceProperty;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AllArgsConstructor;
@@ -78,7 +78,7 @@ public class HikariDataSourceCreator implements DataSourceCreator {
         config.setJdbcUrl(dataSourceProperty.getUrl());
         config.setPoolName(dataSourceProperty.getPoolName());
         String driverClassName = dataSourceProperty.getDriverClassName();
-        if (!StringUtils.isBlank(driverClassName)) {
+        if (StringUtils.isNotBlank(driverClassName)) {
             config.setDriverClassName(driverClassName);
         }
         if (Boolean.FALSE.equals(dataSourceProperty.getLazy())) {
@@ -96,7 +96,6 @@ public class HikariDataSourceCreator implements DataSourceCreator {
 
     @Override
     public boolean support(DataSourceProperty dataSourceProperty) {
-        Class<? extends DataSource> type = dataSourceProperty.getType();
-        return type == null || RdsContext.HIKARI_DATASOURCE.equals(type.getName());
+        return true;
     }
 }

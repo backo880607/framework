@@ -25,7 +25,7 @@
 package com.pisces.framework.rds.helper;
 
 import com.pisces.framework.core.exception.SystemException;
-import com.pisces.framework.rds.entity.EntityField;
+import com.pisces.framework.rds.helper.entity.EntityField;
 import jakarta.persistence.Entity;
 
 import java.beans.BeanInfo;

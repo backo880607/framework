@@ -15,7 +15,7 @@
  */
 package com.pisces.framework.rds.datasource.event;
 
-import com.pisces.framework.rds.datasource.creator.DataSourceProperty;
+import com.pisces.framework.rds.datasource.config.DataSourceProperty;
 import com.pisces.framework.rds.utils.CryptoUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;

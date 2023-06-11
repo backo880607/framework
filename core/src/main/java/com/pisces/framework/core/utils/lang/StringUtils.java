@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  * @date 2022/12/07
  */
 public final class StringUtils {
-    private static Pattern UNDERLINE_TO_CAMELHUMP_PATTERN = Pattern.compile("_[a-z]");
+    private static final Pattern UNDERLINE_TO_CAMELHUMP_PATTERN = Pattern.compile("_[a-z]");
 
     private StringUtils() {
     }

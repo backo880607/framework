@@ -15,19 +15,28 @@
  */
 package com.pisces.framework.rds.datasource.config;
 
+import com.pisces.framework.rds.annotation.DS;
+import com.pisces.framework.rds.annotation.DSTransactional;
 import com.pisces.framework.rds.config.RdsProperties;
 import com.pisces.framework.rds.datasource.DynamicRoutingDataSource;
+import com.pisces.framework.rds.datasource.aop.DynamicDataSourceAnnotationAdvisor;
+import com.pisces.framework.rds.datasource.aop.DynamicDataSourceAnnotationInterceptor;
+import com.pisces.framework.rds.datasource.aop.DynamicLocalTransactionInterceptor;
 import com.pisces.framework.rds.datasource.processor.DsHeaderProcessor;
 import com.pisces.framework.rds.datasource.processor.DsProcessor;
 import com.pisces.framework.rds.datasource.processor.DsSessionProcessor;
 import com.pisces.framework.rds.datasource.processor.DsSpelExpressionProcessor;
 import com.pisces.framework.rds.datasource.provider.DynamicDataSourceProvider;
 import com.pisces.framework.rds.datasource.strategy.DynamicDataSourceStrategy;
+import org.springframework.aop.Advisor;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Role;
 import org.springframework.context.expression.BeanFactoryResolver;
 
 /**
@@ -62,23 +71,23 @@ public class DynamicDataSourceAopConfiguration {
     }
 
 
-//    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-//    @Bean
-//    @ConditionalOnProperty(prefix = DynamicDataSourceProperties.PREFIX + ".aop", name = "enabled", havingValue = "true", matchIfMissing = true)
-//    public Advisor dynamicDatasourceAnnotationAdvisor(DsProcessor dsProcessor) {
-//        DynamicDatasourceAopProperties aopProperties = properties.getAop();
-//        DynamicDataSourceAnnotationInterceptor interceptor = new DynamicDataSourceAnnotationInterceptor(aopProperties.getAllowedPublicOnly(), dsProcessor);
-//        DynamicDataSourceAnnotationAdvisor advisor = new DynamicDataSourceAnnotationAdvisor(interceptor, DS.class);
-//        advisor.setOrder(aopProperties.getOrder());
-//        return advisor;
-//    }
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+    @Bean
+    @ConditionalOnProperty(prefix = RdsProperties.PREFIX + ".aop", name = "enabled", havingValue = "true", matchIfMissing = true)
+    public Advisor dynamicDatasourceAnnotationAdvisor(DsProcessor dsProcessor) {
+        DynamicDatasourceAopProperties aopProperties = properties.getAop();
+        DynamicDataSourceAnnotationInterceptor interceptor = new DynamicDataSourceAnnotationInterceptor(aopProperties.getAllowedPublicOnly(), dsProcessor);
+        DynamicDataSourceAnnotationAdvisor advisor = new DynamicDataSourceAnnotationAdvisor(interceptor, DS.class);
+        advisor.setOrder(aopProperties.getOrder());
+        return advisor;
+    }
 
-//    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-//    @Bean
-//    @ConditionalOnProperty(prefix = DynamicDataSourceProperties.PREFIX, name = "seata", havingValue = "false", matchIfMissing = true)
-//    public Advisor dynamicTransactionAdvisor() {
-//        DynamicLocalTransactionInterceptor interceptor = new DynamicLocalTransactionInterceptor();
-//        return new DynamicDataSourceAnnotationAdvisor(interceptor, DSTransactional.class);
-//    }
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+    @Bean
+    @ConditionalOnProperty(prefix = RdsProperties.PREFIX, name = "seata", havingValue = "false", matchIfMissing = true)
+    public Advisor dynamicTransactionAdvisor() {
+        DynamicLocalTransactionInterceptor interceptor = new DynamicLocalTransactionInterceptor();
+        return new DynamicDataSourceAnnotationAdvisor(interceptor, DSTransactional.class);
+    }
 
 }

@@ -4,10 +4,9 @@ import com.pisces.framework.core.dao.BaseDao;
 import com.pisces.framework.core.entity.BaseObject;
 import com.pisces.framework.core.locale.LanguageService;
 import com.pisces.framework.core.locale.Message;
-import com.pisces.framework.core.utils.lang.ClassUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 /**
@@ -32,7 +31,7 @@ public abstract class BaseServiceImpl<T extends BaseObject, D extends BaseDao<T>
 
     @Override
     public T create() {
-        T entity = ClassUtils.newInstance(getObjectClass());
+        T entity = BeanUtils.instantiateClass(getObjectClass());
         entity.init();
         return entity;
     }

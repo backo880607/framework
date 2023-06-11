@@ -15,7 +15,6 @@
  */
 package com.pisces.framework.rds.datasource;
 
-import com.pisces.framework.rds.enums.SeataMode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

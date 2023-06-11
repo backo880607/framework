@@ -16,6 +16,8 @@
 package com.pisces.framework.rds.datasource.creator;
 
 
+import com.pisces.framework.rds.datasource.config.DataSourceProperty;
+
 import javax.sql.DataSource;
 
 /**

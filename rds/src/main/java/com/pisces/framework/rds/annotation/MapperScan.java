@@ -1,6 +1,7 @@
 package com.pisces.framework.rds.annotation;
 
 import com.pisces.framework.rds.config.MapperFactoryBean;
+import com.pisces.framework.rds.config.MapperScannerRegistrar;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.Import;
 
@@ -11,15 +12,11 @@ import java.lang.annotation.*;
 @Documented
 @Import({MapperScannerRegistrar.class})
 public @interface MapperScan {
-    String[] value() default {};
-
     String[] basePackages() default {};
 
     Class<? extends BeanNameGenerator> nameGenerator() default BeanNameGenerator.class;
 
     Class<? extends Annotation> annotationClass() default Annotation.class;
-
-    Class<?> markerInterface() default Class.class;
 
     String sqlSessionTemplateRef() default "";
 

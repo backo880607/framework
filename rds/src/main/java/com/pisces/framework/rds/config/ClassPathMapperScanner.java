@@ -16,9 +16,8 @@
 package com.pisces.framework.rds.config;
 
 import com.pisces.framework.core.utils.SpringBootBindUtil;
-import com.pisces.framework.rds.entity.Config;
+import com.pisces.framework.rds.helper.entity.Config;
 import com.pisces.framework.rds.helper.MapperHelper;
-import jakarta.validation.constraints.NotNull;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
@@ -31,14 +30,11 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.env.Environment;
-import org.springframework.core.type.classreading.MetadataReader;
-import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.AssignableTypeFilter;
-import org.springframework.core.type.filter.TypeFilter;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
+import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Set;
@@ -102,7 +98,7 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
         if (this.markerInterface != null) {
             addIncludeFilter(new AssignableTypeFilter(this.markerInterface) {
                 @Override
-                protected boolean matchClassName(String className) {
+                protected boolean matchClassName(@Nonnull String className) {
                     return false;
                 }
             });
@@ -131,6 +127,7 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
      * MapperFactoryBeans
      */
     @Override
+    @SuppressWarnings("NullableProblems")
     public Set<BeanDefinitionHolder> doScan(String... basePackages) {
         Set<BeanDefinitionHolder> beanDefinitions = super.doScan(basePackages);
         if (beanDefinitions.isEmpty()) {
@@ -207,7 +204,7 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
      * {@inheritDoc}
      */
     @Override
-    protected boolean checkCandidate(@NotNull String beanName, @NotNull BeanDefinition beanDefinition) {
+    protected boolean checkCandidate(@Nonnull String beanName, @Nonnull BeanDefinition beanDefinition) {
         if (super.checkCandidate(beanName, beanDefinition)) {
             return true;
         } else {

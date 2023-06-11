@@ -28,7 +28,7 @@ import com.pisces.framework.core.exception.SystemException;
 import com.pisces.framework.core.utils.lang.StringUtils;
 import com.pisces.framework.rds.annotation.LogicDelete;
 import com.pisces.framework.rds.annotation.Version;
-import com.pisces.framework.rds.entity.EntityColumn;
+import com.pisces.framework.rds.helper.entity.EntityColumn;
 
 import java.util.Set;
 
@@ -43,66 +43,53 @@ public class SqlHelper {
     /**
      * <bind name="pattern" value="'%' + _parameter.getTitle() + '%'" />
      *
-     * @param column
-     * @return
+     * @param column 列
+     * @return {@link String}
      */
     public static String getBindCache(EntityColumn column) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("<bind name=\"");
-        sql.append(column.getProperty()).append("_cache\" ");
-        sql.append("value=\"").append(column.getProperty()).append("\"/>");
-        return sql.toString();
+        return "<bind name=\"" + column.getProperty() + "_cache\" " + "value=\"" + column.getProperty() + "\"/>";
     }
 
     /**
      * <bind name="pattern" value="'%' + _parameter.getTitle() + '%'" />
      *
-     * @param column
-     * @return
+     * @param column 列
+     * @param value  价值
+     * @return {@link String}
      */
     public static String getBindValue(EntityColumn column, String value) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("<bind name=\"");
-        sql.append(column.getProperty()).append("_bind\" ");
-        sql.append("value='").append(value).append("'/>");
-        return sql.toString();
+        return "<bind name=\"" + column.getProperty() + "_bind\" " + "value='" + value + "'/>";
     }
 
     /**
      * <bind name="pattern" value="'%' + _parameter.getTitle() + '%'" />
      *
-     * @param column
-     * @return
+     * @param column   列
+     * @param contents 内容
+     * @return {@link String}
      */
     public static String getIfCacheNotNull(EntityColumn column, String contents) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("<if test=\"").append(column.getProperty()).append("_cache != null\">");
-        sql.append(contents);
-        sql.append("</if>");
-        return sql.toString();
+        return "<if test=\"" + column.getProperty() + "_cache != null\">" + contents + "</if>";
     }
 
     /**
      * 如果_cache == null
      *
-     * @param column
-     * @return
+     * @param column   列
+     * @param contents 内容
+     * @return {@link String}
      */
     public static String getIfCacheIsNull(EntityColumn column, String contents) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("<if test=\"").append(column.getProperty()).append("_cache == null\">");
-        sql.append(contents);
-        sql.append("</if>");
-        return sql.toString();
+        return "<if test=\"" + column.getProperty() + "_cache == null\">" + contents + "</if>";
     }
 
     /**
      * 判断自动!=null的条件结构
      *
-     * @param column
-     * @param contents
-     * @param empty
-     * @return
+     * @param column   列
+     * @param contents 内容
+     * @param empty    空
+     * @return {@link String}
      */
     public static String getIfNotNull(EntityColumn column, String contents, boolean empty) {
         return getIfNotNull(null, column, contents, empty);
@@ -111,10 +98,10 @@ public class SqlHelper {
     /**
      * 判断自动==null的条件结构
      *
-     * @param column
-     * @param contents
-     * @param empty
-     * @return
+     * @param column   列
+     * @param contents 内容
+     * @param empty    空
+     * @return {@link String}
      */
     public static String getIfIsNull(EntityColumn column, String contents, boolean empty) {
         return getIfIsNull(null, column, contents, empty);
@@ -123,11 +110,11 @@ public class SqlHelper {
     /**
      * 判断自动!=null的条件结构
      *
-     * @param entityName
-     * @param column
-     * @param contents
-     * @param empty
-     * @return
+     * @param entityName 实体名称
+     * @param column     列
+     * @param contents   内容
+     * @param empty      空
+     * @return {@link String}
      */
     public static String getIfNotNull(String entityName, EntityColumn column, String contents, boolean empty) {
         StringBuilder sql = new StringBuilder();
@@ -152,11 +139,11 @@ public class SqlHelper {
     /**
      * 判断自动==null的条件结构
      *
-     * @param entityName
-     * @param column
-     * @param contents
-     * @param empty
-     * @return
+     * @param entityName 实体名称
+     * @param column     列
+     * @param contents   内容
+     * @param empty      空
+     * @return {@link String}
      */
     public static String getIfIsNull(String entityName, EntityColumn column, String contents, boolean empty) {
         StringBuilder sql = new StringBuilder();
@@ -181,8 +168,8 @@ public class SqlHelper {
     /**
      * 获取所有查询列，如id,name,code...
      *
-     * @param entityClass
-     * @return
+     * @param entityClass 实体类
+     * @return {@link String}
      */
     public static String getAllColumns(Class<?> entityClass) {
         Set<EntityColumn> columnSet = EntityHelper.getColumns(entityClass);
@@ -196,22 +183,18 @@ public class SqlHelper {
     /**
      * select xxx,xxx...
      *
-     * @param entityClass
-     * @return
+     * @param entityClass 实体类
+     * @return {@link String}
      */
     public static String selectAllColumns(Class<?> entityClass) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT ");
-        sql.append(getAllColumns(entityClass));
-        sql.append(" ");
-        return sql.toString();
+        return "SELECT " + getAllColumns(entityClass) + " ";
     }
 
     /**
      * select count(x)
      *
-     * @param entityClass
-     * @return
+     * @param entityClass 实体类
+     * @return {@link String}
      */
     public static String selectCount(Class<?> entityClass) {
         StringBuilder sql = new StringBuilder();
@@ -228,8 +211,8 @@ public class SqlHelper {
     /**
      * select case when count(x) > 0 then 1 else 0 end
      *
-     * @param entityClass
-     * @return
+     * @param entityClass 实体类
+     * @return {@link String}
      */
     public static String selectCountExists(Class<?> entityClass) {
         StringBuilder sql = new StringBuilder();
@@ -247,24 +230,20 @@ public class SqlHelper {
     /**
      * from tableName - 动态表名
      *
-     * @param entityClass
-     * @param defaultTableName
-     * @return
+     * @param entityClass      实体类
+     * @param defaultTableName 默认表名
+     * @return {@link String}
      */
     public static String fromTable(Class<?> entityClass, String defaultTableName) {
-        StringBuilder sql = new StringBuilder();
-        sql.append(" FROM ");
-        sql.append(defaultTableName);
-        sql.append(" ");
-        return sql.toString();
+        return " FROM " + defaultTableName + " ";
     }
 
     /**
      * update tableName - 动态表名
      *
-     * @param entityClass
-     * @param defaultTableName
-     * @return
+     * @param entityClass      实体类
+     * @param defaultTableName 默认表名
+     * @return {@link String}
      */
     public static String updateTable(Class<?> entityClass, String defaultTableName) {
         return updateTable(entityClass, defaultTableName, null);
@@ -273,73 +252,57 @@ public class SqlHelper {
     /**
      * update tableName - 动态表名
      *
-     * @param entityClass
+     * @param entityClass      实体类
      * @param defaultTableName 默认表名
-     * @param entityName       别名
-     * @return
+     * @param entityName       实体名称
+     * @return {@link String}
      */
     public static String updateTable(Class<?> entityClass, String defaultTableName, String entityName) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("UPDATE ");
-        sql.append(defaultTableName);
-        sql.append(" ");
-        return sql.toString();
+        return "UPDATE " + defaultTableName + " ";
     }
 
     /**
      * delete tableName - 动态表名
      *
-     * @param entityClass
-     * @param defaultTableName
-     * @return
+     * @param entityClass      实体类
+     * @param defaultTableName 默认表名
+     * @return {@link String}
      */
     public static String deleteFromTable(Class<?> entityClass, String defaultTableName) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("DELETE FROM ");
-        sql.append(defaultTableName);
-        sql.append(" ");
-        return sql.toString();
+        return "DELETE FROM " + defaultTableName + " ";
     }
 
     /**
      * insert into tableName - 动态表名
      *
-     * @param entityClass
-     * @param defaultTableName
-     * @return
+     * @param entityClass      实体类
+     * @param defaultTableName 默认表名
+     * @return {@link String}
      */
     public static String insertIntoTable(Class<?> entityClass, String defaultTableName) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("INSERT INTO ");
-        sql.append(defaultTableName);
-        sql.append(" ");
-        return sql.toString();
+        return "INSERT INTO " + defaultTableName + " ";
     }
 
     /**
      * insert into tableName - 动态表名
      *
-     * @param entityClass
-     * @param defaultTableName
-     * @param parameterName    动态表名的参数名
-     * @return
+     * @param entityClass      实体类
+     * @param defaultTableName 默认表名
+     * @param parameterName    参数名称
+     * @return {@link String}
      */
     public static String insertIntoTable(Class<?> entityClass, String defaultTableName, String parameterName) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("INSERT INTO ");
-        sql.append(defaultTableName);
-        sql.append(" ");
-        return sql.toString();
+        return "INSERT INTO " + defaultTableName + " ";
     }
 
     /**
      * insert table()列
      *
-     * @param entityClass
-     * @param skipId      是否从列中忽略id类型
-     * @param notNull     是否判断!=null
-     * @param notEmpty    是否判断String类型!=''
-     * @return
+     * @param entityClass 实体类
+     * @param skipId      跳过id
+     * @param notNull     非空
+     * @param notEmpty    非空
+     * @return {@link String}
      */
     public static String insertColumns(Class<?> entityClass, boolean skipId, boolean notNull, boolean notEmpty) {
         StringBuilder sql = new StringBuilder();
@@ -357,7 +320,7 @@ public class SqlHelper {
             if (notNull) {
                 sql.append(SqlHelper.getIfNotNull(column, column.getColumn() + ",", notEmpty));
             } else {
-                sql.append(column.getColumn() + ",");
+                sql.append(column.getColumn()).append(",");
             }
         }
         sql.append("</trim>");
@@ -367,11 +330,11 @@ public class SqlHelper {
     /**
      * insert-values()列
      *
-     * @param entityClass
-     * @param skipId      是否从列中忽略id类型
-     * @param notNull     是否判断!=null
-     * @param notEmpty    是否判断String类型!=''
-     * @return
+     * @param entityClass 实体类
+     * @param skipId      跳过id
+     * @param notNull     非空
+     * @param notEmpty    非空
+     * @return {@link String}
      */
     public static String insertValuesColumns(Class<?> entityClass, boolean skipId, boolean notNull, boolean notEmpty) {
         StringBuilder sql = new StringBuilder();
@@ -389,7 +352,7 @@ public class SqlHelper {
             if (notNull) {
                 sql.append(SqlHelper.getIfNotNull(column, column.getColumnHolder() + ",", notEmpty));
             } else {
-                sql.append(column.getColumnHolder() + ",");
+                sql.append(column.getColumnHolder()).append(",");
             }
         }
         sql.append("</trim>");
@@ -446,7 +409,7 @@ public class SqlHelper {
                 } else if (notNull) {
                     sql.append(SqlHelper.getIfNotNull(entityName, column, column.getColumnEqualsHolder(entityName) + ",", notEmpty));
                 } else {
-                    sql.append(column.getColumnEqualsHolder(entityName) + ",");
+                    sql.append(column.getColumnEqualsHolder(entityName)).append(",");
                 }
             }
         }
@@ -457,11 +420,11 @@ public class SqlHelper {
     /**
      * update set列，不考虑乐观锁注解 @Version
      *
-     * @param entityClass
-     * @param entityName  实体映射名
-     * @param notNull     是否判断!=null
-     * @param notEmpty    是否判断String类型!=''
-     * @return
+     * @param entityClass 实体类
+     * @param entityName  实体名称
+     * @param notNull     非空
+     * @param notEmpty    非空
+     * @return {@link String}
      */
     public static String updateSetColumnsIgnoreVersion(Class<?> entityClass, String entityName, boolean notNull, boolean notEmpty) {
         StringBuilder sql = new StringBuilder();
@@ -500,9 +463,9 @@ public class SqlHelper {
     /**
      * 不是所有参数都是 null 的检查
      *
-     * @param parameterName 参数名
-     * @param columnSet     需要检查的列
-     * @return
+     * @param parameterName 参数名称
+     * @param columnSet     列组
+     * @return {@link String}
      */
     public static String notAllNullParameterCheck(String parameterName, Set<EntityColumn> columnSet) {
         StringBuilder sql = new StringBuilder();
@@ -523,8 +486,8 @@ public class SqlHelper {
     /**
      * Example 中包含至少 1 个查询条件
      *
-     * @param parameterName 参数名
-     * @return
+     * @param parameterName 参数名称
+     * @return {@link String}
      */
     public static String exampleHasAtLeastOneCriteriaCheck(String parameterName) {
         StringBuilder sql = new StringBuilder();
@@ -536,8 +499,8 @@ public class SqlHelper {
     /**
      * where主键条件
      *
-     * @param entityClass
-     * @return
+     * @param entityClass 实体类
+     * @return {@link String}
      */
     public static String wherePKColumns(Class<?> entityClass) {
         return wherePKColumns(entityClass, false);
@@ -546,9 +509,9 @@ public class SqlHelper {
     /**
      * where主键条件
      *
-     * @param entityClass
-     * @param useVersion
-     * @return
+     * @param entityClass 实体类
+     * @param useVersion  使用版本
+     * @return {@link String}
      */
     public static String wherePKColumns(Class<?> entityClass, boolean useVersion) {
         return wherePKColumns(entityClass, null, useVersion);
@@ -557,10 +520,10 @@ public class SqlHelper {
     /**
      * where主键条件
      *
-     * @param entityClass
-     * @param entityName
-     * @param useVersion
-     * @return
+     * @param entityClass 实体类
+     * @param entityName  实体名称
+     * @param useVersion  使用版本
+     * @return {@link String}
      */
     public static String wherePKColumns(Class<?> entityClass, String entityName, boolean useVersion) {
         StringBuilder sql = new StringBuilder();
@@ -588,9 +551,9 @@ public class SqlHelper {
     /**
      * where所有列的条件，会判断是否!=null
      *
-     * @param entityClass
-     * @param empty
-     * @return
+     * @param entityClass 实体类
+     * @param empty       空
+     * @return {@link String}
      */
     public static String whereAllIfColumns(Class<?> entityClass, boolean empty) {
         return whereAllIfColumns(entityClass, empty, false);
@@ -599,10 +562,10 @@ public class SqlHelper {
     /**
      * where所有列的条件，会判断是否!=null
      *
-     * @param entityClass
-     * @param empty
-     * @param useVersion
-     * @return
+     * @param entityClass 实体类
+     * @param empty       空
+     * @param useVersion  使用版本
+     * @return {@link String}
      */
     public static String whereAllIfColumns(Class<?> entityClass, boolean empty, boolean useVersion) {
         StringBuilder sql = new StringBuilder();
@@ -637,8 +600,8 @@ public class SqlHelper {
     /**
      * 乐观锁字段条件
      *
-     * @param entityClass
-     * @return
+     * @param entityClass 实体类
+     * @return {@link String}
      */
     public static String whereVersion(Class<?> entityClass){
         return whereVersion(entityClass,null);
@@ -647,9 +610,9 @@ public class SqlHelper {
     /**
      * 乐观锁字段条件
      *
-     * @param entityClass
-     * @param entityName 实体名称
-     * @return
+     * @param entityClass 实体类
+     * @param entityName  实体名称
+     * @return {@link String}
      */
     public static String whereVersion(Class<?> entityClass,String entityName) {
         Set<EntityColumn> columnSet = EntityHelper.getColumns(entityClass);
@@ -672,9 +635,9 @@ public class SqlHelper {
      * <br>
      * AND column = value
      *
-     * @param entityClass
-     * @param isDeleted   true：已经逻辑删除，false：未逻辑删除
-     * @return
+     * @param entityClass 实体类
+     * @param isDeleted   被删除
+     * @return {@link String}
      */
     public static String whereLogicDelete(Class<?> entityClass, boolean isDeleted) {
         String value = logicDeleteColumnEqualsValue(entityClass, isDeleted);
@@ -690,8 +653,9 @@ public class SqlHelper {
      * <br>
      * 若没有逻辑删除注解，则返回空字符串
      *
-     * @param entityClass
-     * @param isDeleted   true 已经逻辑删除  false 未逻辑删除
+     * @param entityClass 实体类
+     * @param isDeleted   被删除
+     * @return {@link String}
      */
     public static String logicDeleteColumnEqualsValue(Class<?> entityClass, boolean isDeleted) {
         EntityColumn logicDeleteColumn = SqlHelper.getLogicDeleteColumn(entityClass);
@@ -712,8 +676,9 @@ public class SqlHelper {
      * <br>
      * 若没有逻辑删除注解，则返回空字符串
      *
-     * @param column
-     * @param isDeleted true 已经逻辑删除  false 未逻辑删除
+     * @param column    列
+     * @param isDeleted 被删除
+     * @return {@link String}
      */
     public static String logicDeleteColumnEqualsValue(EntityColumn column, boolean isDeleted) {
         String result = "";
@@ -726,9 +691,9 @@ public class SqlHelper {
     /**
      * 获取逻辑删除注解的参数值
      *
-     * @param column
-     * @param isDeleted true：逻辑删除的值，false：未逻辑删除的值
-     * @return
+     * @param column    列
+     * @param isDeleted 被删除
+     * @return int
      */
     public static int getLogicDeletedValue(EntityColumn column, boolean isDeleted) {
         if (!column.getEntityField().isAnnotationPresent(LogicDelete.class)) {
@@ -744,8 +709,8 @@ public class SqlHelper {
     /**
      * 是否有逻辑删除的注解
      *
-     * @param entityClass
-     * @return
+     * @param entityClass 实体类
+     * @return boolean
      */
     public static boolean hasLogicDeleteColumn(Class<?> entityClass) {
         return getLogicDeleteColumn(entityClass) != null;
@@ -754,8 +719,8 @@ public class SqlHelper {
     /**
      * 获取逻辑删除注解的列，若没有返回null
      *
-     * @param entityClass
-     * @return
+     * @param entityClass 实体类
+     * @return {@link EntityColumn}
      */
     public static EntityColumn getLogicDeleteColumn(Class<?> entityClass) {
         EntityColumn logicDeleteColumn = null;
@@ -776,7 +741,8 @@ public class SqlHelper {
     /**
      * example支持查询指定列时
      *
-     * @return
+     * @param entityClass 实体类
+     * @return {@link String}
      */
     public static String exampleSelectColumns(Class<?> entityClass) {
         StringBuilder sql = new StringBuilder();
@@ -797,7 +763,8 @@ public class SqlHelper {
     /**
      * example支持查询指定列时
      *
-     * @return
+     * @param entityClass 实体类
+     * @return {@link String}
      */
     public static String exampleCountColumn(Class<?> entityClass) {
         StringBuilder sql = new StringBuilder();
@@ -815,33 +782,26 @@ public class SqlHelper {
     /**
      * example 支持 for update
      *
-     * @return
+     * @return {@link String}
      */
     public static String exampleForUpdate() {
-        StringBuilder sql = new StringBuilder();
-        sql.append("<if test=\"@tk.mybatis.mapper.util.OGNL@hasForUpdate(_parameter)\">");
-        sql.append("FOR UPDATE");
-        sql.append("</if>");
-        return sql.toString();
+        return "<if test=\"@tk.mybatis.mapper.util.OGNL@hasForUpdate(_parameter)\">" + "FOR UPDATE" + "</if>";
     }
 
     /**
      * example 支持 for update
      *
-     * @return
+     * @param entityClass 实体类
+     * @return {@link String}
      */
     public static String exampleCheck(Class<?> entityClass) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("<bind name=\"checkExampleEntityClass\" value=\"@tk.mybatis.mapper.util.OGNL@checkExampleEntityClass(_parameter, '");
-        sql.append(entityClass.getName());
-        sql.append("')\"/>");
-        return sql.toString();
+        return "<bind name=\"checkExampleEntityClass\" value=\"@tk.mybatis.mapper.util.OGNL@checkExampleEntityClass(_parameter, '" + entityClass.getName() + "')\"/>";
     }
 
     /**
      * Example查询中的where结构，用于只有一个Example参数时
      *
-     * @return
+     * @return {@link String}
      */
     public static String exampleWhereClause() {
         return "<if test=\"_parameter != null\">" +
@@ -882,7 +842,7 @@ public class SqlHelper {
     /**
      * Example-Update中的where结构，用于多个参数时，Example带@Param("example")注解时
      *
-     * @return
+     * @return {@link String}
      */
     public static String updateByExampleWhereClause() {
         return "<where>\n" +

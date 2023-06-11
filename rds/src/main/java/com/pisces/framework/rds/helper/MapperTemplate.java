@@ -26,9 +26,8 @@ package com.pisces.framework.rds.helper;
 
 import com.pisces.framework.core.exception.SystemException;
 import com.pisces.framework.core.utils.lang.StringUtils;
-import com.pisces.framework.rds.entity.Config;
-import com.pisces.framework.rds.entity.EntityColumn;
-import com.pisces.framework.rds.entity.EntityTable;
+import com.pisces.framework.rds.helper.entity.Config;
+import com.pisces.framework.rds.helper.entity.EntityTable;
 import com.pisces.framework.rds.utils.MetaObjectUtil;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ResultMap;
@@ -42,7 +41,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -87,16 +85,6 @@ public abstract class MapperTemplate {
      */
     public void addMethodMap(String methodName, Method method) {
         methodMap.put(methodName, method);
-    }
-
-    /**
-     * 获取IDENTITY值的表达式
-     *
-     * @param column 列
-     * @return {@link String}
-     */
-    public String getIDENTITY(EntityColumn column) {
-        return MessageFormat.format(mapperHelper.getConfig().getIDENTITY(), column.getColumn(), column.getProperty(), column.getTable().getName());
     }
 
     /**
@@ -200,18 +188,6 @@ public abstract class MapperTemplate {
 
     public Config getConfig() {
         return mapperHelper.getConfig();
-    }
-
-    public String getIDENTITY() {
-        return getConfig().getIDENTITY();
-    }
-
-    public boolean isBEFORE() {
-        return getConfig().isBEFORE();
-    }
-
-    public boolean isCheckExampleEntityClass() {
-        return getConfig().isCheckExampleEntityClass();
     }
 
     public boolean isNotEmpty() {

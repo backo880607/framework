@@ -23,6 +23,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +45,7 @@ import java.util.List;
 @EnableConfigurationProperties(RdsProperties.class)
 @AutoConfigureBefore(value = DataSourceAutoConfiguration.class, name = "com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure")
 @Import(value = {DynamicDataSourceCreatorAutoConfiguration.class, DynamicDataSourceAopConfiguration.class, DynamicDataSourceAssistConfiguration.class})
-//@ConditionalOnProperty(prefix = DynamicDataSourceProperties.PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
+//@ConditionalOnProperty(prefix = RdsProperties.PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
 public class DynamicDataSourceAutoConfiguration implements InitializingBean {
     private final RdsProperties properties;
     private final List<DynamicDataSourcePropertiesCustomizer> dataSourcePropertiesCustomizers;

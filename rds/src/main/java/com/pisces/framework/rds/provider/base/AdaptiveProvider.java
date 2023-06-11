@@ -1,6 +1,6 @@
 package com.pisces.framework.rds.provider.base;
 
-import com.pisces.framework.rds.entity.EntityColumn;
+import com.pisces.framework.rds.helper.entity.EntityColumn;
 import org.apache.ibatis.type.JdbcType;
 
 import java.sql.Connection;

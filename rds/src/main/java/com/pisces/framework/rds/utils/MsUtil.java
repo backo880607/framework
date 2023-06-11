@@ -25,6 +25,7 @@
 package com.pisces.framework.rds.utils;
 
 import com.pisces.framework.core.exception.SystemException;
+import com.pisces.framework.core.utils.lang.StringUtils;
 import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.cache.decorators.SoftCache;
 import org.apache.ibatis.cache.impl.PerpetualCache;
@@ -97,4 +98,7 @@ public class MsUtil {
         return msId.substring(msId.lastIndexOf(".") + 1);
     }
 
+    public static String buildAsAlias(String alias) {
+        return StringUtils.isBlank(alias) ? "" : " AS " + alias;
+    }
 }

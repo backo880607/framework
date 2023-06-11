@@ -21,7 +21,6 @@ import com.pisces.framework.core.utils.lang.StringUtils;
 import com.pisces.framework.rds.datasource.provider.DynamicDataSourceProvider;
 import com.pisces.framework.rds.datasource.strategy.DynamicDataSourceStrategy;
 import com.pisces.framework.rds.datasource.strategy.LoadBalanceDynamicDataSourceStrategy;
-import com.pisces.framework.rds.utils.DynamicDataSourceContextHolder;
 import io.seata.rm.datasource.DataSourceProxy;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -79,7 +78,6 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource implemen
         String dsKey = DynamicDataSourceContextHolder.peek();
         return getDataSource(dsKey);
     }
-
 
     private DataSource determinePrimaryDataSource() {
         DataSource dataSource = dataSourceMap.get(primary);

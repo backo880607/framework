@@ -18,24 +18,19 @@ package com.pisces.framework.core.utils.lang;
 import java.util.*;
 import java.util.function.Function;
 
-
 public class CollectionUtils {
-
 
     public static boolean isEmpty(Collection<?> collection) {
         return collection == null || collection.isEmpty();
     }
 
-
     public static boolean isNotEmpty(Collection<?> collection) {
         return !isEmpty(collection);
     }
 
-
     public static boolean isEmpty(Map<?, ?> map) {
         return map == null || map.isEmpty();
     }
-
 
     public static boolean isNotEmpty(Map<?, ?> map) {
         return !isEmpty(map);
@@ -44,8 +39,7 @@ public class CollectionUtils {
     /**
      * 判断数组是否为空
      *
-     * @param array
-     * @param <T>
+     * @param array  数组对象
      * @return 空 true
      */
     public static <T> boolean isEmpty(T[] array) {
@@ -56,9 +50,8 @@ public class CollectionUtils {
     /**
      * 判断数组是否不为空
      *
-     * @param array
-     * @param <T>
-     * @return
+     * @param array 数组对象
+     * @return 非空 true
      */
     public static <T> boolean isNotEmpty(T[] array) {
         return !isEmpty(array);
@@ -80,11 +73,6 @@ public class CollectionUtils {
         return newList;
     }
 
-
-    public static <K, V> HashMap<K, V> newHashMap() {
-        return new HashMap<>();
-    }
-
     /**
      * 主要是用于修复 concurrentHashMap 在 jdk1.8 下的死循环问题
      *
@@ -98,28 +86,11 @@ public class CollectionUtils {
         return concurrentHashMap.computeIfAbsent(key, mappingFunction);
     }
 
-    public static <T> Set<T> newHashSet(T... elements) {
-        return new HashSet<>(Arrays.asList(elements));
-    }
-
-    public static <T> List<T> newArrayList(T... elements) {
-        return new ArrayList<>(Arrays.asList(elements));
-    }
-
-    public static <T> List<T> toList(Collection<T> collection) {
-        if (collection instanceof List) {
-            return (List<T>) collection;
-        } else {
-            return new ArrayList<>(collection);
-        }
-    }
-
     /**
      * 合并两个数组为一个新的数组
      *
      * @param first  第一个数组
      * @param second 第二个数组
-     * @param <T>
      * @return 新的数组
      */
     public static <T> T[] concat(T[] first, T[] second) {
@@ -137,11 +108,20 @@ public class CollectionUtils {
     }
 
 
+    /**
+     * concat
+     *
+     * @param first  第一个
+     * @param second 第二个
+     * @param third  第三
+     * @param others 其他人
+     * @return {@link T[]}
+     */
     public static <T> T[] concat(T[] first, T[] second, T[] third, T[]... others) {
         T[] results = concat(first, second);
         results = concat(results, third);
 
-        if (others != null && others.length > 0) {
+        if (others != null) {
             for (T[] other : others) {
                 results = concat(results, other);
             }
@@ -155,7 +135,6 @@ public class CollectionUtils {
      *
      * @param first  第一个数组
      * @param second 第二个数组
-     * @param <T>
      * @return 新的数组
      */
     @SafeVarargs
@@ -179,7 +158,6 @@ public class CollectionUtils {
      *
      * @param arrays 数组
      * @param object 用于检测的值
-     * @param <T>
      * @return true 包含
      */
     public static <T> boolean contains(T[] arrays, T object) {

@@ -27,7 +27,7 @@ package com.pisces.framework.rds.helper;
 import com.pisces.framework.core.exception.SystemException;
 import com.pisces.framework.core.utils.lang.StringUtils;
 import com.pisces.framework.rds.annotation.RegisterMapper;
-import com.pisces.framework.rds.entity.Config;
+import com.pisces.framework.rds.helper.entity.Config;
 import com.pisces.framework.rds.provider.EmptyProvider;
 import com.pisces.framework.rds.provider.resolve.EntityResolve;
 import org.apache.ibatis.annotations.DeleteProvider;
@@ -76,16 +76,6 @@ public class MapperHelper {
      * 默认构造方法
      */
     public MapperHelper() {
-    }
-
-    /**
-     * 带配置的构造方法
-     *
-     * @param properties 属性
-     */
-    public MapperHelper(Properties properties) {
-        this();
-        setProperties(properties);
     }
 
     /**
@@ -274,12 +264,7 @@ public class MapperHelper {
      * @param mapperInterface 映射器接口
      */
     public void processConfiguration(Configuration configuration, Class<?> mapperInterface) {
-        String prefix;
-        if (mapperInterface != null) {
-            prefix = mapperInterface.getName();
-        } else {
-            prefix = "";
-        }
+        String prefix = mapperInterface != null ? mapperInterface.getName() : "";
         for (Object object : new ArrayList<Object>(configuration.getMappedStatements())) {
             if (object instanceof MappedStatement) {
                 MappedStatement ms = (MappedStatement) object;

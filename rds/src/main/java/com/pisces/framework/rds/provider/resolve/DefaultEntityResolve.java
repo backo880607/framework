@@ -2,16 +2,15 @@ package com.pisces.framework.rds.provider.resolve;
 
 import com.pisces.framework.core.utils.lang.StringUtils;
 import com.pisces.framework.rds.annotation.ColumnType;
-import com.pisces.framework.rds.entity.Config;
-import com.pisces.framework.rds.entity.EntityColumn;
-import com.pisces.framework.rds.entity.EntityField;
-import com.pisces.framework.rds.entity.EntityTable;
+import com.pisces.framework.rds.helper.entity.Config;
+import com.pisces.framework.rds.helper.entity.EntityColumn;
+import com.pisces.framework.rds.helper.entity.EntityField;
+import com.pisces.framework.rds.helper.entity.EntityTable;
 import com.pisces.framework.rds.helper.FieldHelper;
 import com.pisces.framework.rds.utils.MetaObjectUtil;
 import com.pisces.framework.rds.utils.SimpleTypeUtil;
 import com.pisces.framework.rds.utils.SqlReservedWords;
 import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import org.apache.ibatis.logging.Log;
@@ -57,11 +56,10 @@ public class DefaultEntityResolve implements EntityResolve {
             //如果启用了简单类型，就做简单类型校验，如果不是简单类型，直接跳过
             //3.5.0 如果启用了枚举作为简单类型，就不会自动忽略枚举类型
             //4.0 如果标记了 Column 或 ColumnType 注解，也不忽略
-            if (!config.isUseSimpleType() //关闭简单类型限制时，所有字段都处理
-                    || (config.isUseSimpleType() && SimpleTypeUtil.isSimpleType(field.getJavaType())) //开启简单类型时只处理包含的简单类型
+            if (SimpleTypeUtil.isSimpleType(field.getJavaType()) //开启简单类型时只处理包含的简单类型
                     || field.isAnnotationPresent(Column.class) //有注解的处理，不考虑类型
                     || field.isAnnotationPresent(ColumnType.class) //有注解的处理，不考虑类型
-                    || (config.isEnumAsSimpleType() && Enum.class.isAssignableFrom(field.getJavaType()))) { //开启枚举作为简单类型时处理
+                    || Enum.class.isAssignableFrom(field.getJavaType())) { //开启枚举作为简单类型时处理
                 processField(entityTable, field, config);
             }
         }
@@ -74,11 +72,11 @@ public class DefaultEntityResolve implements EntityResolve {
     }
 
     /**
-     * 处理字段
+     * 过程领域
      *
-     * @param entityTable
-     * @param field
-     * @param config
+     * @param entityTable 实体表
+     * @param field       场
+     * @param config      配置
      */
     protected void processField(EntityTable entityTable, EntityField field, Config config) {
         //排除字段
@@ -87,8 +85,6 @@ public class DefaultEntityResolve implements EntityResolve {
         }
         //Id
         EntityColumn entityColumn = new EntityColumn(entityTable);
-        //是否使用 {xx, javaType=xxx}
-        entityColumn.setUseJavaType(config.isUseJavaType());
         //记录 field 信息，方便后续扩展使用
         entityColumn.setEntityField(field);
         if (field.getName().equalsIgnoreCase("id")) {

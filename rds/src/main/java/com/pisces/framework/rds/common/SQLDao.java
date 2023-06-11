@@ -7,7 +7,6 @@ import org.mybatis.spring.support.SqlSessionDaoSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -46,18 +45,17 @@ public class SQLDao<T extends BaseObject> extends SqlSessionDaoSupport implement
 
     @Override
     public List<T> list() {
-        mapper.checkTable();
-        return new ArrayList<>();
+        return mapper.selectAll();
     }
 
     @Override
     public List<T> listByIds(Collection<Long> ids) {
-        return new ArrayList<>();
+        return mapper.selectByIds(ids);
     }
 
     @Override
     public boolean exist(Long id) {
-        return getById(id) != null;
+        return mapper.existsById(id);
     }
 
     @Override
@@ -67,48 +65,36 @@ public class SQLDao<T extends BaseObject> extends SqlSessionDaoSupport implement
 
     @Override
     public int insertBatch(List<T> items) {
-        return 1;
-//        return mapper.insertBatch(items);
+        return mapper.insertBatch(items, 0);
     }
 
     @Override
     public int update(T item) {
-        return 1;
-//        return mapper.update(item);
+        return mapper.update(item);
     }
 
     @Override
     public int updateBatch(List<T> items) {
-        for (T item : items) {
-            update(item);
-        }
-        return items.size();
+        return mapper.updateBatch(items, 0);
     }
 
     @Override
     public int delete(T item) {
-        return 1;
-//        return mapper.deleteById(item.getId());
+        return mapper.deleteById(item.getId());
     }
 
     @Override
     public int deleteBatch(List<T> items) {
-        int count = 0;
-        for (T item : items) {
-            count += delete(item);
-        }
-        return count;
+        return mapper.deleteBatch(items, 0);
     }
 
     @Override
     public int deleteById(Long id) {
-        return 1;
-//        return mapper.deleteById(id);
+        return mapper.deleteById(id);
     }
 
     @Override
-    public int deleteByIds(Collection<Long> ids) {
-        return 1;
-//        return mapper.deleteBatchByIds(ids);
+    public int deleteByIds(List<Long> ids) {
+        return mapper.deleteBatchByIds(ids, 0);
     }
 }

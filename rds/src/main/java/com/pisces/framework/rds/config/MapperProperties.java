@@ -24,7 +24,7 @@
 
 package com.pisces.framework.rds.config;
 
-import com.pisces.framework.rds.entity.Config;
+import com.pisces.framework.rds.helper.entity.Config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 

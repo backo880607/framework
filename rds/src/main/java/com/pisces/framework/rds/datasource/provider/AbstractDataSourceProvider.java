@@ -15,7 +15,7 @@
  */
 package com.pisces.framework.rds.datasource.provider;
 
-import com.pisces.framework.rds.datasource.creator.DataSourceProperty;
+import com.pisces.framework.rds.datasource.config.DataSourceProperty;
 import com.pisces.framework.rds.datasource.creator.DefaultDataSourceCreator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +33,7 @@ public abstract class AbstractDataSourceProvider implements DynamicDataSourcePro
 
     private final DefaultDataSourceCreator defaultDataSourceCreator;
 
-    protected Map<String, DataSource> createDataSourceMap(
-            Map<String, DataSourceProperty> dataSourcePropertiesMap) {
+    protected Map<String, DataSource> createDataSourceMap(Map<String, DataSourceProperty> dataSourcePropertiesMap) {
         Map<String, DataSource> dataSourceMap = new HashMap<>(dataSourcePropertiesMap.size() * 2);
         for (Map.Entry<String, DataSourceProperty> item : dataSourcePropertiesMap.entrySet()) {
             String dsName = item.getKey();

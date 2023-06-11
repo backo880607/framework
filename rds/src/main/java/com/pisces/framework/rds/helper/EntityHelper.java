@@ -25,9 +25,9 @@
 package com.pisces.framework.rds.helper;
 
 import com.pisces.framework.core.exception.SystemException;
-import com.pisces.framework.rds.entity.Config;
-import com.pisces.framework.rds.entity.EntityColumn;
-import com.pisces.framework.rds.entity.EntityTable;
+import com.pisces.framework.rds.helper.entity.Config;
+import com.pisces.framework.rds.helper.entity.EntityColumn;
+import com.pisces.framework.rds.helper.entity.EntityTable;
 import com.pisces.framework.rds.provider.resolve.DefaultEntityResolve;
 import com.pisces.framework.rds.provider.resolve.EntityResolve;
 

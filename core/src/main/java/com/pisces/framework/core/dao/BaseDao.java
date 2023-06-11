@@ -120,5 +120,5 @@ public interface BaseDao<T extends BaseObject> {
      * @param ids id列表
      * @return int
      */
-    int deleteByIds(Collection<Long> ids);
+    int deleteByIds(List<Long> ids);
 }

@@ -16,8 +16,10 @@
 package com.pisces.framework.rds.datasource.creator;
 
 import com.p6spy.engine.spy.P6DataSource;
+import com.pisces.framework.core.utils.lang.StringUtils;
 import com.pisces.framework.rds.datasource.ItemDataSource;
-import com.pisces.framework.rds.enums.SeataMode;
+import com.pisces.framework.rds.datasource.SeataMode;
+import com.pisces.framework.rds.datasource.config.DataSourceProperty;
 import com.pisces.framework.rds.datasource.event.DataSourceInitEvent;
 import com.pisces.framework.rds.utils.CryptoUtils;
 import com.pisces.framework.rds.utils.ScriptRunner;
@@ -25,7 +27,6 @@ import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.rm.datasource.xa.DataSourceProxyXA;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -100,12 +101,12 @@ public class DefaultDataSourceCreator {
         DatasourceInitProperties initProperty = dataSourceProperty.getInit();
         String schema = initProperty.getSchema();
         String data = initProperty.getData();
-        if (StringUtils.hasText(schema) || StringUtils.hasText(data)) {
+        if (StringUtils.isNotBlank(schema) || StringUtils.isNotBlank(data)) {
             ScriptRunner scriptRunner = new ScriptRunner(initProperty.isContinueOnError(), initProperty.getSeparator());
-            if (StringUtils.hasText(schema)) {
+            if (StringUtils.isNotBlank(schema)) {
                 scriptRunner.runScript(dataSource, schema);
             }
-            if (StringUtils.hasText(data)) {
+            if (StringUtils.isNotBlank(data)) {
                 scriptRunner.runScript(dataSource, data);
             }
         }

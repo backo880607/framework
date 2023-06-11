@@ -15,11 +15,10 @@
  */
 package com.pisces.framework.rds.datasource;
 
-import com.pisces.framework.rds.tx.ConnectionFactory;
-import com.pisces.framework.rds.tx.ConnectionProxy;
-import com.pisces.framework.rds.tx.TransactionContext;
-import com.pisces.framework.rds.utils.DynamicDataSourceContextHolder;
-import org.springframework.util.StringUtils;
+import com.pisces.framework.core.utils.lang.StringUtils;
+import com.pisces.framework.rds.datasource.tx.ConnectionFactory;
+import com.pisces.framework.rds.datasource.tx.ConnectionProxy;
+import com.pisces.framework.rds.datasource.tx.TransactionContext;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

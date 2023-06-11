@@ -16,8 +16,6 @@
 package com.pisces.framework.rds.datasource.config;
 
 import com.pisces.framework.rds.config.RdsProperties;
-import com.pisces.framework.rds.datasource.creator.BasicDataSourceCreator;
-import com.pisces.framework.rds.datasource.creator.JndiDataSourceCreator;
 import com.pisces.framework.rds.datasource.creator.hikaricp.HikariDataSourceCreator;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
@@ -34,23 +32,8 @@ import org.springframework.core.annotation.Order;
 @RequiredArgsConstructor
 @EnableConfigurationProperties(RdsProperties.class)
 public class DynamicDataSourceCreatorAutoConfiguration {
-
-    public static final int JNDI_ORDER = 1000;
     public static final int HIKARI_ORDER = 3000;
-    public static final int DEFAULT_ORDER = 7000;
     private final RdsProperties properties;
-
-    @Bean
-    @Order(DEFAULT_ORDER)
-    public BasicDataSourceCreator basicDataSourceCreator() {
-        return new BasicDataSourceCreator();
-    }
-
-    @Bean
-    @Order(JNDI_ORDER)
-    public JndiDataSourceCreator jndiDataSourceCreator() {
-        return new JndiDataSourceCreator();
-    }
 
     /**
      * 存在Hikari数据源时, 加入创建器

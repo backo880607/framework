@@ -18,6 +18,7 @@ package com.pisces.framework.rds.datasource.creator;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -49,7 +50,7 @@ public class ConfigMergeCreator<C, T> {
         if (configClazz.equals(targetClazz) && global == null) {
             return (T) item;
         }
-        T result = targetClazz.newInstance();
+        T result = BeanUtils.instantiateClass(targetClazz);
         BeanInfo beanInfo = Introspector.getBeanInfo(configClazz, Object.class);
         PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
         for (PropertyDescriptor pd : propertyDescriptors) {
