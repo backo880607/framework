@@ -37,7 +37,6 @@ public class QueryWrapper extends BaseQueryWrapper<QueryWrapper> {
         return this;
     }
 
-
 //    public QueryWrapper from(TableDef... tableDefs) {
 //        for (TableDef tableDef : tableDefs) {
 //            from(new QueryTable(tableDef.getTableName()));

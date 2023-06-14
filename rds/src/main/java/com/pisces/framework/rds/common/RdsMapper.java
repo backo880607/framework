@@ -26,8 +26,6 @@ public interface RdsMapper<T> {
 
     /**
      * 查询全部结果
-     *
-     * @return
      */
     @SelectProvider(type = RdsProvider.class, method = "dynamicSQL")
     List<T> selectAll();

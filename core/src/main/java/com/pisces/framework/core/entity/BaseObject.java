@@ -1,6 +1,10 @@
 package com.pisces.framework.core.entity;
 
 import com.pisces.framework.core.utils.IDGenerator;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,13 +12,17 @@ import java.util.Date;
 
 @Getter
 @Setter
+//@Entity
+@MappedSuperclass
 public class BaseObject implements Comparable<BaseObject> {
 
+    @Id
     private Long id;
     private String createBy;
     private Date createDate;
     private String updateBy;
     private Date updateDate;
+    @Column(name = "DATA_SET_ID")
     private Long dataSetId;
 
     public void init() {

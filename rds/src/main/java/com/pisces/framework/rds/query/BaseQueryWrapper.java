@@ -38,15 +38,13 @@ public class BaseQueryWrapper<T> implements Serializable {
 
     protected Map<String, Object> context;
 
-    protected T addSelectColumn(QueryColumn queryColumn) {
+    protected void addSelectColumn(QueryColumn queryColumn) {
         if (selectColumns == null) {
             selectColumns = new LinkedList<>();
         }
 
         selectColumns.add(queryColumn);
-        return (T) this;
     }
-
 
     protected T addJoin(Join join) {
         if (joins == null) {
@@ -57,13 +55,12 @@ public class BaseQueryWrapper<T> implements Serializable {
     }
 
 
-    protected T setWhereQueryCondition(QueryCondition queryCondition) {
+    protected void setWhereQueryCondition(QueryCondition queryCondition) {
         if (whereQueryCondition != null) {
             queryCondition.connect(whereQueryCondition, SqlConnector.AND);
         }
 
         whereQueryCondition = queryCondition;
-        return (T) this;
     }
 
 
@@ -79,32 +76,29 @@ public class BaseQueryWrapper<T> implements Serializable {
     }
 
 
-    protected T addGroupByColumns(QueryColumn queryColumn) {
+    protected void addGroupByColumns(QueryColumn queryColumn) {
         if (groupByColumns == null) {
             groupByColumns = new LinkedList<>();
         }
 
         groupByColumns.add(queryColumn);
-        return (T) this;
     }
 
 
-    protected T addHavingQueryCondition(QueryCondition queryCondition, SqlConnector connector) {
+    protected void addHavingQueryCondition(QueryCondition queryCondition, SqlConnector connector) {
         if (havingQueryCondition == null) {
             havingQueryCondition = queryCondition;
         } else {
             havingQueryCondition.connect(queryCondition, connector);
         }
-        return (T) this;
     }
 
 
-    protected T addOrderBy(QueryOrderBy queryOrderBy) {
+    protected void addOrderBy(QueryOrderBy queryOrderBy) {
         if (orderBys == null) {
             orderBys = new LinkedList<>();
         }
         orderBys.add(queryOrderBy);
-        return (T) this;
     }
 
 
