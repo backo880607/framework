@@ -42,7 +42,6 @@
     </developers>
 
     <modules>
-<!--        <module>processor</module>-->
         <module>core</module>
         <module>rds</module>
         <module>web</module>
@@ -127,12 +126,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.pisces.framework</groupId>
-            <artifactId>processor</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
@@ -162,40 +155,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-        </dependency>
-        <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
         </dependency>
-        <!-- QueryDSL 相关依赖 -->
-<!--        <dependency>-->
-<!--            <groupId>com.querydsl</groupId>-->
-<!--            <artifactId>querydsl-sql</artifactId>-->
-<!--            <version>${querydsl.version}</version>-->
-<!--&lt;!&ndash;            <classifier>jakarta</classifier>&ndash;&gt;-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.querydsl</groupId>-->
-<!--            <artifactId>querydsl-apt</artifactId>-->
-<!--            <scope>provided</scope>-->
-<!--            <version>${querydsl.version}</version>-->
-<!--            <classifier>jakarta</classifier>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>com.mybatis-flex</groupId>-->
-<!--            <artifactId>mybatis-flex-spring-boot-starter</artifactId>-->
-<!--            <version>1.3.7</version>-->
-<!--            &lt;!&ndash;排除 mybatis-spring 版本&ndash;&gt;-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.mybatis</groupId>-->
-<!--                    <artifactId>mybatis-spring</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -227,21 +193,15 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
                 <excludes>
-                    <exclude>application-dev.properties</exclude>
-                    <exclude>application-test.properties</exclude>
-                    <exclude>application-prod.properties</exclude>
-                    <exclude>application.properties</exclude>
+                    <exclude>*.properties</exclude>
                 </excludes>
             </resource>
             <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>application-${profileActive}.properties</include>
-                    <include>application.properties</include>
-                </includes>
+                <directory>target/generated-sources</directory>
             </resource>
         </resources>
 
@@ -251,34 +211,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-<!--                    <compilerArgs>-->
-<!--                        <arg>&#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>-->
-<!--                        <arg>&#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>-->
-<!--                        <arg>&#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>-->
-<!--                        <arg>&#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>-->
-<!--                        <arg>&#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>-->
-<!--                        <arg>&#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</arg>-->
-<!--                        <arg>&#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</arg>-->
-<!--                        <arg>&#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>-->
-<!--                        <arg>&#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>-->
-<!--                        <arg>&#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>-->
-<!--                    </compilerArgs>-->
                     <source>${java.source.version}</source>
                     <target>${java.target.version}</target>
                     <encoding>UTF-8</encoding>
-                    <!-- 这是AutoService的处理类 -->
-<!--                    <annotationProcessorPaths>-->
-<!--                        <path>-->
-<!--                            <groupId>com.google.auto.service</groupId>-->
-<!--                            <artifactId>auto-service</artifactId>-->
-<!--                            <version>${auto-service.version}</version>-->
-<!--                        </path>-->
-<!--                        <path>-->
-<!--                            <groupId>org.projectlombok</groupId>-->
-<!--                            <artifactId>lombok</artifactId>-->
-<!--                            <version>${lombok.version}</version>-->
-<!--                        </path>-->
-<!--                    </annotationProcessorPaths>-->
                 </configuration>
             </plugin>
 

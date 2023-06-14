@@ -1,6 +1,7 @@
 package com.pisces.framework.processor;
 
 import com.google.auto.service.AutoService;
+import jakarta.persistence.Table;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -15,7 +16,8 @@ import java.util.function.Consumer;
  * 该注解表明当前注解处理器仅能处理
  * com.pisces.framework.core.compiler.PiscesEntity注解
  */
-@SupportedAnnotationTypes("com.pisces.framework.processor.PiscesEntity")
+//@SupportedAnnotationTypes("com.pisces.framework.processor.PiscesEntity")
+@SupportedAnnotationTypes("jakarta.persistence.Table")
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 /**
  * javac调用注解处理器时是使用spi机制调用
@@ -49,7 +51,7 @@ public class PiscesEntityProcessor extends AbstractProcessor {
             return false;
         }
         System.out.println("mybatis flex processor run start...");
-        roundEnv.getElementsAnnotatedWith(PiscesEntity.class).forEach((Consumer<Element>) entityClassElement -> {
+        roundEnv.getElementsAnnotatedWith(Table.class).forEach((Consumer<Element>) entityClassElement -> {
             String entityClassName = entityClassElement.toString();
             int num = 0;
         });

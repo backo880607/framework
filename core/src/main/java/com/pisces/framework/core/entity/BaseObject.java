@@ -2,7 +2,6 @@ package com.pisces.framework.core.entity;
 
 import com.pisces.framework.core.utils.IDGenerator;
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -12,7 +11,6 @@ import java.util.Date;
 
 @Getter
 @Setter
-//@Entity
 @MappedSuperclass
 public class BaseObject implements Comparable<BaseObject> {
 

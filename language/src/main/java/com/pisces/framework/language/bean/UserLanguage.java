@@ -3,7 +3,6 @@ package com.pisces.framework.language.bean;
 import com.pisces.framework.core.entity.BaseObject;
 import com.pisces.framework.language.enums.LAG_LANGUAGE_CODE;
 import com.pisces.framework.language.enums.LAG_RESOURCE_TYPE;
-import com.pisces.framework.processor.PiscesEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -18,7 +17,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "USER_LANGUAGE")
-@PiscesEntity
 @Entity
 public class UserLanguage extends BaseObject {
     private LAG_LANGUAGE_CODE language;
