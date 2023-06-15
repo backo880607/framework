@@ -13,7 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>framework-parent</name>
+    <name>framework</name>
     <url>https://mybatis-flex.com</url>
     <description>Mybatis-Flex is an elegant Mybatis Enhancement Framework.</description>
     <issueManagement>
@@ -92,7 +92,7 @@
             </dependency>
             <dependency>
                 <groupId>com.pisces.framework</groupId>
-                <artifactId>pisces-framework-spring-boot-starter</artifactId>
+                <artifactId>pisces-framework-starter</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>

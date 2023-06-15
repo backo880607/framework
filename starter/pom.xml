@@ -7,9 +7,9 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pisces-framework-spring-boot-starter</artifactId>
+    <artifactId>pisces-framework-starter</artifactId>
 
-    <name>pisces-framework-spring-boot-starter</name>
+    <name>pisces-framework-starter</name>
 
     <properties>
     </properties>
