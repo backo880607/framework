@@ -10,4 +10,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "pisces.framework.core")
 public class CoreProperties {
+    public CoreProperties() {
+        int num = 0;
+    }
+
+    public Boolean getStrict() {
+        return strict;
+    }
+
+    public void setStrict(Boolean strict) {
+        this.strict = strict;
+    }
+
+    private Boolean strict = false;
 }

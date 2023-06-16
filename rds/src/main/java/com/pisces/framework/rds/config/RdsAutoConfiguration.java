@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 /**
- * rds汽车配置
+ * 关系数据库配置
  *
  * @author jason
  * @date 2022/12/07

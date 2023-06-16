@@ -52,13 +52,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
         converters.add(0, converter);
     }
 
-    @Bean
-    public LocaleResolver localeResolver() {
-        final CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver();
-        cookieLocaleResolver.setDefaultLocale(Locale.SIMPLIFIED_CHINESE);
-        cookieLocaleResolver.setCookieName("messages");
-        return cookieLocaleResolver;
-    }
+//    @Bean
+//    public LocaleResolver localeResolver() {
+//        final CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver();
+//        cookieLocaleResolver.setDefaultLocale(Locale.SIMPLIFIED_CHINESE);
+//        cookieLocaleResolver.setCookieName("messages");
+//        return cookieLocaleResolver;
+//    }
 
     private CorsConfiguration buildConfig() {
         // 配置跨域

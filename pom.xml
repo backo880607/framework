@@ -43,8 +43,8 @@
 
     <modules>
         <module>core</module>
-        <module>rds</module>
         <module>web</module>
+        <module>rds</module>
         <module>nosql</module>
         <module>language</module>
         <module>starter</module>
@@ -197,8 +197,17 @@
                     <include>**/*</include>
                 </includes>
                 <excludes>
-                    <exclude>*.properties</exclude>
+                    <exclude>application-dev.properties</exclude>
+                    <exclude>application-test.properties</exclude>
+                    <exclude>application-prod.properties</exclude>
                 </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>application-${profileActive}.properties</include>
+                </includes>
             </resource>
             <resource>
                 <directory>target/generated-sources</directory>
