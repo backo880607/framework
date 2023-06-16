@@ -1,5 +1,7 @@
 package com.pisces.framework.core.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pisces.framework.core.annotation.PropertyMeta;
 import com.pisces.framework.core.utils.IDGenerator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
@@ -23,6 +25,10 @@ public class BaseObject implements Comparable<BaseObject> {
     @Column(name = "DATA_SET_ID")
     private Long dataSetId;
 
+    @JsonIgnore
+    @PropertyMeta(property = false)
+    private transient boolean initialized = false;
+
     public void init() {
         id = IDGenerator.instance.getID();
         createBy = "";
@@ -30,6 +36,7 @@ public class BaseObject implements Comparable<BaseObject> {
         createDate = new Date();
         updateDate = createDate;
         dataSetId = 0L;
+        initialized = true;
     }
 
     @Override

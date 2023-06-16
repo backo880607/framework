@@ -11,7 +11,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "pisces.framework.core")
 public class CoreProperties {
     public CoreProperties() {
-        int num = 0;
     }
 
     public Boolean getStrict() {

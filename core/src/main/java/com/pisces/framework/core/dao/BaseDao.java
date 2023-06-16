@@ -1,5 +1,6 @@
 package com.pisces.framework.core.dao;
 
+import com.pisces.framework.core.dao.impl.DaoImpl;
 import com.pisces.framework.core.entity.BaseObject;
 
 import java.util.Collection;
@@ -12,13 +13,6 @@ import java.util.List;
  * @date 2022/12/07
  */
 public interface BaseDao<T extends BaseObject> {
-
-    /**
-     * 得到实体类
-     *
-     * @return {@link Class}<{@link T}>
-     */
-    Class<T> getObjectClass();
 
     /**
      * select one entity from dao.
@@ -120,5 +114,29 @@ public interface BaseDao<T extends BaseObject> {
      * @param ids id列表
      * @return int
      */
-    int deleteByIds(List<Long> ids);
+    int deleteIdBatch(List<Long> ids);
+
+    /**
+     * 创建刀impl
+     *
+     * @return {@link DaoImpl}
+     */
+    DaoImpl createDaoImpl();
+
+    /**
+     * 换刀impl
+     *
+     * @param impl impl
+     */
+    void switchDaoImpl(DaoImpl impl);
+
+    /**
+     * 加载数据
+     */
+    void loadData();
+
+    /**
+     * 同步
+     */
+    void sync();
 }

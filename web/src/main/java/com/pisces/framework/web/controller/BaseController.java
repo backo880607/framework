@@ -192,9 +192,9 @@ public abstract class BaseController<T extends BaseObject, S extends BaseService
         return value > 0 ? success(id, WebMessage.Delete) : fail(id, WebMessage.NOT_EXISTED);
     }
 
-    @DeleteMapping("deleteByIds")
+    @DeleteMapping("deleteIdBatch")
     @ExceptionMessage(clazz = WebMessage.class, name = "Delete")
-    public ResponseData deleteByIds(@RequestBody List<Long> ids) {
-        return success(this.service.deleteByIds(ids), WebMessage.Delete);
+    public ResponseData deleteIdBatch(@RequestBody List<Long> ids) {
+        return success(this.service.deleteIdBatch(ids), WebMessage.Delete);
     }
 }

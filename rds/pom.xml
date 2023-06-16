@@ -14,6 +14,7 @@
 
     <properties>
         <mysql.version>8.0.33</mysql.version>
+        <oracle.version>10.2.0.4.0</oracle.version>
     </properties>
 
     <dependencies>
@@ -35,6 +36,15 @@
                     <groupId>com.google.protobuf</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc14</artifactId>
+            <version>${oracle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
         </dependency>
         <dependency>
             <groupId>p6spy</groupId>

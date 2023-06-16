@@ -1,6 +1,9 @@
 package com.pisces.framework.rds.common;
 
 import com.pisces.framework.core.dao.BaseDao;
+import com.pisces.framework.core.dao.DaoManager;
+import com.pisces.framework.core.dao.impl.DaoImpl;
+import com.pisces.framework.core.dao.impl.MemoryModifyDaoImpl;
 import com.pisces.framework.core.entity.BaseObject;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.support.SqlSessionDaoSupport;
@@ -29,8 +32,8 @@ public class SQLDao<T extends BaseObject> extends SqlSessionDaoSupport implement
     }
 
     @Override
-    public Class<T> getObjectClass() {
-        return this.objectClass;
+    protected void initDao() throws Exception {
+        DaoManager.register(this);
     }
 
     @Override
@@ -94,7 +97,25 @@ public class SQLDao<T extends BaseObject> extends SqlSessionDaoSupport implement
     }
 
     @Override
-    public int deleteByIds(List<Long> ids) {
+    public int deleteIdBatch(List<Long> ids) {
         return mapper.deleteBatchByIds(ids, 0);
+    }
+
+    @Override
+    public void loadData() {
+
+    }
+
+    @Override
+    public void sync() {
+    }
+
+    @Override
+    public DaoImpl createDaoImpl() {
+        return new MemoryModifyDaoImpl<T>();
+    }
+
+    @Override
+    public void switchDaoImpl(DaoImpl impl) {
     }
 }

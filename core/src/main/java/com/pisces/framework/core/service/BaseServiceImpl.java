@@ -7,6 +7,7 @@ import com.pisces.framework.core.locale.Message;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 /**
@@ -17,16 +18,26 @@ import java.util.List;
  */
 public abstract class BaseServiceImpl<T extends BaseObject, D extends BaseDao<T>> implements BaseService<T> {
     protected final Message LOG = new Message(this.getClass());
+    private final Class<T> objectClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     @Autowired
     protected LanguageService lang;
     @Autowired
     private D dao;
 
+    public BaseServiceImpl() {
+        ServiceManager.register(objectClass, this);
+    }
+
     protected D getDao() { return dao; }
 
     @Override
     public Class<T> getObjectClass() {
-        return getDao().getObjectClass();
+        return objectClass;
+    }
+
+    @Override
+    public BaseDao<T> getBaseDao() {
+        return getDao();
     }
 
     @Override
@@ -97,8 +108,8 @@ public abstract class BaseServiceImpl<T extends BaseObject, D extends BaseDao<T>
     }
 
     @Override
-    public int deleteByIds(List<Long> ids) {
-        return getDao().deleteByIds(ids);
+    public int deleteIdBatch(List<Long> ids) {
+        return getDao().deleteIdBatch(ids);
     }
 
     @Override

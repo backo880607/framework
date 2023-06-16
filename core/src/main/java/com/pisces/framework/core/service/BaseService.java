@@ -1,11 +1,12 @@
 package com.pisces.framework.core.service;
 
+import com.pisces.framework.core.dao.BaseDao;
 import com.pisces.framework.core.entity.BaseObject;
 
 import java.util.List;
 
 /**
- * 基础服务
+ * 实体对象基础服务
  *
  * @author jason
  * @date 2022/12/07
@@ -20,7 +21,14 @@ public interface BaseService<T extends BaseObject> {
     Class<T> getObjectClass();
 
     /**
-     * 创建
+     * 获取对象Dao
+     *
+     * @return {@link BaseDao}<{@link T}>
+     */
+    BaseDao<T> getBaseDao();
+
+    /**
+     * 创建实体对象
      *
      * @return {@link T}
      */
@@ -67,50 +75,50 @@ public interface BaseService<T extends BaseObject> {
     /**
      * 插入
      *
-     * @param entity 实体
+     * @param item 实体
      * @return int
      */
-    int insert(T entity);
+    int insert(T item);
 
     /**
      * 插入列表
      *
-     * @param entities 实体
+     * @param items 实体
      * @return int
      */
-    int insertBatch(List<T> entities);
+    int insertBatch(List<T> items);
 
     /**
      * 更新
      *
-     * @param entity 实体
+     * @param item 实体
      * @return int
      */
-    int update(T entity);
+    int update(T item);
 
     /**
      * 更新列表
      *
-     * @param entities 实体
+     * @param items 实体
      * @return int
      */
-    int updateBatch(List<T> entities);
+    int updateBatch(List<T> items);
 
     /**
      * 删除
      *
-     * @param entity 实体
+     * @param item 实体
      * @return int
      */
-    int delete(T entity);
+    int delete(T item);
 
     /**
      * 删除表
      *
-     * @param entities 实体
+     * @param items 实体
      * @return int
      */
-    int deleteBatch(List<T> entities);
+    int deleteBatch(List<T> items);
 
     /**
      * 删除通过id
@@ -126,7 +134,7 @@ public interface BaseService<T extends BaseObject> {
      * @param ids id
      * @return int
      */
-    int deleteByIds(List<Long> ids);
+    int deleteIdBatch(List<Long> ids);
 
     /**
      * 清晰
