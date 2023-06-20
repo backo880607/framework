@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.pisces.framework</groupId>
-    <artifactId>parent</artifactId>
+    <artifactId>framework-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -42,12 +42,12 @@
     </developers>
 
     <modules>
-        <module>core</module>
-        <module>web</module>
-        <module>rds</module>
-        <module>nosql</module>
-        <module>language</module>
-        <module>starter</module>
+        <module>framework-core</module>
+        <module>framework-web</module>
+        <module>framework-rds</module>
+        <module>framework-nosql</module>
+        <module>framework-language</module>
+        <module>framework-starter</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -67,32 +67,32 @@
         <dependencies>
             <dependency>
                 <groupId>com.pisces.framework</groupId>
-                <artifactId>core</artifactId>
+                <artifactId>framework-core</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.pisces.framework</groupId>
-                <artifactId>web</artifactId>
+                <artifactId>framework-web</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.pisces.framework</groupId>
-                <artifactId>rds</artifactId>
+                <artifactId>framework-rds</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.pisces.framework</groupId>
-                <artifactId>nosql</artifactId>
+                <artifactId>framework-nosql</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.pisces.framework</groupId>
-                <artifactId>language</artifactId>
+                <artifactId>framework-language</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.pisces.framework</groupId>
-                <artifactId>pisces-framework-starter</artifactId>
+                <artifactId>framework-starter</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
