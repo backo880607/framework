@@ -15,6 +15,7 @@ import java.util.*;
  * @date 2022/12/07
  */
 public final class FactoryManager {
+    private static final List<FactoryCreator> FACTORY_CREATERS = new ArrayList<>();
     private static final Map<Class<? extends BeanObject>, BeanFactory> FACTORIES = new HashMap<>();
     private static final Map<String, BeanFactory> FACTORY_NAMES = new HashMap<>();
     private static final Map<String, BaseProperties> MODEL_PROPERTIES = new HashMap<>();
@@ -28,11 +29,25 @@ public final class FactoryManager {
     private FactoryManager() {
     }
 
+    public static void registerCreater(FactoryCreator creator) {
+        FACTORY_CREATERS.add(creator);
+    }
+
+    private static BeanFactory createFactory(Class<? extends BeanObject> beanClass) {
+        for (FactoryCreator creator : FACTORY_CREATERS) {
+            BeanFactory factory = creator.create(beanClass);
+            if (factory != null) {
+                return factory;
+            }
+        }
+        return new BeanFactory(beanClass);
+    }
+
     public static void registerBeanClass(Class<? extends BeanObject> beanClass) {
         if (FACTORIES.containsKey(beanClass)) {
             return;
         }
-        BeanFactory factory = new BeanFactory(beanClass);
+        BeanFactory factory = createFactory(beanClass);
         FactoryManager.FACTORIES.put(beanClass, factory);
         FactoryManager.FACTORY_NAMES.put(beanClass.getSimpleName(), factory);
         registerBeanClass((Class<? extends BeanObject>) beanClass.getSuperclass());
@@ -101,12 +116,12 @@ public final class FactoryManager {
         return new ArrayList<>(FactoryManager.FACTORIES.values());
     }
 
-    public static BeanFactory fetchFactory(Class<? extends BeanObject> beanClass) {
+    public static <T extends BeanFactory> T fetchFactory(Class<? extends BeanObject> beanClass) {
         BeanFactory factory = FactoryManager.FACTORIES.get(beanClass);
         if (factory == null) {
             throw new UnsupportedOperationException(beanClass.getName() + " has not registered!");
         }
-        return factory;
+        return (T) factory;
     }
 
     public static boolean hasFactory(Class<? extends BeanObject> beanClass) {

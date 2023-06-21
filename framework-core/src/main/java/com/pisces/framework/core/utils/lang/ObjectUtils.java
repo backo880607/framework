@@ -42,6 +42,7 @@ public final class ObjectUtils {
 
     public static void init() {
         try {
+            FactoryManager.init();
             checkProperty();
             checkEntity();
         } catch (Exception e) {

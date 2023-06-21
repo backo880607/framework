@@ -25,8 +25,8 @@ public class BeanFactory {
         return (Class<T>) this.beanClass;
     }
 
-    public BeanFactory getSuperFactory() {
-        return this.superFactory;
+    public <T extends BeanFactory> T getSuperFactory() {
+        return (T) this.superFactory;
     }
 
     public List<BeanFactory> getChildFactories() {

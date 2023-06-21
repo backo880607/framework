@@ -105,6 +105,8 @@ public class Property extends BeanObject {
     @PropertyMeta(modify = false)
     private Integer orderNumber;
 
+    private Long specId;
+
     @JsonIgnore
     @PropertyMeta(property = false)
     private transient Class<? extends BeanObject> belongClass;
