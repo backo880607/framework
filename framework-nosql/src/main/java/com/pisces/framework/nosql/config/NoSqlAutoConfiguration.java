@@ -13,6 +13,6 @@ import org.springframework.context.annotation.PropertySource;
  */
 @Configuration
 @EnableConfigurationProperties({NoSqlProperties.class})
-@PropertySource(ignoreResourceNotFound = true, value = "classpath:nosql.properties")
+@PropertySource(ignoreResourceNotFound = true, value = "classpath:framework-nosql.properties")
 public class NoSqlAutoConfiguration extends BaseConfiguration {
 }

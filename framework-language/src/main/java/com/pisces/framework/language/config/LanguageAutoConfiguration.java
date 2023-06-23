@@ -13,6 +13,6 @@ import org.springframework.context.annotation.PropertySource;
  */
 @Configuration
 @EnableConfigurationProperties({LanguageProperties.class})
-@PropertySource(ignoreResourceNotFound = true, value = "classpath:language.properties")
+@PropertySource(ignoreResourceNotFound = true, value = "classpath:framework-language.properties")
 public class LanguageAutoConfiguration extends BaseConfiguration {
 }

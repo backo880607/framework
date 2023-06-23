@@ -13,6 +13,6 @@ import org.springframework.context.annotation.PropertySource;
  */
 @Configuration
 @EnableConfigurationProperties(WebProperties.class)
-@PropertySource(ignoreResourceNotFound = true, value = "classpath:web.properties")
+@PropertySource(ignoreResourceNotFound = true, value = "classpath:framework-web.properties")
 public class WebAutoConfiguration extends BaseConfiguration {
 }
