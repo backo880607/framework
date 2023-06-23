@@ -2,6 +2,7 @@ package com.pisces.framework.core.entity.factory;
 
 import com.pisces.framework.core.config.BaseProperties;
 import com.pisces.framework.core.entity.BeanObject;
+import com.pisces.framework.core.service.ServiceManager;
 import com.pisces.framework.core.utils.AppUtils;
 import com.pisces.framework.core.utils.io.FileUtils;
 import com.pisces.framework.core.utils.lang.StringUtils;
@@ -15,13 +16,13 @@ import java.util.*;
  * @date 2022/12/07
  */
 public final class FactoryManager {
-    private static final List<FactoryCreator> FACTORY_CREATERS = new ArrayList<>();
-    private static final Map<Class<? extends BeanObject>, BeanFactory> FACTORIES = new HashMap<>();
-    private static final Map<String, BeanFactory> FACTORY_NAMES = new HashMap<>();
+    private static final List<AbstractFactoryCreator> FACTORY_CREATORS = new ArrayList<>();
+    private static final Map<Class<? extends BeanObject>, AbstractFactory> FACTORIES = new HashMap<>();
+    private static final Map<String, AbstractFactory> FACTORY_NAMES = new HashMap<>();
     private static final Map<String, BaseProperties> MODEL_PROPERTIES = new HashMap<>();
 
     static {
-        BeanFactory factory = new BeanFactory(BeanObject.class);
+        AbstractFactory factory = new BeanFactory(BeanObject.class);
         FactoryManager.FACTORIES.put(BeanObject.class, factory);
         FactoryManager.FACTORY_NAMES.put(BeanObject.class.getSimpleName(), factory);
     }
@@ -29,13 +30,13 @@ public final class FactoryManager {
     private FactoryManager() {
     }
 
-    public static void registerCreater(FactoryCreator creator) {
-        FACTORY_CREATERS.add(creator);
+    public static void registerCreator(AbstractFactoryCreator creator) {
+        FACTORY_CREATORS.add(creator);
     }
 
-    private static BeanFactory createFactory(Class<? extends BeanObject> beanClass) {
-        for (FactoryCreator creator : FACTORY_CREATERS) {
-            BeanFactory factory = creator.create(beanClass);
+    private static AbstractFactory createFactory(Class<? extends BeanObject> beanClass) {
+        for (AbstractFactoryCreator creator : FACTORY_CREATORS) {
+            AbstractFactory factory = creator.create(beanClass);
             if (factory != null) {
                 return factory;
             }
@@ -43,23 +44,31 @@ public final class FactoryManager {
         return new BeanFactory(beanClass);
     }
 
-    public static void registerBeanClass(Class<? extends BeanObject> beanClass) {
+    public static void initBeanFactory(Class<? extends BeanObject> beanClass) {
         if (FACTORIES.containsKey(beanClass)) {
             return;
         }
-        BeanFactory factory = createFactory(beanClass);
+        AbstractFactory factory = createFactory(beanClass);
         FactoryManager.FACTORIES.put(beanClass, factory);
         FactoryManager.FACTORY_NAMES.put(beanClass.getSimpleName(), factory);
-        registerBeanClass((Class<? extends BeanObject>) beanClass.getSuperclass());
+        initBeanFactory((Class<? extends BeanObject>) beanClass.getSuperclass());
+    }
+
+    private static void initBeanFactory() {
+        Set<Class<? extends BeanObject>> beanClasses = ServiceManager.getBeanClasses();
+        for (Class<? extends BeanObject> beanClass : beanClasses) {
+            initBeanFactory(beanClass);
+        }
     }
 
     public static void init() {
+        initBeanFactory();
         initModelProperties();
-        for (Map.Entry<Class<? extends BeanObject>, BeanFactory> entry : FACTORIES.entrySet()) {
+        for (Map.Entry<Class<? extends BeanObject>, AbstractFactory> entry : FACTORIES.entrySet()) {
             Class<? extends BeanObject> beanClass = entry.getKey();
+            AbstractFactory factory = entry.getValue();
             Class<? extends BeanObject> superClass = (Class<? extends BeanObject>) beanClass.getSuperclass();
-            BeanFactory factory = FactoryManager.FACTORIES.get(beanClass);
-            BeanFactory superFactory = FactoryManager.FACTORIES.get(superClass);
+            AbstractFactory superFactory = FactoryManager.FACTORIES.get(superClass);
             if (factory != null && superFactory != null) {
                 factory.superFactory = superFactory;
                 superFactory.childFactories.add(factory);
@@ -67,6 +76,9 @@ public final class FactoryManager {
         }
 
         initBeanObjectModel();
+        for (AbstractFactoryCreator creator : FACTORY_CREATORS) {
+            creator.init();
+        }
     }
 
     private static void initModelProperties() {
@@ -91,7 +103,7 @@ public final class FactoryManager {
                 if (!BeanObject.class.isAssignableFrom(beanClass)) {
                     continue;
                 }
-                BeanFactory factory = FACTORIES.get(beanClass);
+                AbstractFactory factory = FACTORIES.get(beanClass);
                 if (factory == null) {
                     continue;
                 }
@@ -100,38 +112,30 @@ public final class FactoryManager {
         }
     }
 
-    public static String getModelIdentify(String objectName) {
-        return fetchFactory(objectName).identify;
+    public static String getModelIdentify(String beanName) {
+        return fetchFactory(beanName).identify;
     }
 
-    public static Set<Class<? extends BeanObject>> getBeanClasses() {
-        return FACTORIES.keySet();
+    public static Class<? extends BeanObject> fetchBeanClass(String beanName) {
+        return fetchFactory(beanName).getBeanClass();
     }
 
-    public static Class<? extends BeanObject> fetchBeanClass(String objectName) {
-        return fetchFactory(objectName).getBeanClass();
-    }
-
-    public static List<BeanFactory> getFactories() {
-        return new ArrayList<>(FactoryManager.FACTORIES.values());
-    }
-
-    public static <T extends BeanFactory> T fetchFactory(Class<? extends BeanObject> beanClass) {
-        BeanFactory factory = FactoryManager.FACTORIES.get(beanClass);
+    public static AbstractFactory fetchFactory(Class<? extends BeanObject> beanClass) {
+        AbstractFactory factory = FactoryManager.FACTORIES.get(beanClass);
         if (factory == null) {
             throw new UnsupportedOperationException(beanClass.getName() + " has not registered!");
         }
-        return (T) factory;
+        return factory;
     }
 
     public static boolean hasFactory(Class<? extends BeanObject> beanClass) {
         return FactoryManager.FACTORIES.containsKey(beanClass);
     }
 
-    public static BeanFactory fetchFactory(String objectName) {
-        BeanFactory factory = FactoryManager.FACTORY_NAMES.get(objectName);
+    public static AbstractFactory fetchFactory(String beanName) {
+        AbstractFactory factory = FactoryManager.FACTORY_NAMES.get(beanName);
         if (factory == null) {
-            throw new UnsupportedOperationException(objectName + " has not registered!");
+            throw new UnsupportedOperationException(beanName + " has not registered!");
         }
         return factory;
     }

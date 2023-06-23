@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.pisces.framework.core.annotation.PropertyMeta;
 import com.pisces.framework.core.converter.*;
 import com.pisces.framework.core.entity.*;
-import com.pisces.framework.core.entity.factory.BeanFactory;
+import com.pisces.framework.core.entity.factory.AbstractFactory;
 import com.pisces.framework.core.entity.factory.FactoryManager;
 import com.pisces.framework.core.entity.serializer.EntityDeserializerModifier;
 import com.pisces.framework.core.entity.serializer.EntityMapper;
@@ -51,7 +51,7 @@ public final class ObjectUtils {
     }
 
     public static Set<Class<? extends BeanObject>> getBeanClasses() {
-        return FactoryManager.getBeanClasses();
+        return ServiceManager.getBeanClasses();
     }
 
     public static Class<? extends BeanObject> fetchBeanClass(String name) {
@@ -59,7 +59,7 @@ public final class ObjectUtils {
     }
 
     public static Class<? extends BeanObject> getSuperClass(Class<? extends BeanObject> beanClass) {
-        BeanFactory superFactory = FactoryManager.fetchFactory(beanClass).getSuperFactory();
+        AbstractFactory superFactory = FactoryManager.fetchFactory(beanClass).getSuperFactory();
         return superFactory != null ? superFactory.getBeanClass() : null;
     }
 
@@ -70,8 +70,8 @@ public final class ObjectUtils {
     }
 
     private static void getChildClassesImpl(List<Class<? extends BeanObject>> result, Class<? extends BeanObject> beanClass) {
-        List<BeanFactory> childFactories = FactoryManager.fetchFactory(beanClass).getChildFactories();
-        for (BeanFactory childFactory : childFactories) {
+        List<AbstractFactory> childFactories = FactoryManager.fetchFactory(beanClass).getChildFactories();
+        for (AbstractFactory childFactory : childFactories) {
             if (!Modifier.isAbstract(childFactory.getBeanClass().getModifiers())) {
                 result.add(childFactory.getBeanClass());
             }
@@ -319,16 +319,16 @@ public final class ObjectUtils {
                 fieldCache.put(field.getName(), field);
             }
 
-            PrimaryKey primaryKey = beanClass.getAnnotation(PrimaryKey.class);
-            if (primaryKey != null) {
-                String[] primaryFields = primaryKey.fields();
-                for (String primaryField : primaryFields) {
-                    Field field = fieldCache.get(primaryField);
-                    if (field == null) {
-                        throw new ConfigurationException(beanClass.getName() + " config primary key has error field name: " + primaryField);
-                    }
-                }
-            }
+//            PrimaryKey primaryKey = beanClass.getAnnotation(PrimaryKey.class);
+//            if (primaryKey != null) {
+//                String[] primaryFields = primaryKey.fields();
+//                for (String primaryField : primaryFields) {
+//                    Field field = fieldCache.get(primaryField);
+//                    if (field == null) {
+//                        throw new ConfigurationException(beanClass.getName() + " config primary key has error field name: " + primaryField);
+//                    }
+//                }
+//            }
         }
     }
 

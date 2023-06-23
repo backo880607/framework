@@ -1,5 +1,6 @@
 package com.pisces.framework.core.utils;
 
+import com.pisces.framework.core.Initializer;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
@@ -23,6 +24,7 @@ public final class AppUtils {
 
     public static void setContext(ApplicationContext context) {
         AppUtils.context = context;
+        Initializer.execute();
     }
 
     public static String getProperty(String name) {

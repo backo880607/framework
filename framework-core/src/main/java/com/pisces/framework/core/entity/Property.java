@@ -80,6 +80,11 @@ public class Property extends BeanObject {
     @PropertyMeta(property = false)
     private Boolean large;
     /**
+     * 是否内部固有属性，固有属性不能被删除
+     */
+    @PropertyMeta(modify = false)
+    private Boolean inherent;
+    /**
      * 对于系统属性，不应显示在界面中
      */
     @PropertyMeta(system = true)
@@ -133,6 +138,7 @@ public class Property extends BeanObject {
         this.typeName = "";
         this.typeFullName = "";
         this.large = false;
+        this.inherent = false;
         this.system = false;
         this.primaryKey = false;
         this.hide = false;

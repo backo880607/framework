@@ -6,6 +6,7 @@ import com.pisces.framework.core.exception.SystemException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 服务经理
@@ -19,12 +20,15 @@ public class ServiceManager {
     protected ServiceManager() {
     }
 
+    public static Set<Class<? extends BeanObject>> getBeanClasses() {
+        return SERVICES.keySet();
+    }
+
     public static void register(Class<? extends BeanObject> beanClass, BeanService<? extends BeanObject> service) {
         if (SERVICES.containsKey(beanClass)) {
             throw new SystemException(beanClass.getName() + " has registered!");
         }
         SERVICES.put(beanClass, service);
-        FactoryManager.registerBeanClass(beanClass);
     }
 
     public static <T extends BeanObject> BeanService<T> getService(Class<T> beanClass) {
