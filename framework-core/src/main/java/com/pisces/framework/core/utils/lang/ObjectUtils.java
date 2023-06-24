@@ -8,8 +8,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.pisces.framework.core.annotation.PropertyMeta;
-import com.pisces.framework.core.converter.*;
-import com.pisces.framework.core.entity.*;
+import com.pisces.framework.core.converter.DateTimeDeserializer;
+import com.pisces.framework.core.converter.DateTimeSerializer;
+import com.pisces.framework.core.converter.SqlDateDeserializer;
+import com.pisces.framework.core.converter.SqlDateSerializer;
+import com.pisces.framework.core.entity.BeanObject;
+import com.pisces.framework.core.entity.Duration;
+import com.pisces.framework.core.entity.MultiEnum;
+import com.pisces.framework.core.entity.Property;
 import com.pisces.framework.core.entity.factory.AbstractFactory;
 import com.pisces.framework.core.entity.factory.FactoryManager;
 import com.pisces.framework.core.entity.serializer.EntityDeserializerModifier;
@@ -22,6 +28,7 @@ import com.pisces.framework.core.service.PropertyService;
 import com.pisces.framework.core.service.ServiceManager;
 import com.pisces.framework.core.utils.AppUtils;
 import com.pisces.framework.core.validator.constraints.PrimaryKey;
+import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -51,7 +58,7 @@ public final class ObjectUtils {
     }
 
     public static Set<Class<? extends BeanObject>> getBeanClasses() {
-        return ServiceManager.getBeanClasses();
+        return FactoryManager.getBeanClasses();
     }
 
     public static Class<? extends BeanObject> fetchBeanClass(String name) {
@@ -340,14 +347,14 @@ public final class ObjectUtils {
             if ("Property".equals(beanClass.getSimpleName()) || "BaseObject".equals(beanClass.getSimpleName())) {
                 continue;
             }
-            BeanObject entity = beanClass.newInstance();
+            BeanObject entity = BeanUtils.instantiateClass(beanClass);
             entity.init();
             Field[] fields = beanClass.getDeclaredFields();
             for (Field field : fields) {
                 if (Modifier.isStatic(field.getModifiers()) || Modifier.isTransient(field.getModifiers())) {
                     continue;
                 }
-                boolean isAccessible = field.isAccessible();
+                boolean isAccessible = field.canAccess(entity);
                 field.setAccessible(true);
                 if (field.get(entity) == null) {
                     throw new NullPointerException(beanClass.getName() + "`s field " + field.getName() + " has not default value.");
@@ -364,37 +371,17 @@ public final class ObjectUtils {
 
         Class<?> typeClass = null;
         switch (type) {
-            case BOOLEAN:
-                typeClass = Boolean.class;
-                break;
-            case CHAR:
-                typeClass = Character.class;
-                break;
-            case SHORT:
-                typeClass = Short.class;
-                break;
-            case INTEGER:
-                typeClass = Integer.class;
-                break;
-            case LONG:
-                typeClass = Long.class;
-                break;
-            case DOUBLE:
-                typeClass = Double.class;
-                break;
-            case DATE:
-            case TIME:
-            case DATE_TIME:
-                typeClass = Date.class;
-                break;
-            case DURATION:
-                typeClass = Duration.class;
-                break;
-            case STRING:
-                typeClass = String.class;
-                break;
-            default:
-                break;
+            case BOOLEAN -> typeClass = Boolean.class;
+            case CHAR -> typeClass = Character.class;
+            case SHORT -> typeClass = Short.class;
+            case INTEGER -> typeClass = Integer.class;
+            case LONG -> typeClass = Long.class;
+            case DOUBLE -> typeClass = Double.class;
+            case DATE, TIME, DATE_TIME -> typeClass = Date.class;
+            case DURATION -> typeClass = Duration.class;
+            case STRING -> typeClass = String.class;
+            default -> {
+            }
         }
         return typeClass;
     }
@@ -434,46 +421,20 @@ public final class ObjectUtils {
     public static EDIT_TYPE getEditType(PROPERTY_TYPE type) {
         EDIT_TYPE editType = EDIT_TYPE.TEXT;
         switch (type) {
-            case BOOLEAN:
-                editType = EDIT_TYPE.BOOLEAN;
-                break;
-            case CHAR:
-                editType = EDIT_TYPE.CHAR;
-                break;
-            case SHORT:
-            case INTEGER:
-            case LONG:
-                editType = EDIT_TYPE.NUMBER;
-                break;
-            case DOUBLE:
-                editType = EDIT_TYPE.DOUBLE;
-                break;
-            case DATE:
-                editType = EDIT_TYPE.DATE;
-                break;
-            case TIME:
-                editType = EDIT_TYPE.TIME;
-                break;
-            case DATE_TIME:
-                editType = EDIT_TYPE.DATE_TIME;
-                break;
-            case DURATION:
-                editType = EDIT_TYPE.DURATION;
-                break;
-            case ENUM:
-                editType = EDIT_TYPE.ENUM;
-                break;
-            case MULTI_ENUM:
-                editType = EDIT_TYPE.MULTI_ENUM;
-                break;
-            case ENTITY:
-                editType = EDIT_TYPE.ENTITY;
-                break;
-            case LIST:
-                editType = EDIT_TYPE.MULTI_ENTITY;
-                break;
-            default:
-                break;
+            case BOOLEAN -> editType = EDIT_TYPE.BOOLEAN;
+            case CHAR -> editType = EDIT_TYPE.CHAR;
+            case SHORT, INTEGER, LONG -> editType = EDIT_TYPE.NUMBER;
+            case DOUBLE -> editType = EDIT_TYPE.DOUBLE;
+            case DATE -> editType = EDIT_TYPE.DATE;
+            case TIME -> editType = EDIT_TYPE.TIME;
+            case DATE_TIME -> editType = EDIT_TYPE.DATE_TIME;
+            case DURATION -> editType = EDIT_TYPE.DURATION;
+            case ENUM -> editType = EDIT_TYPE.ENUM;
+            case MULTI_ENUM -> editType = EDIT_TYPE.MULTI_ENUM;
+            case ENTITY -> editType = EDIT_TYPE.ENTITY;
+            case LIST -> editType = EDIT_TYPE.MULTI_ENTITY;
+            default -> {
+            }
         }
         return editType;
     }
@@ -564,7 +525,7 @@ public final class ObjectUtils {
     public static void cloneEntity(BeanObject origin, BeanObject target) {
         List<Property> properties = AppUtils.getBean(PropertyService.class).get(origin.getClass());
         for (Property property : properties) {
-            if (property.getPropertyCode().equals("id")) {
+            if ("id".equals(property.getPropertyCode())) {
                 continue;
             }
             if (property.getType() == PROPERTY_TYPE.LIST) {

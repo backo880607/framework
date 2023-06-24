@@ -15,10 +15,10 @@
  */
 package com.pisces.framework.rds.datasource.provider;
 
+import com.pisces.framework.core.utils.lang.StringUtils;
 import com.pisces.framework.rds.datasource.config.DataSourceProperty;
 import com.pisces.framework.rds.datasource.creator.DefaultDataSourceCreator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

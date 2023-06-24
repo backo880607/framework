@@ -2,11 +2,11 @@ package com.pisces.framework.rds.provider.resolve;
 
 import com.pisces.framework.core.utils.lang.StringUtils;
 import com.pisces.framework.rds.annotation.ColumnType;
+import com.pisces.framework.rds.helper.FieldHelper;
 import com.pisces.framework.rds.helper.entity.Config;
 import com.pisces.framework.rds.helper.entity.EntityColumn;
 import com.pisces.framework.rds.helper.entity.EntityField;
 import com.pisces.framework.rds.helper.entity.EntityTable;
-import com.pisces.framework.rds.helper.FieldHelper;
 import com.pisces.framework.rds.utils.MetaObjectUtil;
 import com.pisces.framework.rds.utils.SimpleTypeUtil;
 import com.pisces.framework.rds.utils.SqlReservedWords;
@@ -87,7 +87,7 @@ public class DefaultEntityResolve implements EntityResolve {
         EntityColumn entityColumn = new EntityColumn(entityTable);
         //记录 field 信息，方便后续扩展使用
         entityColumn.setEntityField(field);
-        if (field.getName().equalsIgnoreCase("id")) {
+        if ("id".equalsIgnoreCase(field.getName())) {
             entityColumn.setId(true);
         }
         //Column

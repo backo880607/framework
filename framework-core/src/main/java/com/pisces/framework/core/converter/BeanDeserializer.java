@@ -4,13 +4,14 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.pisces.framework.core.entity.serializer.BaseDeserializer;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.entity.Property;
+import com.pisces.framework.core.entity.serializer.BaseDeserializer;
 import com.pisces.framework.core.service.PropertyService;
 import com.pisces.framework.core.utils.AppUtils;
 import com.pisces.framework.core.utils.lang.ObjectUtils;
 import com.pisces.framework.core.utils.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -71,13 +72,8 @@ public class BeanDeserializer extends BaseDeserializer<BeanObject> {
         if (id > 0) {
             return ObjectUtils.getInherit((Class<BeanObject>) property.getTypeClass(), id);
         }
-        BeanObject entity;
-        try {
-            entity =  (BeanObject) property.getTypeClass().newInstance();
-            entity.setId(id);
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        BeanObject entity = (BeanObject) BeanUtils.instantiateClass(property.getTypeClass());
+        entity.setId(id);
         return entity;
     }
 

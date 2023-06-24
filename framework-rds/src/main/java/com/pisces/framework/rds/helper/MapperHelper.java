@@ -39,6 +39,7 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.session.Configuration;
+import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -305,7 +306,7 @@ public class MapperHelper {
         this.config = config;
         if (config.getResolveClass() != null) {
             try {
-                EntityHelper.setResolve(config.getResolveClass().newInstance());
+                EntityHelper.setResolve(BeanUtils.instantiateClass(config.getResolveClass()));
             } catch (Exception e) {
                 log.error("创建 " + config.getResolveClass().getName()
                         + " 实例失败，请保证该类有默认的构造方法!", e);
@@ -332,7 +333,7 @@ public class MapperHelper {
             String resolveClass = properties.getProperty("resolveClass");
             if (StringUtils.isNotEmpty(resolveClass)) {
                 try {
-                    EntityHelper.setResolve((EntityResolve) Class.forName(resolveClass).newInstance());
+                    EntityHelper.setResolve((EntityResolve) BeanUtils.instantiateClass(Class.forName(resolveClass)));
                 } catch (Exception e) {
                     log.error("创建 " + resolveClass + " 实例失败!", e);
                     throw new SystemException("创建 " + resolveClass + " 实例失败!", e);

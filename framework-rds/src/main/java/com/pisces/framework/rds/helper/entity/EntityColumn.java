@@ -143,18 +143,36 @@ public class EntityColumn {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         EntityColumn that = (EntityColumn) o;
 
-        if (id != that.id) return false;
-        if (identity != that.identity) return false;
-        if (!Objects.equals(table, that.table)) return false;
-        if (!Objects.equals(property, that.property)) return false;
-        if (!Objects.equals(column, that.column)) return false;
-        if (!Objects.equals(javaType, that.javaType)) return false;
-        if (jdbcType != that.jdbcType) return false;
+        if (id != that.id) {
+            return false;
+        }
+        if (identity != that.identity) {
+            return false;
+        }
+        if (!Objects.equals(table, that.table)) {
+            return false;
+        }
+        if (!Objects.equals(property, that.property)) {
+            return false;
+        }
+        if (!Objects.equals(column, that.column)) {
+            return false;
+        }
+        if (!Objects.equals(javaType, that.javaType)) {
+            return false;
+        }
+        if (jdbcType != that.jdbcType) {
+            return false;
+        }
         return Objects.equals(typeHandler, that.typeHandler);
     }
 

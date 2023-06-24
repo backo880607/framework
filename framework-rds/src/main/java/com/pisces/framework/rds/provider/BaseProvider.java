@@ -16,7 +16,7 @@ import java.sql.SQLException;
  * @date 2022/12/07
  */
 public abstract class BaseProvider extends MapperTemplate {
-    private SQLProvider provider;
+    private volatile SQLProvider provider;
 
     public BaseProvider(Class<?> mapperClass, MapperHelper mapperHelper) {
         super(mapperClass, mapperHelper);
@@ -42,9 +42,9 @@ public abstract class BaseProvider extends MapperTemplate {
                             this.provider = new OracleProvider();
                         } else if (dbName.startsWith("Microsoft SQL Server")) {
                             this.provider = new SqlServerProvider();
-                        } else if (dbName.equals("Adaptive Server")) {
+                        } else if ("Adaptive Server".equals(dbName)) {
                             this.provider = new AdaptiveProvider();
-                        } else if (dbName.equals("MySQL")) {
+                        } else if ("MySQL".equals(dbName)) {
                             this.provider = new MySqlProvider();
                         }
                     } catch (SQLException e) {

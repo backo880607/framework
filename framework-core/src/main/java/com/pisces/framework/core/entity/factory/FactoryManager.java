@@ -116,6 +116,10 @@ public final class FactoryManager {
         return fetchFactory(beanName).identify;
     }
 
+    public static Set<Class<? extends BeanObject>> getBeanClasses() {
+        return FACTORIES.keySet();
+    }
+
     public static Class<? extends BeanObject> fetchBeanClass(String beanName) {
         return fetchFactory(beanName).getBeanClass();
     }

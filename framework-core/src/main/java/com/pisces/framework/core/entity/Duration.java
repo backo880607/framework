@@ -40,6 +40,7 @@ public class Duration {
          */
         String value = "";
 
+        @Override
         public EV_STRING clone() {
             EV_STRING o = null;
             try {
@@ -204,7 +205,7 @@ public class Duration {
 
     private void parse() {
         this.bValid = true;
-        if (this.value.isEmpty() || this.value.equals("-1")) {
+        if (this.value.isEmpty() || "-1".equals(this.value)) {
             this.time = 0;
             this.rate = 0.0f;
             this.bValid = false;
@@ -226,7 +227,7 @@ public class Duration {
         for (EV_STRING evs : lst) {
             if (evs.type == EV_STRING_TYPE.EVS_GOOD) {
                 AbstractMap.SimpleEntry<Boolean, Integer> extraTime = transTimeEach(evs.value);
-                this.time += (extraTime.getKey() || !oFlg) ? extraTime.getValue() : extraTime.getValue();
+                this.time += extraTime.getValue();
             } else {
                 AbstractMap.SimpleEntry<Boolean, Double> extraPer = transRateEach(evs.value);
                 if (extraPer.getKey()) {

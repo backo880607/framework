@@ -5,10 +5,20 @@ import com.pisces.framework.core.entity.Duration;
 import com.pisces.framework.core.entity.MultiEnum;
 import com.pisces.framework.core.enums.PROPERTY_TYPE;
 
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.function.Predicate;
 
+/**
+ * 类跑龙套
+ *
+ * @author jason
+ * @date 2023/06/23
+ */
 public class ClassUtils {
 
     public static PROPERTY_TYPE getPropertyType(Class<?> clazz) {
@@ -105,10 +115,5 @@ public class ClassUtils {
         }
 
         doGetMethods(cl.getSuperclass(), methods, predicate);
-    }
-
-    private static <T> Class<T> getJdkProxySuperClass(Class<T> clazz) {
-        final Class<?> proxyClass = Proxy.getProxyClass(clazz.getClassLoader(), clazz.getInterfaces());
-        return (Class<T>) proxyClass.getInterfaces()[0];
     }
 }

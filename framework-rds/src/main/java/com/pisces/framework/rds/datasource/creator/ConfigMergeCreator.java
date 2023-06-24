@@ -109,7 +109,7 @@ public class ConfigMergeCreator<C, T> {
             } catch (ReflectiveOperationException e1) {
                 log.warn("dynamic-datasource set {} [{}] failed,please check your config or update {}  to the latest version", configName, name, configName);
             } finally {
-                if (field != null && field.isAccessible()) {
+                if (field != null && field.canAccess(result)) {
                     field.setAccessible(false);
                 }
             }

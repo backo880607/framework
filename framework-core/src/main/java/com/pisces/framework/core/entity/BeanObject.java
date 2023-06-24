@@ -11,6 +11,12 @@ import lombok.Setter;
 
 import java.util.Date;
 
+/**
+ * bean对象
+ *
+ * @author jason
+ * @date 2023/06/23
+ */
 @Getter
 @Setter
 @MappedSuperclass

@@ -1,5 +1,6 @@
 package com.pisces.framework.core.utils;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValues;
 import org.springframework.core.env.Environment;
@@ -35,6 +36,7 @@ public abstract class SpringBootBindUtil {
         public SpringBoot2Bind() {
         }
 
+        @Override
         public <T> T bind(Environment environment, Class<T> targetClass, String prefix) {
             try {
                 Class<?> bindClass = Class.forName("org.springframework.boot.context.properties.bind.Binder");
@@ -44,7 +46,7 @@ public abstract class SpringBootBindUtil {
                 Object bindResult = bindMethod.invoke(bind, prefix, targetClass);
                 Method resultGetMethod = bindResult.getClass().getDeclaredMethod("get");
                 Method isBoundMethod = bindResult.getClass().getDeclaredMethod("isBound");
-                return (Boolean)isBoundMethod.invoke(bindResult) ? (T) resultGetMethod.invoke(bindResult) : null;
+                return (Boolean) isBoundMethod.invoke(bindResult) ? (T) resultGetMethod.invoke(bindResult) : null;
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -55,14 +57,15 @@ public abstract class SpringBootBindUtil {
         public SpringBoot1Bind() {
         }
 
+        @Override
         public <T> T bind(Environment environment, Class<T> targetClass, String prefix) {
             try {
                 Class<?> resolverClass = Class.forName("org.springframework.boot.bind.RelaxedPropertyResolver");
                 Constructor<?> resolverConstructor = resolverClass.getDeclaredConstructor(PropertyResolver.class);
                 Method getSubPropertiesMethod = resolverClass.getDeclaredMethod("getSubProperties", String.class);
                 Object resolver = resolverConstructor.newInstance(environment);
-                Map<String, Object> properties = (Map)getSubPropertiesMethod.invoke(resolver, "");
-                T target = targetClass.newInstance();
+                Map<String, Object> properties = (Map) getSubPropertiesMethod.invoke(resolver, "");
+                T target = BeanUtils.instantiateClass(targetClass);
                 Class<?> binderClass = Class.forName("org.springframework.boot.bind.RelaxedDataBinder");
                 Constructor<?> binderConstructor = binderClass.getDeclaredConstructor(Object.class, String.class);
                 Method bindMethod = binderClass.getMethod("bind", PropertyValues.class);

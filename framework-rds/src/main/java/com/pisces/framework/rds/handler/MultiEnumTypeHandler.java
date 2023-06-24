@@ -3,6 +3,7 @@ package com.pisces.framework.rds.handler;
 import com.pisces.framework.core.entity.MultiEnum;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
+import org.springframework.beans.BeanUtils;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -34,14 +35,8 @@ public class MultiEnumTypeHandler extends BaseTypeHandler<MultiEnum<?>> {
             return null;
         }
 
-        MultiEnum<?> result = null;
-        try {
-            result = type.newInstance();
-            result.setValue(value);
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
+        MultiEnum<?> result = BeanUtils.instantiateClass(type);
+        result.setValue(value);
         return result;
     }
 
@@ -52,14 +47,8 @@ public class MultiEnumTypeHandler extends BaseTypeHandler<MultiEnum<?>> {
             return null;
         }
 
-        MultiEnum<?> result = null;
-        try {
-            result = type.newInstance();
-            result.setValue(value);
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
+        MultiEnum<?> result = BeanUtils.instantiateClass(type);
+        result.setValue(value);
         return result;
     }
 
@@ -70,14 +59,8 @@ public class MultiEnumTypeHandler extends BaseTypeHandler<MultiEnum<?>> {
             return null;
         }
 
-        MultiEnum<?> result = null;
-        try {
-            result = type.newInstance();
-            result.setValue(value);
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
+        MultiEnum<?> result = BeanUtils.instantiateClass(type);
+        result.setValue(value);
         return result;
     }
 

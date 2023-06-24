@@ -24,6 +24,8 @@
 
 package com.pisces.framework.rds.version;
 
+import org.springframework.beans.BeanUtils;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -55,7 +57,7 @@ public class VersionUtil {
                 LOCK.lock();
                 try {
                     if (!CACHE.containsKey(nextVersionClass)) {
-                        CACHE.put(nextVersionClass, nextVersionClass.newInstance());
+                        CACHE.put(nextVersionClass, BeanUtils.instantiateClass(nextVersionClass));
                     }
                     nextVersion = CACHE.get(nextVersionClass);
                 } finally {

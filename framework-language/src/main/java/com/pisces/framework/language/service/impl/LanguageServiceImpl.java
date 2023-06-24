@@ -1,11 +1,11 @@
 package com.pisces.framework.language.service.impl;
 
 import com.pisces.framework.core.locale.LanguageService;
+import com.pisces.framework.core.utils.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.Locale;

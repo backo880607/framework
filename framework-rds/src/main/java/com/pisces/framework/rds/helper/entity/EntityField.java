@@ -128,7 +128,7 @@ public class EntityField {
         if (getter != null) {
             result = getter.invoke(object);
         } else if (field != null) {
-            if (!field.isAccessible()) {
+            if (!field.canAccess(object)) {
                 field.setAccessible(true);
             }
             result = field.get(object);
@@ -138,8 +138,12 @@ public class EntityField {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         EntityField that = (EntityField) o;
         return Objects.equals(name, that.name);

@@ -7,11 +7,11 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
-import com.fasterxml.jackson.databind.exc.InvalidTypeIdException;
-import com.pisces.framework.core.entity.serializer.BaseDeserializer;
 import com.pisces.framework.core.entity.MultiEnum;
 import com.pisces.framework.core.entity.Property;
+import com.pisces.framework.core.entity.serializer.BaseDeserializer;
 import com.pisces.framework.core.utils.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 
 import java.io.IOException;
 
@@ -25,18 +25,12 @@ public class MultiEnumDeserializer extends BaseDeserializer<MultiEnum<? extends 
     /**
      * clazz
      */
-    private Class<? extends MultiEnum<? extends Enum<?>>> clazz;
+    private Class<? extends MultiEnum<? extends Enum<?>>> enumClass;
 
     @Override
     public final MultiEnum<? extends Enum<?>> deserialize(JsonParser p, DeserializationContext context)
             throws IOException {
-        MultiEnum<? extends Enum<?>> result;
-        try {
-            result = clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new InvalidTypeIdException(p, e.getMessage(), null, clazz.getName());
-        }
-
+        MultiEnum<? extends Enum<?>> result = BeanUtils.instantiateClass(enumClass);
         ObjectCodec oc = p.getCodec();
         JsonNode node = oc.readTree(p);
         String text = StringUtils.join(node.iterator(), ";", JsonNode::asText);
@@ -46,21 +40,16 @@ public class MultiEnumDeserializer extends BaseDeserializer<MultiEnum<? extends 
 
     @Override
     public MultiEnum<? extends Enum<?>> deserialize(Property property, String value) {
-        MultiEnum<? extends Enum<?>> result;
-        try {
-            result = (MultiEnum<? extends Enum<?>>) property.getTypeClass().newInstance();
-            result.parse(value);
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        MultiEnum<? extends Enum<?>> result = (MultiEnum<? extends Enum<?>>) BeanUtils.instantiateClass(property.getTypeClass());
+        result.parse(value);
         return result;
     }
 
     @Override
     public JsonDeserializer<?> createContextual(DeserializationContext context, BeanProperty property) {
-        Class<? extends MultiEnum<? extends Enum<?>>> rawCls = (Class<? extends MultiEnum<? extends Enum<?>>>) context.getContextualType().getRawClass();
+        Class<? extends MultiEnum<? extends Enum<?>>> rawClass = (Class<? extends MultiEnum<? extends Enum<?>>>) context.getContextualType().getRawClass();
         MultiEnumDeserializer deserializer = new MultiEnumDeserializer();
-        deserializer.clazz = rawCls;
+        deserializer.enumClass = rawClass;
         return deserializer;
     }
 }

@@ -20,14 +20,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * mapper扫描仪注册
+ *
+ * @author jason
+ * @date 2023/06/23
+ */
 public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware, EnvironmentAware {
-    private static final String[] defaultPackages = {"com.pisces.**.dao", "com.pisces.**.dao.impl"};
+    private static final String[] DEFAULT_PACKAGES = {"com.pisces.**.dao", "com.pisces.**.dao.impl"};
     private ResourceLoader resourceLoader;
     private Environment environment;
 
     public MapperScannerRegistrar() {
     }
 
+    @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, @Nonnull BeanDefinitionRegistry registry) {
         AnnotationAttributes annoAttrs = AnnotationAttributes.fromMap(importingClassMetadata.getAnnotationAttributes(MapperScan.class.getName()));
         ClassPathMapperScanner scanner = new ClassPathMapperScanner(registry);
@@ -56,7 +63,7 @@ public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
         scanner.setSqlSessionTemplateBeanName(annoAttrs.getString("sqlSessionTemplateRef"));
         scanner.setSqlSessionFactoryBeanName(annoAttrs.getString("sqlSessionFactoryRef"));
 
-        List<String> basePackages = new ArrayList<>(Arrays.asList(defaultPackages));
+        List<String> basePackages = new ArrayList<>(Arrays.asList(DEFAULT_PACKAGES));
         for (String pkg : annoAttrs.getStringArray("basePackages")) {
             if (StringUtils.hasText(pkg)) {
                 basePackages.add(pkg);
@@ -67,10 +74,12 @@ public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
         scanner.doScan(StringUtils.toStringArray(basePackages));
     }
 
+    @Override
     public void setEnvironment(@Nonnull Environment environment) {
         this.environment = environment;
     }
 
+    @Override
     public void setResourceLoader(@Nonnull ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }

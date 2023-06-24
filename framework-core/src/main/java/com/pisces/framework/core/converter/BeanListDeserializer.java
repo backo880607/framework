@@ -4,10 +4,11 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.pisces.framework.core.entity.serializer.BaseDeserializer;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.entity.Property;
+import com.pisces.framework.core.entity.serializer.BaseDeserializer;
 import lombok.SneakyThrows;
+import org.springframework.beans.BeanUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +35,6 @@ public class BeanListDeserializer extends BaseDeserializer<Collection<BeanObject
         }
         Collection<BeanObject> result = new ArrayList<>();
         for (JsonNode node : nodeList) {
-            BeanObject entity = (BeanObject) property.getTypeClass().newInstance();
             Iterator<Map.Entry<String, JsonNode>> fieldsIterator = node.fields();
             while (fieldsIterator.hasNext()) {
                 Map.Entry<String, JsonNode> field = fieldsIterator.next();
@@ -60,13 +60,9 @@ public class BeanListDeserializer extends BaseDeserializer<Collection<BeanObject
                 continue;
             }
             final long id = Long.parseLong(strId);
-            try {
-                BeanObject entity = (BeanObject) property.getTypeClass().newInstance();
-                entity.setId(id);
-                entities.add(entity);
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e.getMessage());
-            }
+            BeanObject entity = (BeanObject) BeanUtils.instantiateClass(property.getTypeClass());
+            entity.setId(id);
+            entities.add(entity);
         }
         return entities;
     }

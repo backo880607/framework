@@ -134,7 +134,7 @@ public final class FileUtils {
     }
 
     public static List<Class<?>> loadClass(String packName) {
-        List<Class<?>> clses = new ArrayList<>();
+        List<Class<?>> classes = new ArrayList<>();
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         String strFile = packName.replaceAll("\\.", "/");
         try {
@@ -144,10 +144,10 @@ public final class FileUtils {
                 if (url != null) {
                     String protocol = url.getProtocol();
                     String filePath = url.getPath();
-                    if (protocol.equals("file")) {
-                        loadClassImpl(packName, filePath, clses);
-                    } else if (protocol.equals("jar")) {
-                        loadJarImpl(packName, url, clses);
+                    if ("file".equals(protocol)) {
+                        loadClassImpl(packName, filePath, classes);
+                    } else if ("jar".equals(protocol)) {
+                        loadJarImpl(packName, url, classes);
                     }
                 }
             }
@@ -155,7 +155,7 @@ public final class FileUtils {
             e.printStackTrace();
         }
 
-        return clses;
+        return classes;
     }
 
     private static void loadClassImpl(String packName, String dirPath, List<Class<?>> clses) {
