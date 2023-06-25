@@ -22,61 +22,62 @@ public class MySqlProvider extends SQLProvider {
     @Override
     public String getSqlType(JdbcType jdbcType) {
         switch (jdbcType) {
-            case BIT:
-            case BOOLEAN:
+            case BIT, BOOLEAN -> {
                 return "bit";
-            case TINYINT:
+            }
+            case TINYINT -> {
                 return "tinyint";
-            case SMALLINT:
+            }
+            case SMALLINT -> {
                 return "smallint";
-            case INTEGER:
+            }
+            case INTEGER -> {
                 return "int";
-            case BIGINT:
+            }
+            case BIGINT -> {
                 return "bigint";
-            case FLOAT:
-            case REAL:
+            }
+            case FLOAT, REAL -> {
                 return "float";
-            case DOUBLE:
+            }
+            case DOUBLE -> {
                 return "double";
-            case NUMERIC:
-            case DECIMAL:
+            }
+            case NUMERIC, DECIMAL -> {
                 return "decimal";
-            case CHAR:
+            }
+            case CHAR -> {
                 return "char";
-            case VARCHAR:
+            }
+            case VARCHAR -> {
                 return "varchar(255)";
-            case LONGVARCHAR:
+            }
+            case LONGVARCHAR -> {
                 return "longtext";
-            case DATE:
+            }
+            case DATE -> {
                 return "date";
-            case TIME:
+            }
+            case TIME -> {
                 return "time";
-            case TIMESTAMP:
+            }
+            case TIMESTAMP -> {
                 return "timestamp";
-            case BINARY:
+            }
+            case BINARY -> {
                 return "tinyblob";
-            case VARBINARY:
+            }
+            case VARBINARY -> {
                 return "varbinary";
-            case BLOB:
+            }
+            case BLOB -> {
                 return "blob";
-            case CLOB:
+            }
+            case CLOB -> {
                 return "text";
-            case CURSOR:
-            case UNDEFINED:
-            case NVARCHAR:
-            case NCHAR:
-            case NCLOB:
-            case STRUCT:
-            case JAVA_OBJECT:
-            case DISTINCT:
-            case REF:
-            case DATALINK:
-            case ROWID:
-            case LONGNVARCHAR:
-            case SQLXML:
-            case DATETIMEOFFSET:
-            default:
-                break;
+            }
+            default -> {
+            }
         }
         throw new UnsupportedOperationException("not support jdbc type: " + jdbcType.name());
     }
