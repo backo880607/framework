@@ -15,12 +15,13 @@
  */
 package com.pisces.framework.rds.datasource.dialect.impl;
 
-import com.pisces.framework.core.utils.lang.CollectionUtils;
+import com.pisces.framework.core.query.QueryTable;
+import com.pisces.framework.core.query.QueryWrapper;
+import com.pisces.framework.core.query.column.QueryColumn;
 import com.pisces.framework.core.utils.lang.StringUtils;
 import com.pisces.framework.rds.datasource.dialect.IDialect;
 import com.pisces.framework.rds.datasource.dialect.KeywordWrap;
 import com.pisces.framework.rds.datasource.dialect.LimitOffsetProcessor;
-import com.pisces.framework.rds.query.*;
 
 import java.util.List;
 
@@ -120,146 +121,114 @@ public class CommonsDialectImpl implements IDialect {
     ////////////build query sql///////
     @Override
     public String buildSelectSql(QueryWrapper queryWrapper) {
-        List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
-        List<QueryTable> joinTables = CPI.getJoinTables(queryWrapper);
-        List<QueryTable> allTables = CollectionUtils.merge(queryTables, joinTables);
-
-        List<QueryColumn> selectColumns = CPI.getSelectColumns(queryWrapper);
-
-        StringBuilder sqlBuilder = buildSelectColumnSql(allTables, selectColumns, CPI.getHint(queryWrapper));
-        sqlBuilder.append(" FROM ").append(StringUtils.join(queryTables, ", ", queryTable -> queryTable.toSql(this)));
-
-        buildJoinSql(sqlBuilder, queryWrapper, allTables);
-        buildWhereSql(sqlBuilder, queryWrapper, allTables, true);
-        buildGroupBySql(sqlBuilder, queryWrapper, allTables);
-        buildHavingSql(sqlBuilder, queryWrapper, allTables);
-        buildOrderBySql(sqlBuilder, queryWrapper, allTables);
-
-        List<UnionWrapper> unions = CPI.getUnions(queryWrapper);
-        if (CollectionUtils.isNotEmpty(unions)) {
-            sqlBuilder.insert(0, "(").append(")");
-            for (UnionWrapper unionWrapper : unions) {
-                unionWrapper.buildSql(sqlBuilder, this);
-            }
-        }
-
-        Integer limitRows = CPI.getLimitRows(queryWrapper);
-        Integer limitOffset = CPI.getLimitOffset(queryWrapper);
-        if (limitRows != null || limitOffset != null) {
-            sqlBuilder = buildLimitOffsetSql(sqlBuilder, queryWrapper, limitRows, limitOffset);
-        }
-
-        return sqlBuilder.toString();
+        return "";
     }
 
     private StringBuilder buildSelectColumnSql(List<QueryTable> queryTables, List<QueryColumn> selectColumns, String hint) {
         StringBuilder sqlBuilder = new StringBuilder("SELECT ");
-        sqlBuilder.append(forHint(hint));
-        if (selectColumns == null || selectColumns.isEmpty()) {
-            sqlBuilder.append("*");
-        } else {
-            int index = 0;
-            for (QueryColumn selectColumn : selectColumns) {
-                String selectColumnSql = CPI.toSelectSql(selectColumn, queryTables, this);
-                sqlBuilder.append(selectColumnSql);
-                if (index != selectColumns.size() - 1) {
-                    sqlBuilder.append(", ");
-                }
-                index++;
-            }
-        }
+//        sqlBuilder.append(forHint(hint));
+//        if (selectColumns == null || selectColumns.isEmpty()) {
+//            sqlBuilder.append("*");
+//        } else {
+//            int index = 0;
+//            for (QueryColumn selectColumn : selectColumns) {
+//                String selectColumnSql = CPI.toSelectSql(selectColumn, queryTables, this);
+//                sqlBuilder.append(selectColumnSql);
+//                if (index != selectColumns.size() - 1) {
+//                    sqlBuilder.append(", ");
+//                }
+//                index++;
+//            }
+//        }
         return sqlBuilder;
     }
 
     @Override
     public String buildDeleteSql(QueryWrapper queryWrapper) {
-        List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
-        List<QueryTable> joinTables = CPI.getJoinTables(queryWrapper);
-        List<QueryTable> allTables = CollectionUtils.merge(queryTables, joinTables);
-
-        //ignore selectColumns
-        StringBuilder sqlBuilder = new StringBuilder("DELETE " + forHint(CPI.getHint(queryWrapper)) + "FROM ");
-        sqlBuilder.append(StringUtils.join(queryTables, ", ", queryTable -> queryTable.toSql(this)));
-
-        buildJoinSql(sqlBuilder, queryWrapper, allTables);
-        buildWhereSql(sqlBuilder, queryWrapper, allTables, false);
-        buildGroupBySql(sqlBuilder, queryWrapper, allTables);
-        buildHavingSql(sqlBuilder, queryWrapper, allTables);
-
-        //ignore orderBy and limit
-        //buildOrderBySql(sqlBuilder, queryWrapper);
-        //buildLimitSql(sqlBuilder, queryWrapper);
-
-        return sqlBuilder.toString();
+        return "";
+//        List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
+//        List<QueryTable> joinTables = CPI.getJoinTables(queryWrapper);
+//        List<QueryTable> allTables = CollectionUtils.merge(queryTables, joinTables);
+//
+//        //ignore selectColumns
+//        StringBuilder sqlBuilder = new StringBuilder("DELETE " + forHint(CPI.getHint(queryWrapper)) + "FROM ");
+////        sqlBuilder.append(StringUtils.join(queryTables, ", ", queryTable -> queryTable.toSql(this)));
+//
+//        buildJoinSql(sqlBuilder, queryWrapper, allTables);
+//        buildWhereSql(sqlBuilder, queryWrapper, allTables, false);
+//        buildGroupBySql(sqlBuilder, queryWrapper, allTables);
+//        buildHavingSql(sqlBuilder, queryWrapper, allTables);
+//
+//        return sqlBuilder.toString();
     }
 
     protected void buildJoinSql(StringBuilder sqlBuilder, QueryWrapper queryWrapper, List<QueryTable> queryTables) {
-        List<Join> joins = CPI.getJoins(queryWrapper);
-        if (joins != null && !joins.isEmpty()) {
-            for (Join join : joins) {
-                if (!join.checkEffective()) {
-                    continue;
-                }
-                sqlBuilder.append(join.toSql(queryTables, this));
-            }
-        }
+//        List<Join> joins = CPI.getJoins(queryWrapper);
+//        if (joins != null && !joins.isEmpty()) {
+//            for (Join join : joins) {
+//                if (!join.checkEffective()) {
+//                    continue;
+//                }
+//                sqlBuilder.append(join.toSql(queryTables, this));
+//            }
+//        }
     }
 
 
     protected void buildWhereSql(StringBuilder sqlBuilder, QueryWrapper queryWrapper, List<QueryTable> queryTables, boolean allowNoCondition) {
-        QueryCondition whereQueryCondition = CPI.getWhereQueryCondition(queryWrapper);
-        if (whereQueryCondition != null) {
-            String whereSql = whereQueryCondition.toSql(queryTables, this);
-            if (StringUtils.isNotBlank(whereSql)) {
-                sqlBuilder.append(" WHERE ").append(whereSql);
-            } else if (!allowNoCondition) {
-                throw new IllegalArgumentException("Not allowed DELETE a table without where condition.");
-            }
-        }
+//        QueryCondition whereQueryCondition = CPI.getWhereQueryCondition(queryWrapper);
+//        if (whereQueryCondition != null) {
+//            String whereSql = whereQueryCondition.toSql(queryTables, this);
+//            if (StringUtils.isNotBlank(whereSql)) {
+//                sqlBuilder.append(" WHERE ").append(whereSql);
+//            } else if (!allowNoCondition) {
+//                throw new IllegalArgumentException("Not allowed DELETE a table without where condition.");
+//            }
+//        }
     }
 
 
     protected void buildGroupBySql(StringBuilder sqlBuilder, QueryWrapper queryWrapper, List<QueryTable> queryTables) {
-        List<QueryColumn> groupByColumns = CPI.getGroupByColumns(queryWrapper);
-        if (groupByColumns != null && !groupByColumns.isEmpty()) {
-            sqlBuilder.append(" GROUP BY ");
-            int index = 0;
-            for (QueryColumn groupByColumn : groupByColumns) {
-                String groupBy = CPI.toConditionSql(groupByColumn, queryTables, this);
-                sqlBuilder.append(groupBy);
-                if (index != groupByColumns.size() - 1) {
-                    sqlBuilder.append(", ");
-                }
-                index++;
-            }
-        }
+//        List<QueryColumn> groupByColumns = CPI.getGroupByColumns(queryWrapper);
+//        if (groupByColumns != null && !groupByColumns.isEmpty()) {
+//            sqlBuilder.append(" GROUP BY ");
+//            int index = 0;
+//            for (QueryColumn groupByColumn : groupByColumns) {
+//                String groupBy = CPI.toConditionSql(groupByColumn, queryTables, this);
+//                sqlBuilder.append(groupBy);
+//                if (index != groupByColumns.size() - 1) {
+//                    sqlBuilder.append(", ");
+//                }
+//                index++;
+//            }
+//        }
     }
 
 
     protected void buildHavingSql(StringBuilder sqlBuilder, QueryWrapper queryWrapper, List<QueryTable> queryTables) {
-        QueryCondition havingQueryCondition = CPI.getHavingQueryCondition(queryWrapper);
-        if (havingQueryCondition != null) {
-            String havingSql = havingQueryCondition.toSql(queryTables, this);
-            if (StringUtils.isNotBlank(havingSql)) {
-                sqlBuilder.append(" HAVING ").append(havingSql);
-            }
-        }
+//        QueryCondition havingQueryCondition = CPI.getHavingQueryCondition(queryWrapper);
+//        if (havingQueryCondition != null) {
+//            String havingSql = havingQueryCondition.toSql(queryTables, this);
+//            if (StringUtils.isNotBlank(havingSql)) {
+//                sqlBuilder.append(" HAVING ").append(havingSql);
+//            }
+//        }
     }
 
 
     protected void buildOrderBySql(StringBuilder sqlBuilder, QueryWrapper queryWrapper, List<QueryTable> queryTables) {
-        List<QueryOrderBy> orderBys = CPI.getOrderBys(queryWrapper);
-        if (orderBys != null && !orderBys.isEmpty()) {
-            sqlBuilder.append(" ORDER BY ");
-            int index = 0;
-            for (QueryOrderBy orderBy : orderBys) {
-                sqlBuilder.append(orderBy.toSql(queryTables, this));
-                if (index != orderBys.size() - 1) {
-                    sqlBuilder.append(", ");
-                }
-                index++;
-            }
-        }
+//        List<QueryOrderBy> orderBys = CPI.getOrderBys(queryWrapper);
+//        if (orderBys != null && !orderBys.isEmpty()) {
+//            sqlBuilder.append(" ORDER BY ");
+//            int index = 0;
+//            for (QueryOrderBy orderBy : orderBys) {
+//                sqlBuilder.append(orderBy.toSql(queryTables, this));
+//                if (index != orderBys.size() - 1) {
+//                    sqlBuilder.append(", ");
+//                }
+//                index++;
+//            }
+//        }
     }
 
 

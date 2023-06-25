@@ -1,12 +1,12 @@
 package com.pisces.framework.language.controller;
 
-import com.pisces.framework.core.annotation.TableMeta;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.entity.EnumDto;
 import com.pisces.framework.core.entity.Property;
 import com.pisces.framework.core.service.PropertyService;
 import com.pisces.framework.core.utils.lang.ObjectUtils;
 import com.pisces.framework.language.config.LanguageConstant;
+import com.pisces.framework.type.annotation.TableMeta;
 import com.pisces.framework.web.controller.BeanController;
 import com.pisces.framework.web.controller.ResponseData;
 import org.springframework.web.bind.annotation.GetMapping;

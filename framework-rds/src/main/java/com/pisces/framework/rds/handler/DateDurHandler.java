@@ -1,6 +1,6 @@
 package com.pisces.framework.rds.handler;
 
-import com.pisces.framework.core.entity.Duration;
+import com.pisces.framework.type.Duration;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 

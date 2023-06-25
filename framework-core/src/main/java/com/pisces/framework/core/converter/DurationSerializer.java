@@ -1,7 +1,7 @@
 package com.pisces.framework.core.converter;
 
-import com.pisces.framework.core.entity.Duration;
 import com.pisces.framework.core.entity.serializer.BaseSerializer;
+import com.pisces.framework.type.Duration;
 
 /**
  * 持续时间序列化器

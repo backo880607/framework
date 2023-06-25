@@ -1,8 +1,8 @@
 package com.pisces.framework.core.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pisces.framework.core.annotation.PropertyMeta;
-import com.pisces.framework.core.enums.PROPERTY_TYPE;
+import com.pisces.framework.type.PROPERTY_TYPE;
+import com.pisces.framework.type.annotation.PropertyMeta;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;

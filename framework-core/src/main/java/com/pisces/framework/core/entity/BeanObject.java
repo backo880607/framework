@@ -1,8 +1,8 @@
 package com.pisces.framework.core.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pisces.framework.core.annotation.PropertyMeta;
 import com.pisces.framework.core.utils.IDGenerator;
+import com.pisces.framework.type.annotation.PropertyMeta;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;

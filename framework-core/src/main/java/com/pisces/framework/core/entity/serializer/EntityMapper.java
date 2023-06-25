@@ -3,8 +3,8 @@ package com.pisces.framework.core.entity.serializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.entity.Property;
-import com.pisces.framework.core.enums.PROPERTY_TYPE;
 import com.pisces.framework.core.utils.lang.ObjectUtils;
+import com.pisces.framework.type.PROPERTY_TYPE;
 
 import java.util.HashMap;
 import java.util.Map;

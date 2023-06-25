@@ -1,7 +1,7 @@
 package com.pisces.framework.core.validator.impl;
 
-import com.pisces.framework.core.entity.Duration;
 import com.pisces.framework.core.validator.ValidDuration;
+import com.pisces.framework.type.Duration;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

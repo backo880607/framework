@@ -1,7 +1,7 @@
 package com.pisces.framework.rds.provider.base;
 
-import com.pisces.framework.core.enums.PROPERTY_TYPE;
 import com.pisces.framework.rds.helper.entity.EntityColumn;
+import com.pisces.framework.type.PROPERTY_TYPE;
 import org.apache.ibatis.type.JdbcType;
 
 import java.sql.Connection;
@@ -69,7 +69,7 @@ public abstract class SQLProvider {
             case STRING:
                 jdbcType = large ? JdbcType.LONGVARCHAR : JdbcType.VARCHAR;
                 break;
-            case ENTITY:
+            case BEAN:
                 jdbcType = JdbcType.LONGVARCHAR;
                 break;
             case LIST:

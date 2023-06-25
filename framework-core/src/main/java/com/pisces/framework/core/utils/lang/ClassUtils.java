@@ -1,9 +1,9 @@
 package com.pisces.framework.core.utils.lang;
 
 import com.pisces.framework.core.entity.BeanObject;
-import com.pisces.framework.core.entity.Duration;
-import com.pisces.framework.core.entity.MultiEnum;
-import com.pisces.framework.core.enums.PROPERTY_TYPE;
+import com.pisces.framework.type.Duration;
+import com.pisces.framework.type.MultiEnum;
+import com.pisces.framework.type.PROPERTY_TYPE;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -44,7 +44,7 @@ public class ClassUtils {
         } else if (MultiEnum.class.isAssignableFrom(clazz)) {
             type = PROPERTY_TYPE.MULTI_ENUM;
         } else if (BeanObject.class.isAssignableFrom(clazz)) {
-            type = PROPERTY_TYPE.ENTITY;
+            type = PROPERTY_TYPE.BEAN;
         } else if (Collection.class.isAssignableFrom(clazz)) {
             type = PROPERTY_TYPE.LIST;
         } else {

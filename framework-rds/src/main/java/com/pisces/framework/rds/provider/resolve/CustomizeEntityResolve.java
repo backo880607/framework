@@ -1,17 +1,17 @@
 package com.pisces.framework.rds.provider.resolve;
 
-import com.pisces.framework.core.annotation.PropertyMeta;
 import com.pisces.framework.core.entity.BeanObject;
-import com.pisces.framework.core.entity.MultiEnum;
-import com.pisces.framework.core.enums.PROPERTY_TYPE;
 import com.pisces.framework.core.utils.lang.ClassUtils;
+import com.pisces.framework.rds.handler.MultiEnumTypeHandler;
 import com.pisces.framework.rds.helper.entity.Config;
 import com.pisces.framework.rds.helper.entity.EntityColumn;
 import com.pisces.framework.rds.helper.entity.EntityField;
 import com.pisces.framework.rds.helper.entity.EntityTable;
-import com.pisces.framework.rds.handler.MultiEnumTypeHandler;
 import com.pisces.framework.rds.provider.base.SQLProvider;
 import com.pisces.framework.rds.utils.MetaObjectUtil;
+import com.pisces.framework.type.MultiEnum;
+import com.pisces.framework.type.PROPERTY_TYPE;
+import com.pisces.framework.type.annotation.PropertyMeta;
 import jakarta.persistence.Transient;
 import org.apache.ibatis.type.JdbcType;
 

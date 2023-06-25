@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pisces.framework.rds.datasource.dialect;
+package com.pisces.framework.core.query;
 
-import com.pisces.framework.core.query.QueryWrapper;
+/**
+ * sql连接器
+ *
+ * @author jason
+ * @date 2023/06/25
+ */
+public enum QueryConnector {
+    AND(" AND "),
+    OR(" OR ");
 
-public interface IDialect {
+    private final String value;
 
-    String wrap(String keyword);
+    QueryConnector(String value) {
+        this.value = value;
+    }
 
-    String forHint(String hintString);
-
-    String forDeleteById(String tableName, String[] primaryKeys);
-
-    String forDeleteBatchByIds(String tableName, String[] primaryKeys, Object[] ids);
-
-    String buildSelectSql(QueryWrapper queryWrapper);
-
-    String buildDeleteSql(QueryWrapper queryWrapper);
+    @Override
+    public String toString() {
+        return value;
+    }
 }

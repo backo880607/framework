@@ -1,8 +1,8 @@
 package com.pisces.framework.core.converter;
 
-import com.pisces.framework.core.entity.Duration;
 import com.pisces.framework.core.entity.Property;
 import com.pisces.framework.core.entity.serializer.BaseDeserializer;
+import com.pisces.framework.type.Duration;
 
 /**
  * 反序列化器持续时间

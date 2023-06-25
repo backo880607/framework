@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pisces.framework.rds.datasource.dialect;
+package com.pisces.framework.core.query;
 
-import com.pisces.framework.core.query.QueryWrapper;
+import java.io.Serializable;
 
-public interface IDialect {
+/**
+ * 表的定义
+ *
+ * @author jason
+ * @date 2023/06/25
+ */
+public class TableDef implements Serializable {
 
-    String wrap(String keyword);
+    private final String tableName;
 
-    String forHint(String hintString);
+    public TableDef(String tableName) {
+        this.tableName = tableName;
+    }
 
-    String forDeleteById(String tableName, String[] primaryKeys);
-
-    String forDeleteBatchByIds(String tableName, String[] primaryKeys, Object[] ids);
-
-    String buildSelectSql(QueryWrapper queryWrapper);
-
-    String buildDeleteSql(QueryWrapper queryWrapper);
+    public String getTableName() {
+        return tableName;
+    }
 }

@@ -1,9 +1,9 @@
 package com.pisces.framework.core.converter;
 
 import com.pisces.framework.core.entity.serializer.BaseSerializer;
-import com.pisces.framework.core.entity.MultiEnum;
 import com.pisces.framework.core.locale.LocaleManager;
 import com.pisces.framework.core.utils.lang.StringUtils;
+import com.pisces.framework.type.MultiEnum;
 
 /**
  * 多enum序列化器

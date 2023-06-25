@@ -1,7 +1,7 @@
 package com.pisces.framework.core.utils.lang;
 
-import com.pisces.framework.core.entity.Duration;
 import com.pisces.framework.core.exception.SystemException;
+import com.pisces.framework.type.Duration;
 
 import java.util.Date;
 

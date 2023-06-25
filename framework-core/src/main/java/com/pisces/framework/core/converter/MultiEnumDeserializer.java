@@ -7,10 +7,10 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
-import com.pisces.framework.core.entity.MultiEnum;
 import com.pisces.framework.core.entity.Property;
 import com.pisces.framework.core.entity.serializer.BaseDeserializer;
 import com.pisces.framework.core.utils.lang.StringUtils;
+import com.pisces.framework.type.MultiEnum;
 import org.springframework.beans.BeanUtils;
 
 import java.io.IOException;

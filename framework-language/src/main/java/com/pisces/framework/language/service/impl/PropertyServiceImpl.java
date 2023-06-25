@@ -3,15 +3,14 @@ package com.pisces.framework.language.service.impl;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.entity.EnumDto;
 import com.pisces.framework.core.entity.Property;
-import com.pisces.framework.core.enums.PROPERTY_TYPE;
 import com.pisces.framework.core.service.BeanServiceImpl;
 import com.pisces.framework.core.service.PropertyService;
 import com.pisces.framework.core.utils.lang.ObjectUtils;
 import com.pisces.framework.language.dao.PropertyDao;
+import com.pisces.framework.type.PROPERTY_TYPE;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**

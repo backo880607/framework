@@ -1,6 +1,6 @@
 package com.pisces.framework.rds.handler;
 
-import com.pisces.framework.core.entity.MultiEnum;
+import com.pisces.framework.type.MultiEnum;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.springframework.beans.BeanUtils;

@@ -1,18 +1,18 @@
 package com.pisces.framework.language.dao;
 
-import com.pisces.framework.core.annotation.PropertyMeta;
 import com.pisces.framework.core.config.CoreMessage;
 import com.pisces.framework.core.dao.BaseDao;
 import com.pisces.framework.core.dao.DaoManager;
 import com.pisces.framework.core.dao.impl.DaoImpl;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.entity.Property;
-import com.pisces.framework.core.enums.PROPERTY_TYPE;
 import com.pisces.framework.core.exception.ConfigurationException;
 import com.pisces.framework.core.exception.PropertyException;
 import com.pisces.framework.core.utils.lang.ObjectUtils;
 import com.pisces.framework.core.utils.lang.StringUtils;
 import com.pisces.framework.language.dao.mapper.PropertyMapper;
+import com.pisces.framework.type.PROPERTY_TYPE;
+import com.pisces.framework.type.annotation.PropertyMeta;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 

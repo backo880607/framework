@@ -7,27 +7,27 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.pisces.framework.core.annotation.PropertyMeta;
 import com.pisces.framework.core.converter.DateTimeDeserializer;
 import com.pisces.framework.core.converter.DateTimeSerializer;
 import com.pisces.framework.core.converter.SqlDateDeserializer;
 import com.pisces.framework.core.converter.SqlDateSerializer;
 import com.pisces.framework.core.entity.BeanObject;
-import com.pisces.framework.core.entity.Duration;
-import com.pisces.framework.core.entity.MultiEnum;
 import com.pisces.framework.core.entity.Property;
 import com.pisces.framework.core.entity.factory.AbstractFactory;
 import com.pisces.framework.core.entity.factory.FactoryManager;
 import com.pisces.framework.core.entity.serializer.EntityDeserializerModifier;
 import com.pisces.framework.core.entity.serializer.EntityMapper;
-import com.pisces.framework.core.enums.EDIT_TYPE;
-import com.pisces.framework.core.enums.PROPERTY_TYPE;
 import com.pisces.framework.core.exception.ConfigurationException;
 import com.pisces.framework.core.service.BeanService;
 import com.pisces.framework.core.service.PropertyService;
 import com.pisces.framework.core.service.ServiceManager;
 import com.pisces.framework.core.utils.AppUtils;
 import com.pisces.framework.core.validator.constraints.PrimaryKey;
+import com.pisces.framework.type.Duration;
+import com.pisces.framework.type.EDIT_TYPE;
+import com.pisces.framework.type.MultiEnum;
+import com.pisces.framework.type.PROPERTY_TYPE;
+import com.pisces.framework.type.annotation.PropertyMeta;
 import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Field;
@@ -409,7 +409,7 @@ public final class ObjectUtils {
         } else if (MultiEnum.class.isAssignableFrom(clazz)) {
             type = PROPERTY_TYPE.MULTI_ENUM;
         } else if (BeanObject.class.isAssignableFrom(clazz)) {
-            type = PROPERTY_TYPE.ENTITY;
+            type = PROPERTY_TYPE.BEAN;
         } else if (Collection.class.isAssignableFrom(clazz)) {
             type = PROPERTY_TYPE.LIST;
         } else {
@@ -431,7 +431,7 @@ public final class ObjectUtils {
             case DURATION -> editType = EDIT_TYPE.DURATION;
             case ENUM -> editType = EDIT_TYPE.ENUM;
             case MULTI_ENUM -> editType = EDIT_TYPE.MULTI_ENUM;
-            case ENTITY -> editType = EDIT_TYPE.ENTITY;
+            case BEAN -> editType = EDIT_TYPE.ENTITY;
             case LIST -> editType = EDIT_TYPE.MULTI_ENTITY;
             default -> {
             }
@@ -456,7 +456,7 @@ public final class ObjectUtils {
     public static void setValue(BeanObject entity, Property property, Object value) {
         if (entity == null || property == null || property.getSetMethod() == null) {
             return;
-        } else if (value == null && property.getType() != PROPERTY_TYPE.ENTITY) {
+        } else if (value == null && property.getType() != PROPERTY_TYPE.BEAN) {
             return;
         }
 
@@ -506,7 +506,7 @@ public final class ObjectUtils {
         List<Property> properties = AppUtils.getBean(PropertyService.class).get(src.getClass());
         for (Property property : properties) {
             Object srcValue = getValue(src, property);
-            if (property.getType() == PROPERTY_TYPE.ENTITY) {
+            if (property.getType() == PROPERTY_TYPE.BEAN) {
                 if (srcValue != null) {
                     final long relationId = ((BeanObject) srcValue).getId();
                     if (relationId < 0) {

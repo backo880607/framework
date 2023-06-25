@@ -15,7 +15,7 @@
  */
 package com.pisces.framework.rds.datasource.dialect;
 
-import com.pisces.framework.rds.query.QueryWrapper;
+import com.pisces.framework.core.query.QueryWrapper;
 
 /**
  * limit 和 offset 参数的处理器
