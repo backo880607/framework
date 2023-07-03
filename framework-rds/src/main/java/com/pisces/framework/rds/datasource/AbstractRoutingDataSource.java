@@ -19,6 +19,7 @@ import com.pisces.framework.core.utils.lang.StringUtils;
 import com.pisces.framework.rds.datasource.tx.ConnectionFactory;
 import com.pisces.framework.rds.datasource.tx.ConnectionProxy;
 import com.pisces.framework.rds.datasource.tx.TransactionContext;
+import com.pisces.framework.rds.enums.DatabaseType;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -37,7 +38,9 @@ public abstract class AbstractRoutingDataSource extends AbstractDataSource {
      *
      * @return 连接池
      */
-    protected abstract DataSource determineDataSource();
+    public abstract DataSource determineDataSource();
+
+    public abstract DatabaseType determineDatabaseType();
 
     /**
      * 获取默认数据源名称
@@ -80,7 +83,6 @@ public abstract class AbstractRoutingDataSource extends AbstractDataSource {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T> T unwrap(Class<T> iface) throws SQLException {
         if (iface.isInstance(this)) {
             return (T) this;

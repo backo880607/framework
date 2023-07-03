@@ -53,19 +53,19 @@ public class EntityTable {
     private String schema;
     private String baseSelect;
     //实体类 => 全部列属性
-    private LinkedHashSet<EntityColumn> entityClassColumns;
+    private LinkedHashSet<EntityColumn> beanColumns;
     //实体类 => 主键信息
-    private LinkedHashSet<EntityColumn> entityClassPKColumns;
+    private LinkedHashSet<EntityColumn> beanPKColumns;
     //useGenerator包含多列的时候需要用到
     private List<String> keyProperties;
     private List<String> keyColumns;
     //resultMap对象
     private ResultMap resultMap;
     //类
-    private final Class<?> entityClass;
+    private final Class<?> beanClass;
 
-    public EntityTable(Class<?> entityClass) {
-        this.entityClass = entityClass;
+    public EntityTable(Class<?> beanClass) {
+        this.beanClass = beanClass;
     }
 
     /**
@@ -75,11 +75,11 @@ public class EntityTable {
         if (this.resultMap != null) {
             return this.resultMap;
         }
-        if (entityClassColumns == null || entityClassColumns.size() == 0) {
+        if (beanColumns == null || beanColumns.size() == 0) {
             return null;
         }
         List<ResultMapping> resultMappings = new ArrayList<>();
-        for (EntityColumn entityColumn : entityClassColumns) {
+        for (EntityColumn entityColumn : beanColumns) {
             String column = entityColumn.getColumn();
             //去掉可能存在的分隔符
             Matcher matcher = DELIMITER.matcher(column);
@@ -104,7 +104,7 @@ public class EntityTable {
             builder.flags(flags);
             resultMappings.add(builder.build());
         }
-        ResultMap.Builder builder = new ResultMap.Builder(configuration, "BaseMapperResultMap", this.entityClass, resultMappings, true);
+        ResultMap.Builder builder = new ResultMap.Builder(configuration, "BaseMapperResultMap", this.beanClass, resultMappings, true);
         this.resultMap = builder.build();
         return this.resultMap;
     }
@@ -113,15 +113,14 @@ public class EntityTable {
      * 初始化 - Example 会使用
      */
     public void initPropertyMap() {
-        propertyMap = new HashMap<>(getEntityClassColumns().size());
-        for (EntityColumn column : getEntityClassColumns()) {
+        propertyMap = new HashMap<>(getBeanColumns().size());
+        for (EntityColumn column : getBeanColumns()) {
             propertyMap.put(column.getProperty(), column);
         }
     }
 
     /**
      * 实例化TypeHandler
-     *
      */
     @SuppressWarnings("unchecked")
     public <T> TypeHandler<T> getInstance(Class<?> javaTypeClass, Class<?> typeHandlerClass) {
@@ -159,24 +158,24 @@ public class EntityTable {
         this.catalog = catalog;
     }
 
-    public Class<?> getEntityClass() {
-        return entityClass;
+    public Class<?> getBeanClass() {
+        return beanClass;
     }
 
-    public LinkedHashSet<EntityColumn> getEntityClassColumns() {
-        return entityClassColumns;
+    public LinkedHashSet<EntityColumn> getBeanColumns() {
+        return beanColumns;
     }
 
-    public void setEntityClassColumns(LinkedHashSet<EntityColumn> entityClassColumns) {
-        this.entityClassColumns = entityClassColumns;
+    public void setBeanColumns(LinkedHashSet<EntityColumn> beanColumns) {
+        this.beanColumns = beanColumns;
     }
 
-    public LinkedHashSet<EntityColumn> getEntityClassPKColumns() {
-        return entityClassPKColumns;
+    public LinkedHashSet<EntityColumn> getBeanPKColumns() {
+        return beanPKColumns;
     }
 
-    public void setEntityClassPKColumns(LinkedHashSet<EntityColumn> entityClassPKColumns) {
-        this.entityClassPKColumns = entityClassPKColumns;
+    public void setBeanPKColumns(LinkedHashSet<EntityColumn> beanPKColumns) {
+        this.beanPKColumns = beanPKColumns;
     }
 
     public String[] getKeyColumns() {
@@ -229,8 +228,12 @@ public class EntityTable {
         return "";
     }
 
-    public Map<String, EntityColumn> getPropertyMap() {
-        return propertyMap;
+    public EntityColumn getColumn(String name) {
+        EntityColumn column = propertyMap.get(name);
+        if (column == null) {
+            throw new SystemException("无法获取实体类【" + beanClass.getName() + "】对应的字段名【" + name + "】");
+        }
+        return column;
     }
 
     public String getSchema() {

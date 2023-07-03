@@ -57,7 +57,7 @@ public class BeanDeserializer extends BaseDeserializer<BeanObject> {
             }
             Property entityProperty = propertyService.get((Class<BeanObject>) property.getTypeClass(), field.getKey());
             if (entityProperty != null) {
-                ObjectUtils.defaultObjectMapper().setTextValue(entity, entityProperty, value);
+                ObjectUtils.defaultBeanMapper().setTextValue(entity, entityProperty, value);
             }
         }
         return entity;

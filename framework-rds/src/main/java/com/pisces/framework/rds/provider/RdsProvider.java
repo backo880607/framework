@@ -1,10 +1,10 @@
 package com.pisces.framework.rds.provider;
 
-import com.pisces.framework.rds.helper.entity.EntityColumn;
-import com.pisces.framework.rds.helper.entity.EntityTable;
 import com.pisces.framework.rds.helper.EntityHelper;
 import com.pisces.framework.rds.helper.MapperHelper;
 import com.pisces.framework.rds.helper.SqlHelper;
+import com.pisces.framework.rds.helper.entity.EntityColumn;
+import com.pisces.framework.rds.helper.entity.EntityTable;
 import com.pisces.framework.rds.utils.MetaObjectUtil;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
@@ -38,17 +38,17 @@ public class RdsProvider extends BaseProvider {
 //            Transmit.instance.start();
             return;
         }
-        Class<?> entityClass = getEntityClass(ms);
+        Class<?> beanClass = getEntityClass(ms);
         try (Connection conn = ms.getConfiguration().getEnvironment().getDataSource().getConnection()) {
             if (!doExistedTable(conn, ms)) {
                 doCreateTable(conn, ms);
                 return;
             }
 
-            Map<String, EntityColumn> existedColumns = getExistedColumns(conn, entityClass);
+            Map<String, EntityColumn> existedColumns = getExistedColumns(conn, beanClass);
             List<EntityColumn> addColumns = new ArrayList<>();
             List<EntityColumn> changeColumns = new ArrayList<>();
-            for (EntityColumn column : EntityHelper.getColumns(entityClass)) {
+            for (EntityColumn column : EntityHelper.getColumns(beanClass)) {
                 EntityColumn existedColumn = existedColumns.get(column.getColumn());
                 if (existedColumn != null) {
                     if (!(getProvider(ms).compatible(column.getJdbcType(), existedColumn.getJdbcType()))) {
@@ -71,14 +71,14 @@ public class RdsProvider extends BaseProvider {
     }
 
     private boolean doExistedTable(Connection conn, MappedStatement ms) throws SQLException {
-        Class<?> entityClass = getEntityClass(ms);
-        return getProvider(ms).existedTable(conn, conn.getCatalog(), tableName(entityClass));
+        Class<?> beanClass = getEntityClass(ms);
+        return getProvider(ms).existedTable(conn, conn.getCatalog(), tableName(beanClass));
     }
 
     private void doCreateTable(Connection conn, MappedStatement ms) throws SQLException {
-        Class<?> entityClass = getEntityClass(ms);
-        EntityTable table = EntityHelper.getEntityTable(entityClass);
-        this.getProvider(ms).createTable(conn, tableName(entityClass), table.getEntityClassColumns());
+        Class<?> beanClass = getEntityClass(ms);
+        EntityTable table = EntityHelper.getEntityTable(beanClass);
+        this.getProvider(ms).createTable(conn, tableName(beanClass), table.getBeanColumns());
     }
 
     private Map<String, EntityColumn> getExistedColumns(Connection conn, Class<?> entityClass) throws SQLException {
@@ -95,24 +95,24 @@ public class RdsProvider extends BaseProvider {
     }
 
     private void autoAddColumns(Connection conn, MappedStatement ms, List<EntityColumn> columns) throws SQLException {
-        Class<?> entityClass = getEntityClass(ms);
-        final String addSQL = this.getProvider(ms).addColumns(tableName(entityClass), columns);
+        Class<?> beanClass = getEntityClass(ms);
+        final String addSQL = this.getProvider(ms).addColumns(tableName(beanClass), columns);
         try (PreparedStatement stmt = conn.prepareStatement(addSQL)) {
             stmt.execute();
         }
     }
 
     private void autoChangeColumns(Connection conn, MappedStatement ms, List<EntityColumn> columns) throws SQLException {
-        Class<?> entityClass = getEntityClass(ms);
-        final String changeSQL = this.getProvider(ms).changeColumns(tableName(entityClass), columns);
+        Class<?> beanClass = getEntityClass(ms);
+        final String changeSQL = this.getProvider(ms).changeColumns(tableName(beanClass), columns);
         try (PreparedStatement stmt = conn.prepareStatement(changeSQL)) {
             stmt.execute();
         }
     }
 
     private void autoDropColumns(Connection conn, MappedStatement ms, Map<String, EntityColumn> columns) throws SQLException {
-        Class<?> entityClass = getEntityClass(ms);
-        final String changeSQL = this.getProvider(ms).dropColumns(tableName(entityClass), columns);
+        Class<?> beanClass = getEntityClass(ms);
+        final String changeSQL = this.getProvider(ms).dropColumns(tableName(beanClass), columns);
         try (PreparedStatement stmt = conn.prepareStatement(changeSQL)) {
             stmt.execute();
         }
@@ -125,16 +125,16 @@ public class RdsProvider extends BaseProvider {
      * @return {@link String}
      */
     public String selectAll(MappedStatement ms) {
-        final Class<?> entityClass = getEntityClass(ms);
+        final Class<?> beanClass = getEntityClass(ms);
         //修改返回值类型为实体类型
-        setResultType(ms, entityClass);
+        setResultType(ms, beanClass);
         StringBuilder sql = new StringBuilder();
-        sql.append(SqlHelper.selectAllColumns(entityClass));
-        sql.append(SqlHelper.fromTable(entityClass, tableName(entityClass)));
+        sql.append(SqlHelper.selectAllColumns(beanClass));
+        sql.append(SqlHelper.fromTable(beanClass, tableName(beanClass)));
 
         // 逻辑删除的未删除查询条件
         sql.append("<where>");
-        sql.append(SqlHelper.whereLogicDelete(entityClass, false));
+        sql.append(SqlHelper.whereLogicDelete(beanClass, false));
         sql.append("</where>");
         return sql.toString();
     }
@@ -146,19 +146,19 @@ public class RdsProvider extends BaseProvider {
      * @return {@link String}
      */
     public String selectById(MappedStatement ms) {
-        final Class<?> entityClass = getEntityClass(ms);
+        final Class<?> beanClass = getEntityClass(ms);
         //将返回值修改为实体类型
-        setResultType(ms, entityClass);
-        return SqlHelper.selectAllColumns(entityClass) +
-                SqlHelper.fromTable(entityClass, tableName(entityClass)) +
-                SqlHelper.wherePKColumns(entityClass);
+        setResultType(ms, beanClass);
+        return SqlHelper.selectAllColumns(beanClass) +
+                SqlHelper.fromTable(beanClass, tableName(beanClass)) +
+                SqlHelper.wherePKColumns(beanClass);
     }
 
     public String selectByIds(MappedStatement ms) {
-        final Class<?> entityClass = getEntityClass(ms);
-        setResultType(ms, entityClass);
-        return SqlHelper.selectAllColumns(entityClass) +
-                SqlHelper.fromTable(entityClass, tableName(entityClass)) +
+        final Class<?> beanClass = getEntityClass(ms);
+        setResultType(ms, beanClass);
+        return SqlHelper.selectAllColumns(beanClass) +
+                SqlHelper.fromTable(beanClass, tableName(beanClass)) +
                 " WHERE id IN " +
                 "<foreach item=\"item\" index=\"index\" collection=\"list\" open=\"(\" separator=\",\" close=\")\">" +
                 "#{item}" +
@@ -172,19 +172,19 @@ public class RdsProvider extends BaseProvider {
      * @return {@link String}
      */
     public String existsById(MappedStatement ms) {
-        Class<?> entityClass = getEntityClass(ms);
-        return SqlHelper.selectCountExists(entityClass) +
-                SqlHelper.fromTable(entityClass, tableName(entityClass)) +
-                SqlHelper.wherePKColumns(entityClass);
+        Class<?> beanClass = getEntityClass(ms);
+        return SqlHelper.selectCountExists(beanClass) +
+                SqlHelper.fromTable(beanClass, tableName(beanClass)) +
+                SqlHelper.wherePKColumns(beanClass);
     }
 
     public String insert(MappedStatement ms) {
-        Class<?> entityClass = getEntityClass(ms);
+        Class<?> beanClass = getEntityClass(ms);
         StringBuilder sql = new StringBuilder();
         //获取全部列
-        Set<EntityColumn> columnList = EntityHelper.getColumns(entityClass);
-        EntityColumn logicDeleteColumn = SqlHelper.getLogicDeleteColumn(entityClass);
-        sql.append(SqlHelper.insertIntoTable(entityClass, tableName(entityClass)));
+        Set<EntityColumn> columnList = EntityHelper.getColumns(beanClass);
+        EntityColumn logicDeleteColumn = SqlHelper.getLogicDeleteColumn(beanClass);
+        sql.append(SqlHelper.insertIntoTable(beanClass, tableName(beanClass)));
         sql.append("<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">");
         for (EntityColumn column : columnList) {
             if (!column.isInsertable()) {
@@ -236,17 +236,17 @@ public class RdsProvider extends BaseProvider {
      * @return {@link String}
      */
     public String insertBatch(MappedStatement ms) {
-        final Class<?> entityClass = getEntityClass(ms);
+        final Class<?> beanClass = getEntityClass(ms);
         //开始拼sql
         StringBuilder sql = new StringBuilder();
         sql.append("<bind name=\"listNotEmptyCheck\" value=\"@tk.mybatis.mapper.util.OGNL@notEmptyCollectionCheck(list, '").append(ms.getId()).append(" 方法参数为空')\"/>");
-        sql.append(SqlHelper.insertIntoTable(entityClass, tableName(entityClass), "list[0]"));
-        sql.append(SqlHelper.insertColumns(entityClass, true, false, false));
+        sql.append(SqlHelper.insertIntoTable(beanClass, tableName(beanClass), "list[0]"));
+        sql.append(SqlHelper.insertColumns(beanClass, true, false, false));
         sql.append(" VALUES ");
         sql.append("<foreach collection=\"list\" item=\"record\" separator=\",\" >");
         sql.append("<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">");
         //获取全部列
-        Set<EntityColumn> columnList = EntityHelper.getColumns(entityClass);
+        Set<EntityColumn> columnList = EntityHelper.getColumns(beanClass);
         //当某个列有主键策略时，不需要考虑他的属性是否为空，因为如果为空，一定会根据主键策略给他生成一个值
         for (EntityColumn column : columnList) {
             if (!column.isId() && column.isInsertable()) {
@@ -269,10 +269,10 @@ public class RdsProvider extends BaseProvider {
      * @return {@link String}
      */
     public String update(MappedStatement ms) {
-        Class<?> entityClass = getEntityClass(ms);
-        return SqlHelper.updateTable(entityClass, tableName(entityClass)) +
-                SqlHelper.updateSetColumns(entityClass, null, true, isNotEmpty()) +
-                SqlHelper.wherePKColumns(entityClass, true);
+        Class<?> beanClass = getEntityClass(ms);
+        return SqlHelper.updateTable(beanClass, tableName(beanClass)) +
+                SqlHelper.updateSetColumns(beanClass, null, true, isNotEmpty()) +
+                SqlHelper.wherePKColumns(beanClass, true);
     }
 
     /**
@@ -282,7 +282,7 @@ public class RdsProvider extends BaseProvider {
      * @return {@link String}
      */
     public String updateBatch(MappedStatement ms) {
-        Class<?> entityClass = getEntityClass(ms);
+        Class<?> beanClass = getEntityClass(ms);
 //        String sql = "<foreach item=\"item\" index=\"index\" collection=\"list\" open=\"(\" separator=\",\" close=\")\">" +
 //                SqlHelper.updateTable(entityClass, tableName(entityClass)) +
 //                SqlHelper.updateSetColumns(entityClass, null, true, isNotEmpty()) +
@@ -290,11 +290,11 @@ public class RdsProvider extends BaseProvider {
 //                "</foreach>";
         //开始拼sql
         StringBuilder sql = new StringBuilder();
-        sql.append(SqlHelper.updateTable(entityClass, tableName(entityClass)));
+        sql.append(SqlHelper.updateTable(beanClass, tableName(beanClass)));
         sql.append("<trim prefix=\"set\" suffixOverrides=\",\">");
 
         //获取全部列
-        Set<EntityColumn> columnList = EntityHelper.getColumns(entityClass);
+        Set<EntityColumn> columnList = EntityHelper.getColumns(beanClass);
         for (EntityColumn column : columnList) {
             if (!column.isId() && column.isUpdatable()) {
                 sql.append("  <trim prefix=\"").append(column.getColumn()).append(" =case\" suffix=\"end,\">");
@@ -325,28 +325,28 @@ public class RdsProvider extends BaseProvider {
      * @return {@link String}
      */
     public String deleteById(MappedStatement ms) {
-        final Class<?> entityClass = getEntityClass(ms);
+        final Class<?> beanClass = getEntityClass(ms);
         StringBuilder sql = new StringBuilder();
-        if (SqlHelper.hasLogicDeleteColumn(entityClass)) {
-            sql.append(SqlHelper.updateTable(entityClass, tableName(entityClass)));
+        if (SqlHelper.hasLogicDeleteColumn(beanClass)) {
+            sql.append(SqlHelper.updateTable(beanClass, tableName(beanClass)));
             sql.append("<set>");
-            sql.append(SqlHelper.logicDeleteColumnEqualsValue(entityClass, true));
+            sql.append(SqlHelper.logicDeleteColumnEqualsValue(beanClass, true));
             sql.append("</set>");
             MetaObjectUtil.forObject(ms).setValue("sqlCommandType", SqlCommandType.UPDATE);
         } else {
-            sql.append(SqlHelper.deleteFromTable(entityClass, tableName(entityClass)));
+            sql.append(SqlHelper.deleteFromTable(beanClass, tableName(beanClass)));
         }
-        sql.append(SqlHelper.wherePKColumns(entityClass));
+        sql.append(SqlHelper.wherePKColumns(beanClass));
         return sql.toString();
     }
 
     public String deleteBatchByIds(MappedStatement ms) {
         StringBuilder sql = new StringBuilder();
-        final Class<?> entityClazz = getEntityClass(ms);
+        final Class<?> beanClass = getEntityClass(ms);
         if (this.getConfig().isSafeDelete()) {
-            sql.append(SqlHelper.notAllNullParameterCheck("_parameter", EntityHelper.getColumns(entityClazz)));
+            sql.append(SqlHelper.notAllNullParameterCheck("_parameter", EntityHelper.getColumns(beanClass)));
         }
-        sql.append(SqlHelper.deleteFromTable(entityClazz, tableName(entityClazz)) +
+        sql.append(SqlHelper.deleteFromTable(beanClass, tableName(beanClass)) +
                 "WHERE ID IN " +
                 "<foreach item=\"item\" index=\"index\" collection=\"list\" open=\"(\" separator=\",\" close=\")\">" +
                 "#{item}" +
@@ -355,8 +355,8 @@ public class RdsProvider extends BaseProvider {
     }
 
     public String deleteBatch(MappedStatement ms) {
-        final Class<?> entityClass = getEntityClass(ms);
-        String sql = SqlHelper.deleteFromTable(entityClass, tableName(entityClass)) +
+        final Class<?> beanClass = getEntityClass(ms);
+        String sql = SqlHelper.deleteFromTable(beanClass, tableName(beanClass)) +
                 " WHERE id IN " +
                 "<foreach item=\"item\" index=\"index\" collection=\"list\" open=\"(\" separator=\",\" close=\")\">" +
                 "#{item.id}" +

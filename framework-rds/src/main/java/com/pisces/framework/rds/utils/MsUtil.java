@@ -55,16 +55,17 @@ public class MsUtil {
         if (mapperClass != null) {
             return mapperClass;
         }
-        ClassLoader[] classLoader = getClassLoaders();
 
-        for (ClassLoader cl : classLoader) {
-            if (null != cl) {
-                try {
-                    mapperClass = Class.forName(mapperClassStr, true, cl);
-                    break;
-                } catch (ClassNotFoundException e) {
-                    // we'll ignore this until all class loaders fail to locate the class
-                }
+        ClassLoader[] classLoader = getClassLoaders();
+        for (ClassLoader loader : classLoader) {
+            if (loader == null) {
+                continue;
+            }
+            try {
+                mapperClass = Class.forName(mapperClassStr, true, loader);
+                break;
+            } catch (ClassNotFoundException e) {
+                // we'll ignore this until all class loaders fail to locate the class
             }
         }
         if (mapperClass == null) {

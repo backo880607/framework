@@ -5,7 +5,6 @@ import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.utils.lang.ObjectUtils;
 import org.springframework.beans.BeanUtils;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,8 +18,7 @@ public class GlobalDao<T extends BeanObject> implements BaseDao<T> {
     private final T record;
 
     public GlobalDao() {
-        Class<T> objectClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-        record = BeanUtils.instantiateClass(objectClass);
+        record = BeanUtils.instantiateClass(getBeanClass());
         record.init();
     }
 
@@ -97,16 +95,6 @@ public class GlobalDao<T extends BeanObject> implements BaseDao<T> {
     @Override
     public int deleteIdBatch(List<Long> ids) {
         throw new UnsupportedOperationException("deleteByIds global bean is not allowed");
-    }
-
-    @Override
-    public void loadData() {
-        throw new UnsupportedOperationException("global dao is not allowed");
-    }
-
-    @Override
-    public void sync() {
-        throw new UnsupportedOperationException("global dao is not allowed");
     }
 
     @Override

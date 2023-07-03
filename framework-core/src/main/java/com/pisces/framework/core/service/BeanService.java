@@ -2,9 +2,17 @@ package com.pisces.framework.core.service;
 
 import com.pisces.framework.core.dao.BaseDao;
 import com.pisces.framework.core.entity.BeanObject;
+import com.pisces.framework.core.query.QueryOrderBy;
+import com.pisces.framework.core.query.condition.QueryCondition;
 
 import java.util.List;
 
+/**
+ * bean对象服务接口
+ *
+ * @author jason
+ * @date 2023/06/27
+ */
 public interface BeanService<T extends BeanObject> extends BaseService {
     /**
      * 得到对象类
@@ -43,6 +51,14 @@ public interface BeanService<T extends BeanObject> extends BaseService {
     T getById(long id);
 
     /**
+     * 得到
+     *
+     * @param condition 查询条件
+     * @return {@link T}
+     */
+    T get(QueryCondition condition);
+
+    /**
      * 列表
      *
      * @return {@link List}<{@link T}>
@@ -56,6 +72,15 @@ public interface BeanService<T extends BeanObject> extends BaseService {
      * @return {@link List}<{@link T}>
      */
     List<T> listByIds(List<Long> ids);
+
+    /**
+     * 列表
+     *
+     * @param condition 查询条件
+     * @param orderBys  订单
+     * @return {@link List}<{@link T}>
+     */
+    List<T> list(QueryCondition condition, QueryOrderBy... orderBys);
 
     /**
      * 存在
@@ -130,7 +155,9 @@ public interface BeanService<T extends BeanObject> extends BaseService {
     int deleteIdBatch(List<Long> ids);
 
     /**
-     * 清晰
+     * 删除
+     *
+     * @param condition 条件
      */
-    void clear();
+    void delete(QueryCondition condition);
 }

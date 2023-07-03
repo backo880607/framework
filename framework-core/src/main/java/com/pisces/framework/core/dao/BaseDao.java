@@ -2,7 +2,10 @@ package com.pisces.framework.core.dao;
 
 import com.pisces.framework.core.dao.impl.DaoImpl;
 import com.pisces.framework.core.entity.BeanObject;
+import com.pisces.framework.core.query.QueryWrapper;
+import org.springframework.beans.BeanUtils;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 /**
@@ -12,6 +15,16 @@ import java.util.List;
  * @date 2022/12/07
  */
 public interface BaseDao<T extends BeanObject> {
+
+    default Class<T> getBeanClass() {
+        return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    }
+
+    default T create(Class<T> beanClass) {
+        T bean = BeanUtils.instantiateClass(beanClass);
+        bean.init();
+        return bean;
+    }
 
     /**
      * select one entity from dao.
@@ -28,6 +41,10 @@ public interface BaseDao<T extends BeanObject> {
      */
     T getById(Long id);
 
+    default T fetchOne(QueryWrapper qw) {
+        throw new UnsupportedOperationException("fetchOne is not allowed");
+    }
+
     /**
      * 选择所有
      *
@@ -42,6 +59,16 @@ public interface BaseDao<T extends BeanObject> {
      * @return {@link List}<{@link T}>
      */
     List<T> listByIds(List<Long> ids);
+
+    /**
+     * 获取
+     *
+     * @param qw qw
+     * @return {@link List}<{@link T}>
+     */
+    default List<T> fetch(QueryWrapper qw) {
+        throw new UnsupportedOperationException("fetchOne is not allowed");
+    }
 
     /**
      * 存在
@@ -128,14 +155,4 @@ public interface BaseDao<T extends BeanObject> {
      * @param impl impl
      */
     void switchDaoImpl(DaoImpl impl);
-
-    /**
-     * 加载数据
-     */
-    void loadData();
-
-    /**
-     * 同步
-     */
-    void sync();
 }

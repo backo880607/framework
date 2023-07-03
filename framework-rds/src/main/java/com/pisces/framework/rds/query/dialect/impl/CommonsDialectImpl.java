@@ -13,20 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pisces.framework.rds.datasource.dialect.impl;
+package com.pisces.framework.rds.query.dialect.impl;
 
+import com.pisces.framework.core.query.QueryOrderBy;
 import com.pisces.framework.core.query.QueryTable;
 import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.core.query.column.QueryColumn;
+import com.pisces.framework.core.query.condition.QueryCondition;
+import com.pisces.framework.core.utils.lang.CollectionUtils;
 import com.pisces.framework.core.utils.lang.StringUtils;
-import com.pisces.framework.rds.datasource.dialect.IDialect;
-import com.pisces.framework.rds.datasource.dialect.KeywordWrap;
-import com.pisces.framework.rds.datasource.dialect.LimitOffsetProcessor;
+import com.pisces.framework.rds.query.SqlTools;
+import com.pisces.framework.rds.query.dialect.IDialect;
+import com.pisces.framework.rds.query.dialect.KeywordWrap;
+import com.pisces.framework.rds.query.dialect.LimitOffsetProcessor;
 
 import java.util.List;
 
 /**
  * 通用的方言设计，其他方言可以继承于当前 CommonsDialectImpl
+ *
+ * @author jason
+ * @date 2023/06/27
  */
 public class CommonsDialectImpl implements IDialect {
 
@@ -55,7 +62,6 @@ public class CommonsDialectImpl implements IDialect {
         return StringUtils.isNotBlank(hintString) ? "/*+ " + hintString + " */ " : "";
     }
 
-
     @Override
     public String forDeleteById(String tableName, String[] primaryKeys) {
         StringBuilder sql = new StringBuilder();
@@ -70,7 +76,6 @@ public class CommonsDialectImpl implements IDialect {
         }
         return sql.toString();
     }
-
 
     @Override
     public String forDeleteBatchByIds(String tableName, String[] primaryKeys, Object[] ids) {
@@ -121,45 +126,61 @@ public class CommonsDialectImpl implements IDialect {
     ////////////build query sql///////
     @Override
     public String buildSelectSql(QueryWrapper queryWrapper) {
-        return "";
+        List<QueryTable> queryTables = queryWrapper.getQueryTables();
+        List<QueryTable> joinTables = queryWrapper.getJoinTables();
+        List<QueryTable> allTables = CollectionUtils.merge(queryTables, joinTables);
+
+        List<QueryColumn> selectColumns = queryWrapper.getSelectColumns();
+
+        StringBuilder sqlBuilder = buildSelectColumnSql(allTables, selectColumns, queryWrapper.getHint());
+        sqlBuilder.append(" FROM ").append(StringUtils.join(queryTables, ", ", queryTable -> SqlTools.toSql(queryTable, this)));
+
+        buildJoinSql(sqlBuilder, queryWrapper, allTables);
+        buildWhereSql(sqlBuilder, queryWrapper, allTables, true);
+        buildGroupBySql(sqlBuilder, queryWrapper, allTables);
+        buildHavingSql(sqlBuilder, queryWrapper, allTables);
+        buildOrderBySql(sqlBuilder, queryWrapper, allTables);
+
+        Integer limitRows = queryWrapper.getLimitRows();
+        Integer limitOffset = queryWrapper.getLimitOffset();
+        if (limitRows != null || limitOffset != null) {
+            sqlBuilder = buildLimitOffsetSql(sqlBuilder, queryWrapper, limitRows, limitOffset);
+        }
+
+        return sqlBuilder.toString();
     }
 
     private StringBuilder buildSelectColumnSql(List<QueryTable> queryTables, List<QueryColumn> selectColumns, String hint) {
         StringBuilder sqlBuilder = new StringBuilder("SELECT ");
-//        sqlBuilder.append(forHint(hint));
-//        if (selectColumns == null || selectColumns.isEmpty()) {
-//            sqlBuilder.append("*");
-//        } else {
-//            int index = 0;
-//            for (QueryColumn selectColumn : selectColumns) {
-//                String selectColumnSql = CPI.toSelectSql(selectColumn, queryTables, this);
-//                sqlBuilder.append(selectColumnSql);
-//                if (index != selectColumns.size() - 1) {
-//                    sqlBuilder.append(", ");
-//                }
-//                index++;
-//            }
-//        }
+        sqlBuilder.append(forHint(hint));
+        if (CollectionUtils.isEmpty(selectColumns)) {
+            sqlBuilder.append("*");
+        } else {
+            for (QueryColumn selectColumn : selectColumns) {
+                String selectColumnSql = SqlTools.toSelectSql(queryTables, selectColumn, this);
+                sqlBuilder.append(selectColumnSql);
+            }
+            sqlBuilder.deleteCharAt(sqlBuilder.length() - 1);
+        }
         return sqlBuilder;
     }
 
     @Override
     public String buildDeleteSql(QueryWrapper queryWrapper) {
-        return "";
-//        List<QueryTable> queryTables = CPI.getQueryTables(queryWrapper);
-//        List<QueryTable> joinTables = CPI.getJoinTables(queryWrapper);
-//        List<QueryTable> allTables = CollectionUtils.merge(queryTables, joinTables);
-//
-//        //ignore selectColumns
-//        StringBuilder sqlBuilder = new StringBuilder("DELETE " + forHint(CPI.getHint(queryWrapper)) + "FROM ");
-////        sqlBuilder.append(StringUtils.join(queryTables, ", ", queryTable -> queryTable.toSql(this)));
-//
-//        buildJoinSql(sqlBuilder, queryWrapper, allTables);
-//        buildWhereSql(sqlBuilder, queryWrapper, allTables, false);
-//        buildGroupBySql(sqlBuilder, queryWrapper, allTables);
-//        buildHavingSql(sqlBuilder, queryWrapper, allTables);
-//
-//        return sqlBuilder.toString();
+        List<QueryTable> queryTables = queryWrapper.getQueryTables();
+        List<QueryTable> joinTables = queryWrapper.getJoinTables();
+        List<QueryTable> allTables = CollectionUtils.merge(queryTables, joinTables);
+
+        //ignore selectColumns
+        StringBuilder sqlBuilder = new StringBuilder("DELETE " + forHint(queryWrapper.getHint()) + "FROM ");
+//        sqlBuilder.append(StringUtils.join(queryTables, ", ", queryTable -> queryTable.toSql(this)));
+
+        buildJoinSql(sqlBuilder, queryWrapper, allTables);
+        buildWhereSql(sqlBuilder, queryWrapper, allTables, false);
+        buildGroupBySql(sqlBuilder, queryWrapper, allTables);
+        buildHavingSql(sqlBuilder, queryWrapper, allTables);
+
+        return sqlBuilder.toString();
     }
 
     protected void buildJoinSql(StringBuilder sqlBuilder, QueryWrapper queryWrapper, List<QueryTable> queryTables) {
@@ -174,63 +195,58 @@ public class CommonsDialectImpl implements IDialect {
 //        }
     }
 
-
     protected void buildWhereSql(StringBuilder sqlBuilder, QueryWrapper queryWrapper, List<QueryTable> queryTables, boolean allowNoCondition) {
-//        QueryCondition whereQueryCondition = CPI.getWhereQueryCondition(queryWrapper);
-//        if (whereQueryCondition != null) {
-//            String whereSql = whereQueryCondition.toSql(queryTables, this);
-//            if (StringUtils.isNotBlank(whereSql)) {
-//                sqlBuilder.append(" WHERE ").append(whereSql);
-//            } else if (!allowNoCondition) {
-//                throw new IllegalArgumentException("Not allowed DELETE a table without where condition.");
-//            }
-//        }
+        QueryCondition whereQueryCondition = queryWrapper.getWhereQueryCondition();
+        if (whereQueryCondition != null) {
+            String whereSql = SqlTools.toSql(queryTables, whereQueryCondition, this);
+            if (StringUtils.isNotBlank(whereSql)) {
+                sqlBuilder.append(" WHERE ").append(whereSql);
+            } else if (!allowNoCondition) {
+                throw new IllegalArgumentException("Not allowed DELETE a table without where condition.");
+            }
+        }
     }
-
 
     protected void buildGroupBySql(StringBuilder sqlBuilder, QueryWrapper queryWrapper, List<QueryTable> queryTables) {
-//        List<QueryColumn> groupByColumns = CPI.getGroupByColumns(queryWrapper);
-//        if (groupByColumns != null && !groupByColumns.isEmpty()) {
-//            sqlBuilder.append(" GROUP BY ");
-//            int index = 0;
-//            for (QueryColumn groupByColumn : groupByColumns) {
-//                String groupBy = CPI.toConditionSql(groupByColumn, queryTables, this);
-//                sqlBuilder.append(groupBy);
-//                if (index != groupByColumns.size() - 1) {
-//                    sqlBuilder.append(", ");
-//                }
-//                index++;
-//            }
-//        }
+        List<QueryColumn> groupByColumns = queryWrapper.getGroupByColumns();
+        if (groupByColumns != null && !groupByColumns.isEmpty()) {
+            sqlBuilder.append(" GROUP BY ");
+            int index = 0;
+            for (QueryColumn groupByColumn : groupByColumns) {
+                String groupBy = SqlTools.toConditionSql(queryTables, groupByColumn, this);
+                sqlBuilder.append(groupBy);
+                if (index != groupByColumns.size() - 1) {
+                    sqlBuilder.append(", ");
+                }
+                index++;
+            }
+        }
     }
-
 
     protected void buildHavingSql(StringBuilder sqlBuilder, QueryWrapper queryWrapper, List<QueryTable> queryTables) {
-//        QueryCondition havingQueryCondition = CPI.getHavingQueryCondition(queryWrapper);
-//        if (havingQueryCondition != null) {
-//            String havingSql = havingQueryCondition.toSql(queryTables, this);
-//            if (StringUtils.isNotBlank(havingSql)) {
-//                sqlBuilder.append(" HAVING ").append(havingSql);
-//            }
-//        }
+        QueryCondition havingQueryCondition = queryWrapper.getHavingQueryCondition();
+        if (havingQueryCondition != null) {
+            String havingSql = SqlTools.toSql(queryTables, havingQueryCondition, this);
+            if (StringUtils.isNotBlank(havingSql)) {
+                sqlBuilder.append(" HAVING ").append(havingSql);
+            }
+        }
     }
-
 
     protected void buildOrderBySql(StringBuilder sqlBuilder, QueryWrapper queryWrapper, List<QueryTable> queryTables) {
-//        List<QueryOrderBy> orderBys = CPI.getOrderBys(queryWrapper);
-//        if (orderBys != null && !orderBys.isEmpty()) {
-//            sqlBuilder.append(" ORDER BY ");
-//            int index = 0;
-//            for (QueryOrderBy orderBy : orderBys) {
-//                sqlBuilder.append(orderBy.toSql(queryTables, this));
-//                if (index != orderBys.size() - 1) {
-//                    sqlBuilder.append(", ");
-//                }
-//                index++;
-//            }
-//        }
+        List<QueryOrderBy> orderBys = queryWrapper.getOrderBys();
+        if (orderBys != null && !orderBys.isEmpty()) {
+            sqlBuilder.append(" ORDER BY ");
+            int index = 0;
+            for (QueryOrderBy orderBy : orderBys) {
+                sqlBuilder.append(SqlTools.toSql(queryTables, orderBy, this));
+                if (index != orderBys.size() - 1) {
+                    sqlBuilder.append(", ");
+                }
+                index++;
+            }
+        }
     }
-
 
     /**
      * 构建 limit 和 offset 的参数

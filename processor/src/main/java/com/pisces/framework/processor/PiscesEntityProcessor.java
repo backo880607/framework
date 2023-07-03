@@ -1,7 +1,7 @@
 package com.pisces.framework.processor;
 
 import com.google.auto.service.AutoService;
-import jakarta.persistence.Table;
+import com.pisces.framework.type.annotation.TableMeta;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -17,47 +17,18 @@ import java.util.*;
 import java.util.function.Consumer;
 
 /**
- * 该注解表明当前注解处理器仅能处理
- * com.pisces.framework.core.compiler.PiscesEntity注解
- */
-//@SupportedAnnotationTypes("com.pisces.framework.processor.PiscesEntity")
-@SupportedAnnotationTypes("jakarta.persistence.Table")
-@SupportedSourceVersion(SourceVersion.RELEASE_17)
-/**
  * javac调用注解处理器时是使用spi机制调用
  * 因此需要在META-INF下创建spi文件
  * 使用该@AutoService注解可以自动创建
  * Google的工具
+ *
+ * @author jason
+ * @date 2023/07/02
  */
+@SupportedAnnotationTypes("com.pisces.framework.type.annotation.TableMeta")
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
 @AutoService(Processor.class)
 public class PiscesEntityProcessor extends AbstractProcessor {
-    private static final String classTableTemplate = "package @package;\n" +
-            "\n" +
-            "import com.pisces.framework.core.query.column.*;\n" +
-            "import com.pisces.framework.core.query.TableDef;\n" +
-            "\n" +
-            "// Auto generate by mybatis-flex, do not modify it.\n" +
-            "public class @tablesClassName {\n" +
-            "@classesInfo" +
-            "}\n";
-
-    private static final String tableDefTemplate = "\n\n    public static final @entityClassTableDef @tableField = new @entityClassTableDef(\"@tableName\");\n";
-
-    private static final String classTemplate = "\n" +
-            "    public static class @entityClassTableDef extends TableDef {\n" +
-            "\n" +
-            "@queryColumns" +
-            "\n" +
-            "        public @entityClassTableDef(String tableName) {\n" +
-            "            super(tableName);\n" +
-            "        }\n" +
-            "    }\n";
-
-    private static final String columnsTemplate = "        public QueryColumn @property = new QueryColumn(this, \"@columnName\");\n";
-
-    private static final String defaultColumnsTemplate = "\n        public QueryColumn[] DEFAULT_COLUMNS = new QueryColumn[]{@allColumns};\n";
-    private static final String allColumnsTemplate = "        public QueryColumn[] ALL_COLUMNS = new QueryColumn[]{@allColumns};\n\n";
-
     private Filer filer;
     private Elements elementUtils;
     private Types typeUtils;
@@ -81,59 +52,45 @@ public class PiscesEntityProcessor extends AbstractProcessor {
             return false;
         }
         System.out.println("mybatis flex processor run start...");
-        roundEnv.getElementsAnnotatedWith(Table.class).forEach((Consumer<Element>) entityClassElement -> {
-            Table table = entityClassElement.getAnnotation(Table.class);
-            String entityClassName = entityClassElement.toString();
+        roundEnv.getElementsAnnotatedWith(TableMeta.class).forEach((Consumer<Element>) beanClassElement -> {
+            String beanClassName = beanClassElement.toString();
             StringBuilder guessPackage = new StringBuilder();
-            if (!entityClassName.contains(".")) {
+            if (!beanClassName.contains(".")) {
                 guessPackage.append("table");// = "table";
             } else {
-                guessPackage.append(entityClassName.substring(0, entityClassName.lastIndexOf("."))).append(".table");
+                guessPackage.append(beanClassName, 0, beanClassName.lastIndexOf(".")).append(".table");
             }
-            String className = "Q" + entityClassElement.getSimpleName();
-            String tableName = table != null && table.name().trim().length() != 0
-                    ? table.name()
-                    : camelToUnderline(entityClassElement.getSimpleName().toString());
-
+            String tableName = camelToUnderline(beanClassElement.getSimpleName().toString());
             Map<String, Element> propertyAndColumns = new LinkedHashMap<>();
             List<String> defaultColumns = new ArrayList<>();
-            TypeElement classElement = (TypeElement) entityClassElement;
+            TypeElement classElement = (TypeElement) beanClassElement;
             do {
                 fillPropertyAndColumns(propertyAndColumns, defaultColumns, classElement);
                 classElement = (TypeElement) typeUtils.asElement(classElement.getSuperclass());
             } while (classElement != null);
 
-            StringBuilder tablesContent = new StringBuilder();
-            tablesContent.append(buildTablesClass(entityClassElement.getSimpleName().toString(), tableName, propertyAndColumns, defaultColumns));
-            if (tablesContent.length() > 0) {
-                genTablesClass(guessPackage.toString(), className, tablesContent.toString());
-            }
+            genTablesClass(guessPackage.toString(), beanClassElement.getSimpleName().toString(), tableName, propertyAndColumns);
         });
         return false;
     }
 
-    private String buildTablesClass(String entityClass, String tableName, Map<String, Element> propertyAndColumns
-            , List<String> defaultColumns) {
-
-        String tableDef = tableDefTemplate.replace("@entityClass", entityClass)
-                .replace("@tableField", buildName(entityClass))
-                .replace("@tableName", tableName);
-
+    private void genTablesClass(String packageName, String entityClass, String tableName, Map<String, Element> propertyAndColumns) {
         StringBuilder queryColumns = new StringBuilder();
         propertyAndColumns.forEach((property, typeMirror) ->
                 queryColumns.append(ColumnsTemplate.get(typeMirror, typeUtils)
                         .replace("@property", property)
+                        .replace("@entityClass", entityClass)
                 ));
-
-        String tableClass = classTemplate.replace("@entityClass", entityClass)
+        String genContent = ClassTableTemplate.TEMPLATE.replace("@package", packageName)
+                .replace("@entityClass", entityClass)
                 .replace("@queryColumns", queryColumns);
 
-        return tableDef + tableClass;
-    }
-
-    //upperCase, lowerCase, upperCamelCase, lowerCamelCase
-    private static String buildName(String name) {
-        return camelToUnderline(name).toUpperCase();
+        try (Writer writer = filer.createSourceFile(packageName + ".Q" + entityClass).openWriter()) {
+            writer.write(genContent);
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static String camelToUnderline(String string) {
@@ -164,19 +121,6 @@ public class PiscesEntityProcessor extends AbstractProcessor {
 
                 propertyAndColumns.put(fieldElement.toString(), fieldElement);
             }
-        }
-    }
-
-    private void genTablesClass(String genPackageName, String className, String classContent) {
-        String genContent = classTableTemplate.replace("@package", genPackageName)
-                .replace("@classesInfo", classContent)
-                .replace("@tablesClassName", className);
-
-        try (Writer writer = filer.createSourceFile(genPackageName + "." + className).openWriter()) {
-            writer.write(genContent);
-            writer.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

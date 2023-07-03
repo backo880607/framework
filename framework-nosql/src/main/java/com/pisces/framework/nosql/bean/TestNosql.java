@@ -1,7 +1,7 @@
 package com.pisces.framework.nosql.bean;
 
 import com.pisces.framework.core.entity.BeanObject;
-import jakarta.persistence.Table;
+import com.pisces.framework.type.annotation.TableMeta;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +13,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@Table(name = "NOSQL_TEST")
+@TableMeta(name = "NOSQL_TEST")
 public class TestNosql extends BeanObject {
     private String module;
     private String resKey;

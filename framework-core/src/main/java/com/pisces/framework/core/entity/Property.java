@@ -3,7 +3,7 @@ package com.pisces.framework.core.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pisces.framework.type.PROPERTY_TYPE;
 import com.pisces.framework.type.annotation.PropertyMeta;
-import jakarta.persistence.Table;
+import com.pisces.framework.type.annotation.TableMeta;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-@Table(name = "PROPERTY")
+@TableMeta(name = "PROPERTY")
 public class Property extends BeanObject {
     private String propertyCode;
     private String propertyName;

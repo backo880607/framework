@@ -24,14 +24,6 @@ import java.io.Serializable;
  * @date 2023/06/25
  */
 public class TableDef implements Serializable {
-
-    private final String tableName;
-
-    public TableDef(String tableName) {
-        this.tableName = tableName;
-    }
-
-    public String getTableName() {
-        return tableName;
+    public TableDef() {
     }
 }

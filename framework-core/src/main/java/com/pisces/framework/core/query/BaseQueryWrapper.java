@@ -16,6 +16,10 @@
 package com.pisces.framework.core.query;
 
 import com.pisces.framework.core.query.column.QueryColumn;
+import com.pisces.framework.core.query.condition.QueryCondition;
+import com.pisces.framework.core.query.condition.QueryConnector;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.*;
@@ -26,15 +30,18 @@ import java.util.*;
  * @author jason
  * @date 2023/06/25
  */
-public class BaseQueryWrapper<T> implements Serializable {
+@Getter
+@Setter
+public class BaseQueryWrapper implements Serializable {
     protected List<QueryTable> queryTables;
+    private String hint;
 
     protected List<QueryColumn> selectColumns;
-    protected List<QueryTable> joinTables;
-    protected QueryCondition whereQueryCondition;
-    protected List<QueryColumn> groupByColumns;
-    protected QueryCondition havingQueryCondition;
-    protected List<QueryOrderBy> orderBys;
+    private List<QueryTable> joinTables;
+    private QueryCondition whereQueryCondition;
+    private List<QueryColumn> groupByColumns;
+    private QueryCondition havingQueryCondition;
+    private List<QueryOrderBy> orderBys;
 
     protected Integer limitOffset;
     protected Integer limitRows;
@@ -57,18 +64,16 @@ public class BaseQueryWrapper<T> implements Serializable {
         whereQueryCondition = queryCondition;
     }
 
-
-    protected T addWhereQueryCondition(QueryCondition queryCondition, QueryConnector connector) {
-        if (queryCondition != null) {
-            if (whereQueryCondition == null) {
-                whereQueryCondition = queryCondition;
-            } else {
-                whereQueryCondition.connect(queryCondition, connector);
-            }
+    public void addWhereQueryCondition(QueryCondition queryCondition, QueryConnector connector) {
+        if (queryCondition == null) {
+            return;
         }
-        return (T) this;
+        if (whereQueryCondition == null) {
+            whereQueryCondition = queryCondition;
+        } else {
+            whereQueryCondition.connect(queryCondition, connector);
+        }
     }
-
 
     protected void addGroupByColumns(QueryColumn queryColumn) {
         if (groupByColumns == null) {
@@ -78,7 +83,6 @@ public class BaseQueryWrapper<T> implements Serializable {
         groupByColumns.add(queryColumn);
     }
 
-
     protected void addHavingQueryCondition(QueryCondition queryCondition, QueryConnector connector) {
         if (havingQueryCondition == null) {
             havingQueryCondition = queryCondition;
@@ -87,7 +91,6 @@ public class BaseQueryWrapper<T> implements Serializable {
         }
     }
 
-
     protected void addOrderBy(QueryOrderBy queryOrderBy) {
         if (orderBys == null) {
             orderBys = new LinkedList<>();
@@ -95,89 +98,11 @@ public class BaseQueryWrapper<T> implements Serializable {
         orderBys.add(queryOrderBy);
     }
 
-
     protected void addJoinTable(QueryTable queryTable) {
         if (joinTables == null) {
             joinTables = new ArrayList<>();
         }
         joinTables.add(queryTable);
-    }
-
-
-    protected List<QueryTable> getQueryTables() {
-        return queryTables;
-    }
-
-    protected void setQueryTables(List<QueryTable> queryTables) {
-        this.queryTables = queryTables;
-    }
-
-    protected List<QueryColumn> getSelectColumns() {
-        return selectColumns;
-    }
-
-    protected void setSelectColumns(List<QueryColumn> selectColumns) {
-        this.selectColumns = selectColumns;
-    }
-
-    protected List<QueryTable> getJoinTables() {
-        return joinTables;
-    }
-
-    protected void setJoinTables(List<QueryTable> joinTables) {
-        this.joinTables = joinTables;
-    }
-
-    protected QueryCondition getWhereQueryCondition() {
-        return whereQueryCondition;
-    }
-
-    protected List<QueryColumn> getGroupByColumns() {
-        return groupByColumns;
-    }
-
-    protected void setGroupByColumns(List<QueryColumn> groupByColumns) {
-        this.groupByColumns = groupByColumns;
-    }
-
-    protected QueryCondition getHavingQueryCondition() {
-        return havingQueryCondition;
-    }
-
-    protected void setHavingQueryCondition(QueryCondition havingQueryCondition) {
-        this.havingQueryCondition = havingQueryCondition;
-    }
-
-    protected List<QueryOrderBy> getOrderBys() {
-        return orderBys;
-    }
-
-    protected void setOrderBys(List<QueryOrderBy> orderBys) {
-        this.orderBys = orderBys;
-    }
-
-    protected Integer getLimitOffset() {
-        return limitOffset;
-    }
-
-    protected void setLimitOffset(Integer limitOffset) {
-        this.limitOffset = limitOffset;
-    }
-
-    protected Integer getLimitRows() {
-        return limitRows;
-    }
-
-    protected void setLimitRows(Integer limitRows) {
-        this.limitRows = limitRows;
-    }
-
-    protected Map<String, Object> getContext() {
-        return context;
-    }
-
-    protected void setContext(Map<String, Object> context) {
-        this.context = context;
     }
 
     protected void putContext(String key, Object value) {

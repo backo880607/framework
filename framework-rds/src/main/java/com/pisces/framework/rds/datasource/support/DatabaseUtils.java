@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pisces.framework.rds.datasource.dialect;
+package com.pisces.framework.rds.datasource.support;
 
 import com.pisces.framework.core.exception.SystemException;
 import com.pisces.framework.core.utils.lang.StringUtils;
+import com.pisces.framework.rds.enums.DatabaseType;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -24,15 +25,14 @@ import java.sql.Connection;
 import java.util.regex.Pattern;
 
 /**
- * DbType 解析 工具类
+ * DBType 解析 工具类
  */
-public class DbTypeUtil {
-
+public class DatabaseUtils {
 
     /**
-     * 获取当前配置的 DbType
+     * 获取当前配置的 DBType
      */
-    public static DbType getDbType(DataSource dataSource) {
+    public static DatabaseType getType(DataSource dataSource) {
         String jdbcUrl = getJdbcUrl(dataSource);
 
         if (StringUtils.isNotBlank(jdbcUrl)) {
@@ -74,82 +74,82 @@ public class DbTypeUtil {
      * @param jdbcUrl jdbcURL
      * @return 返回数据库类型
      */
-    private static DbType parseDbType(String jdbcUrl) {
+    private static DatabaseType parseDbType(String jdbcUrl) {
         jdbcUrl = jdbcUrl.toLowerCase();
         if (jdbcUrl.contains(":mysql:") || jdbcUrl.contains(":cobar:")) {
-            return DbType.MYSQL;
+            return DatabaseType.MYSQL;
         } else if (jdbcUrl.contains(":mariadb:")) {
-            return DbType.MARIADB;
+            return DatabaseType.MARIADB;
         } else if (jdbcUrl.contains(":oracle:")) {
-            return DbType.ORACLE;
+            return DatabaseType.ORACLE;
         } else if (jdbcUrl.contains(":sqlserver:") || jdbcUrl.contains(":microsoft:")) {
-            return DbType.SQLSERVER_2005;
+            return DatabaseType.SQLSERVER_2005;
         } else if (jdbcUrl.contains(":sqlserver2012:")) {
-            return DbType.SQLSERVER;
+            return DatabaseType.SQLSERVER;
         } else if (jdbcUrl.contains(":postgresql:")) {
-            return DbType.POSTGRE_SQL;
+            return DatabaseType.POSTGRE_SQL;
         } else if (jdbcUrl.contains(":hsqldb:")) {
-            return DbType.HSQL;
+            return DatabaseType.HSQL;
         } else if (jdbcUrl.contains(":db2:")) {
-            return DbType.DB2;
+            return DatabaseType.DB2;
         } else if (jdbcUrl.contains(":sqlite:")) {
-            return DbType.SQLITE;
+            return DatabaseType.SQLITE;
         } else if (jdbcUrl.contains(":h2:")) {
-            return DbType.H2;
+            return DatabaseType.H2;
         } else if (isMatchedRegex(":dm\\d*:", jdbcUrl)) {
-            return DbType.DM;
+            return DatabaseType.DM;
         } else if (jdbcUrl.contains(":xugu:")) {
-            return DbType.XUGU;
+            return DatabaseType.XUGU;
         } else if (isMatchedRegex(":kingbase\\d*:", jdbcUrl)) {
-            return DbType.KINGBASE_ES;
+            return DatabaseType.KINGBASE_ES;
         } else if (jdbcUrl.contains(":phoenix:")) {
-            return DbType.PHOENIX;
+            return DatabaseType.PHOENIX;
         } else if (jdbcUrl.contains(":zenith:")) {
-            return DbType.GAUSS;
+            return DatabaseType.GAUSS;
         } else if (jdbcUrl.contains(":gbase:")) {
-            return DbType.GBASE;
+            return DatabaseType.GBASE;
         } else if (jdbcUrl.contains(":gbasedbt-sqli:") || jdbcUrl.contains(":informix-sqli:")) {
-            return DbType.GBASE_8S;
+            return DatabaseType.GBASE_8S;
         } else if (jdbcUrl.contains(":ch:") || jdbcUrl.contains(":clickhouse:")) {
-            return DbType.CLICK_HOUSE;
+            return DatabaseType.CLICK_HOUSE;
         } else if (jdbcUrl.contains(":oscar:")) {
-            return DbType.OSCAR;
+            return DatabaseType.OSCAR;
         } else if (jdbcUrl.contains(":sybase:")) {
-            return DbType.SYBASE;
+            return DatabaseType.SYBASE;
         } else if (jdbcUrl.contains(":oceanbase:")) {
-            return DbType.OCEAN_BASE;
+            return DatabaseType.OCEAN_BASE;
         } else if (jdbcUrl.contains(":highgo:")) {
-            return DbType.HIGH_GO;
+            return DatabaseType.HIGH_GO;
         } else if (jdbcUrl.contains(":cubrid:")) {
-            return DbType.CUBRID;
+            return DatabaseType.CUBRID;
         } else if (jdbcUrl.contains(":goldilocks:")) {
-            return DbType.GOLDILOCKS;
+            return DatabaseType.GOLDILOCKS;
         } else if (jdbcUrl.contains(":csiidb:")) {
-            return DbType.CSIIDB;
+            return DatabaseType.CSIIDB;
         } else if (jdbcUrl.contains(":sap:")) {
-            return DbType.SAP_HANA;
+            return DatabaseType.SAP_HANA;
         } else if (jdbcUrl.contains(":impala:")) {
-            return DbType.IMPALA;
+            return DatabaseType.IMPALA;
         } else if (jdbcUrl.contains(":vertica:")) {
-            return DbType.VERTICA;
+            return DatabaseType.VERTICA;
         } else if (jdbcUrl.contains(":xcloud:")) {
-            return DbType.XCloud;
+            return DatabaseType.XCloud;
         } else if (jdbcUrl.contains(":firebirdsql:")) {
-            return DbType.FIREBIRD;
+            return DatabaseType.FIREBIRD;
         } else if (jdbcUrl.contains(":redshift:")) {
-            return DbType.REDSHIFT;
+            return DatabaseType.REDSHIFT;
         } else if (jdbcUrl.contains(":opengauss:")) {
-            return DbType.OPENGAUSS;
+            return DatabaseType.OPENGAUSS;
         } else if (jdbcUrl.contains(":taos:") || jdbcUrl.contains(":taos-rs:")) {
-            return DbType.TDENGINE;
+            return DatabaseType.TDENGINE;
         } else if (jdbcUrl.contains(":informix")) {
-            return DbType.INFORMIX;
+            return DatabaseType.INFORMIX;
         } else if (jdbcUrl.contains(":uxdb:")) {
-            return DbType.UXDB;
+            return DatabaseType.UXDB;
         } else if (jdbcUrl.contains(":greenplum:")) {
-            return DbType.GREENPLUM;
+            return DatabaseType.GREENPLUM;
         } else {
-            return DbType.OTHER;
+            return DatabaseType.OTHER;
         }
     }
 

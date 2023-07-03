@@ -4,15 +4,15 @@ import com.pisces.framework.core.dao.BaseDao;
 import com.pisces.framework.core.dao.DaoManager;
 import com.pisces.framework.core.dao.impl.DaoImpl;
 import com.pisces.framework.core.dao.impl.SingletonModifyDaoImpl;
-import com.pisces.framework.core.entity.EntityAccount;
+import com.pisces.framework.core.entity.BeanAccount;
+import com.pisces.framework.core.entity.table.QBeanAccount;
+import com.pisces.framework.core.query.QueryWrapper;
+import com.pisces.framework.rds.query.SqlExecutor;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.support.SqlSessionDaoSupport;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -22,8 +22,8 @@ import java.util.List;
  * @author jason
  * @date 2022/12/07
  */
-public class SQLAccountDao<T extends EntityAccount> extends SqlSessionDaoSupport implements BaseDao<T> {
-    private final Class<T> entityClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+public class SQLAccountDao<T extends BeanAccount> extends SqlSessionDaoSupport implements BaseDao<T> {
+    private final Class<T> beanClass = getBeanClass();
 
     @Autowired
     private RdsMapper<T> mapper;
@@ -38,30 +38,33 @@ public class SQLAccountDao<T extends EntityAccount> extends SqlSessionDaoSupport
     }
 
     @Override
-    protected void initDao() throws Exception {
+    protected void initDao() {
         DaoManager.register(this);
-    }
-
-    private T create() {
-        T entity = BeanUtils.instantiateClass(entityClass);
-        entity.init();
-//            entity.setDataSetId(AppUtils.getDataSetId());
-        return entity;
     }
 
     @Override
     public T get() {
-        return null;
-//        Example example = new Example(entityClass);
-//        Example.Criteria criteria = example.createCriteria();
-//        criteria.andEqualTo("account", AppUtils.getUsername());
-//        T item = mapper.selectOneByExample(example);
-//        if (item == null) {
-//            item = create();
-//            item.setAccount(AppUtils.getUsername());
-//            mapper.insert(item);
-//        }
-//        return item;
+        String account = "";
+        QueryWrapper qw = QueryWrapper.from(beanClass).where(QBeanAccount.account.bind(beanClass).equal(account));
+        T item = SqlExecutor.fetchOne(qw, beanClass);
+        if (item == null) {
+            item = create(beanClass);
+            item.setAccount(account);
+            mapper.insert(item);
+        }
+        return item;
+    }
+
+    @Override
+    public T getById(Long id) {
+        throw new UnsupportedOperationException("selectByPrimaryKey Singleton bean is not allowed");
+    }
+
+    @Override
+    public T fetchOne(QueryWrapper qw) {
+        String account = "";
+        qw.and(QBeanAccount.account.bind(beanClass).equal(account));
+        return SqlExecutor.fetchOne(qw, beanClass);
     }
 
     @Override
@@ -72,13 +75,15 @@ public class SQLAccountDao<T extends EntityAccount> extends SqlSessionDaoSupport
     }
 
     @Override
-    public T getById(Long id) {
-        throw new UnsupportedOperationException("selectByPrimaryKey Singleton bean is not allowed");
+    public List<T> listByIds(List<Long> ids) {
+        throw new UnsupportedOperationException("selectByIds Singleton bean is not allowed");
     }
 
     @Override
-    public List<T> listByIds(List<Long> ids) {
-        throw new UnsupportedOperationException("selectByIds Singleton bean is not allowed");
+    public List<T> fetch(QueryWrapper qw) {
+        String account = "";
+        qw.and(QBeanAccount.account.bind(beanClass).equal(account));
+        return SqlExecutor.fetch(qw, beanClass);
     }
 
     @Override
@@ -137,13 +142,5 @@ public class SQLAccountDao<T extends EntityAccount> extends SqlSessionDaoSupport
 
     @Override
     public void switchDaoImpl(DaoImpl impl) {
-    }
-
-    @Override
-    public void loadData() {
-    }
-
-    @Override
-    public void sync() {
     }
 }

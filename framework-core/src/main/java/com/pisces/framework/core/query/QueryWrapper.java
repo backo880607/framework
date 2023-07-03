@@ -1,8 +1,11 @@
 package com.pisces.framework.core.query;
 
+import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.query.column.QueryColumn;
+import com.pisces.framework.core.query.condition.QueryCondition;
+import com.pisces.framework.core.query.condition.QueryConnector;
 import com.pisces.framework.core.utils.lang.CollectionUtils;
-import com.pisces.framework.core.utils.lang.StringUtils;
+import com.pisces.framework.core.utils.lang.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,35 +16,34 @@ import java.util.Arrays;
  * @author jason
  * @date 2023/06/25
  */
-public class QueryWrapper extends BaseQueryWrapper<QueryWrapper> {
+public class QueryWrapper extends BaseQueryWrapper {
 
-    public static QueryWrapper from(TableDef... tableDefs) {
+    public static QueryWrapper from(String... tables) {
         QueryWrapper query = new QueryWrapper();
-        for (TableDef tableDef : tableDefs) {
-            query.from(new QueryTable(tableDef.getTableName()));
+        for (String table : tables) {
+            Class<? extends BeanObject> beanClass = ObjectUtils.fetchBeanClass(table);
+            query.from(new QueryTable(beanClass));
         }
         return query;
     }
 
-    public QueryWrapper from(String... tables) {
-        for (String table : tables) {
-            if (StringUtils.isBlank(table)) {
-                throw new IllegalArgumentException("table must not be null or blank.");
-            }
-            from(new QueryTable(table));
+    @SafeVarargs
+    public static QueryWrapper from(Class<? extends BeanObject>... beanClasses) {
+        QueryWrapper query = new QueryWrapper();
+        for (Class<? extends BeanObject> beanClass : beanClasses) {
+            query.from(new QueryTable(beanClass));
         }
-        return this;
+        return query;
     }
 
     public QueryWrapper from(QueryTable... tables) {
         if (CollectionUtils.isEmpty(queryTables)) {
-            queryTables = new ArrayList<>();
-            queryTables.addAll(Arrays.asList(tables));
+            queryTables = new ArrayList<>(Arrays.asList(tables));
         } else {
             for (QueryTable table : tables) {
                 boolean contains = false;
                 for (QueryTable queryTable : queryTables) {
-                    if (queryTable.isSameTable(table)) {
+                    if (queryTable.isSame(table)) {
                         contains = true;
                     }
                 }
@@ -59,11 +61,13 @@ public class QueryWrapper extends BaseQueryWrapper<QueryWrapper> {
     }
 
     public QueryWrapper and(QueryCondition queryCondition) {
-        return addWhereQueryCondition(queryCondition, QueryConnector.AND);
+        addWhereQueryCondition(queryCondition, QueryConnector.AND);
+        return this;
     }
 
     public QueryWrapper or(QueryCondition queryCondition) {
-        return addWhereQueryCondition(queryCondition, QueryConnector.OR);
+        addWhereQueryCondition(queryCondition, QueryConnector.OR);
+        return this;
     }
 
     public QueryWrapper groupBy(QueryColumn... columns) {
@@ -72,7 +76,7 @@ public class QueryWrapper extends BaseQueryWrapper<QueryWrapper> {
         }
         return this;
     }
-    
+
     public QueryWrapper having(QueryCondition queryCondition) {
         addHavingQueryCondition(queryCondition, QueryConnector.AND);
         return this;

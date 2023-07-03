@@ -199,7 +199,7 @@ public class SqlHelper {
     public static String selectCount(Class<?> entityClass) {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT ");
-        Set<EntityColumn> pkColumns = EntityHelper.getPKColumns(entityClass);
+        Set<EntityColumn> pkColumns = EntityHelper.getPkColumns(entityClass);
         if (pkColumns.size() == 1) {
             sql.append("COUNT(").append(pkColumns.iterator().next().getColumn()).append(") ");
         } else {
@@ -217,7 +217,7 @@ public class SqlHelper {
     public static String selectCountExists(Class<?> entityClass) {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT CASE WHEN ");
-        Set<EntityColumn> pkColumns = EntityHelper.getPKColumns(entityClass);
+        Set<EntityColumn> pkColumns = EntityHelper.getPkColumns(entityClass);
         if (pkColumns.size() == 1) {
             sql.append("COUNT(").append(pkColumns.iterator().next().getColumn()).append(") ");
         } else {
@@ -531,7 +531,7 @@ public class SqlHelper {
 
         sql.append("<where>");
         //获取全部列
-        Set<EntityColumn> columnSet = EntityHelper.getPKColumns(entityClass);
+        Set<EntityColumn> columnSet = EntityHelper.getPkColumns(entityClass);
         //当某个列有主键策略时，不需要考虑他的属性是否为空，因为如果为空，一定会根据主键策略给他生成一个值
         for (EntityColumn column : columnSet) {
             sql.append(" AND ").append(column.getColumnEqualsHolder(entityName));
@@ -603,8 +603,8 @@ public class SqlHelper {
      * @param entityClass 实体类
      * @return {@link String}
      */
-    public static String whereVersion(Class<?> entityClass){
-        return whereVersion(entityClass,null);
+    public static String whereVersion(Class<?> entityClass) {
+        return whereVersion(entityClass, null);
     }
 
     /**
@@ -614,7 +614,7 @@ public class SqlHelper {
      * @param entityName  实体名称
      * @return {@link String}
      */
-    public static String whereVersion(Class<?> entityClass,String entityName) {
+    public static String whereVersion(Class<?> entityClass, String entityName) {
         Set<EntityColumn> columnSet = EntityHelper.getColumns(entityClass);
         boolean hasVersion = false;
         String result = "";

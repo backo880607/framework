@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pisces.framework.rds.datasource.dialect;
+package com.pisces.framework.rds.query.dialect;
 
 import com.pisces.framework.core.query.QueryWrapper;
+import com.pisces.framework.rds.enums.DatabaseType;
 
 /**
  * limit 和 offset 参数的处理器
+ *
+ * @author jason
+ * @date 2023/06/27
  */
 public interface LimitOffsetProcessor {
 
     /**
      * MySql 的处理器
-     * 适合 {@link DbType#MYSQL,DbType#MARIADB,DbType#H2,DbType#CLICK_HOUSE,DbType#XCloud}
+     * 适合 {@link DatabaseType#MYSQL, DatabaseType#MARIADB, DatabaseType#H2, DatabaseType#CLICK_HOUSE, DatabaseType#XCloud}
      */
     LimitOffsetProcessor MYSQL = (sql, queryWrapper, limitRows, limitOffset) -> {
         if (limitRows != null && limitOffset != null) {
@@ -37,9 +41,9 @@ public interface LimitOffsetProcessor {
 
     /**
      * Postgresql 的处理器
-     * 适合  {@link DbType#POSTGRE_SQL,DbType#SQLITE,DbType#H2,DbType#HSQL,DbType#KINGBASE_ES,DbType#PHOENIX}
-     * 适合  {@link DbType#SAP_HANA,DbType#IMPALA,DbType#HIGH_GO,DbType#VERTICA,DbType#REDSHIFT}
-     * 适合  {@link DbType#OPENGAUSS,DbType#TDENGINE,DbType#UXDB}
+     * 适合  {@link DatabaseType#POSTGRE_SQL, DatabaseType#SQLITE, DatabaseType#H2, DatabaseType#HSQL, DatabaseType#KINGBASE_ES, DatabaseType#PHOENIX}
+     * 适合  {@link DatabaseType#SAP_HANA, DatabaseType#IMPALA, DatabaseType#HIGH_GO, DatabaseType#VERTICA, DatabaseType#REDSHIFT}
+     * 适合  {@link DatabaseType#OPENGAUSS, DatabaseType#TDENGINE, DatabaseType#UXDB}
      */
     LimitOffsetProcessor POSTGRESQL = (sql, queryWrapper, limitRows, limitOffset) -> {
         if (limitRows != null && limitOffset != null) {
@@ -52,7 +56,7 @@ public interface LimitOffsetProcessor {
 
     /**
      * derby 的处理器
-     * 适合  {@link DbType#DERBY,DbType#ORACLE_12C,DbType#SQLSERVER ,DbType#POSTGRE_SQL}
+     * 适合  {@link DatabaseType#DERBY, DatabaseType#ORACLE_12C, DatabaseType#SQLSERVER ,DBType#POSTGRE_SQL}
      */
     LimitOffsetProcessor DERBY = (sql, queryWrapper, limitRows, limitOffset) -> {
         if (limitRows != null && limitOffset != null) {
@@ -67,7 +71,7 @@ public interface LimitOffsetProcessor {
 
     /**
      * db2 的处理器
-     * 适合  {@link DbType#DB2,DbType#SQLSERVER_2005}
+     * 适合  {@link DatabaseType#DB2, DatabaseType#SQLSERVER_2005}
      */
     LimitOffsetProcessor DB2 = (sql, queryWrapper, limitRows, limitOffset) -> {
         if (limitRows != null && limitOffset != null) {
@@ -82,7 +86,7 @@ public interface LimitOffsetProcessor {
 
     /**
      * Informix 的处理器
-     * 适合  {@link DbType#INFORMIX}
+     * 适合  {@link DatabaseType#INFORMIX}
      * 文档 {@link <a href="https://www.ibm.com/docs/en/informix-servers/14.10?topic=clause-restricting-return-values-skip-limit-first-options">https://www.ibm.com/docs/en/informix-servers/14.10?topic=clause-restricting-return-values-skip-limit-first-options</a>}
      */
     LimitOffsetProcessor INFORMIX = (sql, queryWrapper, limitRows, limitOffset) -> {
@@ -97,7 +101,7 @@ public interface LimitOffsetProcessor {
 
     /**
      * Firebird 的处理器
-     * 适合  {@link DbType#FIREBIRD}
+     * 适合  {@link DatabaseType#FIREBIRD}
      */
     LimitOffsetProcessor FIREBIRD = (sql, queryWrapper, limitRows, limitOffset) -> {
         if (limitRows != null && limitOffset != null) {
@@ -111,7 +115,7 @@ public interface LimitOffsetProcessor {
 
     /**
      * Oracle11g及以下数据库的处理器
-     * 适合  {@link DbType#ORACLE,DbType#DM,DbType#GAUSS}
+     * 适合  {@link DatabaseType#ORACLE, DatabaseType#DM, DatabaseType#GAUSS}
      */
     LimitOffsetProcessor ORACLE = (sql, queryWrapper, limitRows, limitOffset) -> {
         if (limitRows != null) {
@@ -128,7 +132,7 @@ public interface LimitOffsetProcessor {
 
     /**
      * Sybase 处理器
-     * 适合  {@link DbType#SYBASE}
+     * 适合  {@link DatabaseType#SYBASE}
      */
     LimitOffsetProcessor SYBASE = (sql, queryWrapper, limitRows, limitOffset) -> {
         if (limitRows != null && limitOffset != null) {

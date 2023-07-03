@@ -156,8 +156,8 @@ public interface RdsMapper<T> {
     /**
      * 根据多个 id 批量删除数据
      *
-     * @param idList  ids 列表
-     * @param size 切分大小
+     * @param idList ids 列表
+     * @param size   切分大小
      * @return 返回影响的行数
      */
     default int deleteBatchByIds(List<Long> idList, int size) {

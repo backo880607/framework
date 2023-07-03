@@ -6,6 +6,7 @@ import com.pisces.framework.core.entity.Property;
 import com.pisces.framework.core.utils.lang.ObjectUtils;
 import com.pisces.framework.type.PROPERTY_TYPE;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import java.util.Map;
  * @date 2022/12/07
  */
 public class EntityMapper extends ObjectMapper {
+    @Serial
     private static final long serialVersionUID = 415052758487294871L;
 
     private final EntitySerializerModifier serModifier = new EntitySerializerModifier();

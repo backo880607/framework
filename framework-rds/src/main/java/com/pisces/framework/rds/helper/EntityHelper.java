@@ -47,25 +47,23 @@ public class EntityHelper {
     /**
      * 实体类 => 表对象
      */
-    private static final Map<Class<?>, EntityTable> entityTableMap = new ConcurrentHashMap<>();
-
-    private static final EntityResolve DEFAULT = new DefaultEntityResolve();
+    private static final Map<Class<?>, EntityTable> ENTITY_TABLES = new ConcurrentHashMap<>();
 
     /**
      * 实体类解析器
      */
-    private static EntityResolve resolve = DEFAULT;
+    private static EntityResolve resolve = new DefaultEntityResolve();
 
     /**
      * 获取表对象
      *
-     * @param entityClass 实体类
+     * @param beanClass 实体类
      * @return {@link EntityTable}
      */
-    public static EntityTable getEntityTable(Class<?> entityClass) {
-        EntityTable entityTable = entityTableMap.get(entityClass);
+    public static EntityTable getEntityTable(Class<?> beanClass) {
+        EntityTable entityTable = ENTITY_TABLES.get(beanClass);
         if (entityTable == null) {
-            throw new SystemException("无法获取实体类" + entityClass.getName() + "对应的表名!");
+            throw new SystemException("无法获取实体类" + beanClass.getName() + "对应的表名!");
         }
         return entityTable;
     }
@@ -73,37 +71,38 @@ public class EntityHelper {
     /**
      * 获取全部列
      *
-     * @param entityClass 实体类
+     * @param beanClass 实体类
      * @return {@link Set}<{@link EntityColumn}>
      */
-    public static Set<EntityColumn> getColumns(Class<?> entityClass) {
-        return getEntityTable(entityClass).getEntityClassColumns();
+    public static Set<EntityColumn> getColumns(Class<?> beanClass) {
+        
+        return getEntityTable(beanClass).getBeanColumns();
     }
 
     /**
      * 获取主键信息
      *
-     * @param entityClass 实体类
+     * @param beanClass 实体类
      * @return {@link Set}<{@link EntityColumn}>
      */
-    public static Set<EntityColumn> getPKColumns(Class<?> entityClass) {
-        return getEntityTable(entityClass).getEntityClassPKColumns();
+    public static Set<EntityColumn> getPkColumns(Class<?> beanClass) {
+        return getEntityTable(beanClass).getBeanPKColumns();
     }
 
     /**
      * 获取查询的Select
      *
-     * @param entityClass 实体类
+     * @param beanClass 实体类
      * @return {@link String}
      */
-    public static String getSelectColumns(Class<?> entityClass) {
-        EntityTable entityTable = getEntityTable(entityClass);
+    public static String getSelectColumns(Class<?> beanClass) {
+        EntityTable entityTable = getEntityTable(beanClass);
         if (entityTable.getBaseSelect() != null) {
             return entityTable.getBaseSelect();
         }
-        Set<EntityColumn> columnList = getColumns(entityClass);
+        Set<EntityColumn> columnList = getColumns(beanClass);
         StringBuilder selectBuilder = new StringBuilder();
-        boolean skipAlias = Map.class.isAssignableFrom(entityClass);
+        boolean skipAlias = Map.class.isAssignableFrom(beanClass);
         for (EntityColumn entityColumn : columnList) {
             selectBuilder.append(entityColumn.getColumn());
             if (!skipAlias && !entityColumn.getColumn().equalsIgnoreCase(entityColumn.getProperty())) {
@@ -124,16 +123,16 @@ public class EntityHelper {
     /**
      * 初始化实体属性
      *
-     * @param entityClass 实体类
-     * @param config      配置
+     * @param beanClass 实体类
+     * @param config    配置
      */
-    public static synchronized void initEntityNameMap(Class<?> entityClass, Config config) {
-        if (entityTableMap.get(entityClass) != null) {
+    public static synchronized void initEntityNameMap(Class<?> beanClass, Config config) {
+        if (ENTITY_TABLES.get(beanClass) != null) {
             return;
         }
         //创建并缓存EntityTable
-        EntityTable entityTable = resolve.resolveEntity(entityClass, config);
-        entityTableMap.put(entityClass, entityTable);
+        EntityTable entityTable = resolve.resolveEntity(beanClass, config);
+        ENTITY_TABLES.put(beanClass, entityTable);
     }
 
     /**

@@ -1,25 +1,26 @@
 package com.pisces.framework.rds.common;
 
 import com.pisces.framework.core.dao.BaseDao;
-import com.pisces.framework.core.dao.DaoManager;
 import com.pisces.framework.core.dao.impl.DaoImpl;
 import com.pisces.framework.core.dao.impl.MemoryModifyDaoImpl;
 import com.pisces.framework.core.entity.BeanObject;
+import com.pisces.framework.core.entity.table.QBeanObject;
+import com.pisces.framework.core.query.QueryWrapper;
+import com.pisces.framework.rds.query.SqlExecutor;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.support.SqlSessionDaoSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 /**
- * sqldao
+ * sql dao
  *
  * @author jason
  * @date 2022/12/07
  */
 public class SQLDao<T extends BeanObject> extends SqlSessionDaoSupport implements BaseDao<T> {
-    private final Class<T> objectClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    private final Class<T> beanClass = getBeanClass();
 
     @Autowired
     private RdsMapper<T> mapper;
@@ -31,8 +32,8 @@ public class SQLDao<T extends BeanObject> extends SqlSessionDaoSupport implement
     }
 
     @Override
-    protected void initDao() throws Exception {
-        DaoManager.register(this);
+    protected void initDao() {
+        SQLDaoManager.register(this);
     }
 
     @Override
@@ -46,6 +47,12 @@ public class SQLDao<T extends BeanObject> extends SqlSessionDaoSupport implement
     }
 
     @Override
+    public T fetchOne(QueryWrapper qw) {
+        qw.and(QBeanObject.dataSetId.bind(beanClass).equal(0));
+        return SqlExecutor.fetchOne(qw, beanClass);
+    }
+
+    @Override
     public List<T> list() {
         return mapper.selectAll();
     }
@@ -53,6 +60,12 @@ public class SQLDao<T extends BeanObject> extends SqlSessionDaoSupport implement
     @Override
     public List<T> listByIds(List<Long> ids) {
         return mapper.selectByIds(ids);
+    }
+
+    @Override
+    public List<T> fetch(QueryWrapper qw) {
+        qw.and(QBeanObject.dataSetId.bind(beanClass).equal(0));
+        return SqlExecutor.fetch(qw, beanClass);
     }
 
     @Override
@@ -98,15 +111,6 @@ public class SQLDao<T extends BeanObject> extends SqlSessionDaoSupport implement
     @Override
     public int deleteIdBatch(List<Long> ids) {
         return mapper.deleteBatchByIds(ids, 0);
-    }
-
-    @Override
-    public void loadData() {
-
-    }
-
-    @Override
-    public void sync() {
     }
 
     @Override

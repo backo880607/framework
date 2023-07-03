@@ -4,9 +4,7 @@ import com.pisces.framework.core.dao.impl.DaoImpl;
 import com.pisces.framework.core.dao.impl.MemoryDaoImpl;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.utils.lang.ObjectUtils;
-import org.springframework.beans.BeanUtils;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -19,20 +17,11 @@ import java.util.Map.Entry;
  * @date 2022/12/07
  */
 public class MemoryDao<T extends BeanObject> implements BaseDao<T> {
+    private final Class<T> beanClass = getBeanClass();
     private final ThreadLocal<MemoryDaoImpl<T>> impl = new ThreadLocal<>();
 
     public MemoryDao() {
         DaoManager.register(this);
-    }
-
-    private Class<T> getObjectClass() {
-        return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-    }
-
-    private T create() {
-        T item = BeanUtils.instantiateClass(getObjectClass());
-        item.init();
-        return item;
     }
 
     @Override
@@ -71,7 +60,7 @@ public class MemoryDao<T extends BeanObject> implements BaseDao<T> {
     @Override
     public int insert(T item) {
         if (!item.isInitialized()) {
-            T newItem = create();
+            T newItem = create(beanClass);
             ObjectUtils.copyIgnoreNull(item, newItem);
             item = newItem;
         }
@@ -134,14 +123,6 @@ public class MemoryDao<T extends BeanObject> implements BaseDao<T> {
             count += deleteById(id);
         }
         return count;
-    }
-
-    @Override
-    public void loadData() {
-    }
-
-    @Override
-    public void sync() {
     }
 
     @Override

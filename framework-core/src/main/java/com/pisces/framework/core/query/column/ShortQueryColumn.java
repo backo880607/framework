@@ -1,8 +1,8 @@
 package com.pisces.framework.core.query.column;
 
+import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.enums.CONDITION_TYPE;
-import com.pisces.framework.core.query.QueryCondition;
-import com.pisces.framework.core.query.TableDef;
+import com.pisces.framework.core.query.condition.QueryCondition;
 
 import java.util.Collection;
 
@@ -14,8 +14,12 @@ import java.util.Collection;
  */
 public class ShortQueryColumn extends QueryColumn {
 
-    public ShortQueryColumn(TableDef tableDef, String name) {
-        super(tableDef, name);
+    public ShortQueryColumn(String beanName, String fieldName) {
+        super(beanName, fieldName);
+    }
+
+    public ShortQueryColumn bind(Class<? extends BeanObject> beanClass) {
+        return new ShortQueryColumn(beanClass.getSimpleName(), getName());
     }
 
     public QueryCondition equal(Object value) {

@@ -1,8 +1,8 @@
 package com.pisces.framework.core.query.column;
 
+import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.enums.CONDITION_TYPE;
-import com.pisces.framework.core.query.QueryCondition;
-import com.pisces.framework.core.query.TableDef;
+import com.pisces.framework.core.query.condition.QueryCondition;
 
 /**
  * 日期查询列
@@ -12,8 +12,12 @@ import com.pisces.framework.core.query.TableDef;
  */
 public class DateQueryColumn extends QueryColumn {
 
-    public DateQueryColumn(TableDef tableDef, String name) {
-        super(tableDef, name);
+    public DateQueryColumn(String beanName, String fieldName) {
+        super(beanName, fieldName);
+    }
+
+    public DateQueryColumn bind(Class<? extends BeanObject> beanClass) {
+        return new DateQueryColumn(beanClass.getSimpleName(), getName());
     }
 
     public QueryCondition equal(Object value) {

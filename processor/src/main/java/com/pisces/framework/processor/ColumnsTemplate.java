@@ -20,21 +20,21 @@ import java.util.Date;
  * @date 2023/06/25
  */
 public class ColumnsTemplate {
-    private static final String BOOLEAN_TEMPLATE = "        public BooleanQueryColumn @property = new BooleanQueryColumn(this, \"@property\");\n";
-    private static final String CHAR_TEMPLATE = "        public CharQueryColumn @property = new CharQueryColumn(this, \"@property\");\n";
-    private static final String SHORT_TEMPLATE = "        public ShortQueryColumn @property = new ShortQueryColumn(this, \"@property\");\n";
-    private static final String INTEGER_TEMPLATE = "        public IntegerQueryColumn @property = new IntegerQueryColumn(this, \"@property\");\n";
-    private static final String LONG_TEMPLATE = "        public LongQueryColumn @property = new LongQueryColumn(this, \"@property\");\n";
-    private static final String STRING_TEMPLATE = "        public StringQueryColumn @property = new StringQueryColumn(this, \"@property\");\n";
-    private static final String DOUBLE_TEMPLATE = "        public DoubleQueryColumn @property = new DoubleQueryColumn(this, \"@property\");\n";
-    private static final String DATE_TEMPLATE = "        public DateQueryColumn @property = new DateQueryColumn(this, \"@property\");\n";
-    private static final String TIME_TEMPLATE = "        public TimeQueryColumn @property = new TimeQueryColumn(this, \"@property\");\n";
-    private static final String DATE_TIME_TEMPLATE = "        public DateTimeQueryColumn @property = new DateTimeQueryColumn(this, \"@property\");\n";
-    private static final String DURATION_TEMPLATE = "        public DurationQueryColumn @property = new DurationQueryColumn(this, \"@property\");\n";
-    private static final String ENUM_TEMPLATE = "        public EnumQueryColumn @property = new EnumQueryColumn(this, \"@property\");\n";
-    private static final String MULTI_ENUM_TEMPLATE = "        public MultiEnumQueryColumn @property = new MultiEnumQueryColumn(this, \"@property\");\n";
-    private static final String BEAN_TEMPLATE = "        public BeanQueryColumn @property = new BeanQueryColumn(this, \"@property\");\n";
-    private static final String LIST_TEMPLATE = "        public ListQueryColumn @property = new ListQueryColumn(this, \"@property\");\n";
+    private static final String BOOLEAN_TEMPLATE = "        public static BooleanQueryColumn @property = new BooleanQueryColumn(\"@entityClass\", \"@property\");\n";
+    private static final String CHAR_TEMPLATE = "        public static CharQueryColumn @property = new CharQueryColumn(\"@entityClass\", \"@property\");\n";
+    private static final String SHORT_TEMPLATE = "        public static ShortQueryColumn @property = new ShortQueryColumn(\"@entityClass\", \"@property\");\n";
+    private static final String INTEGER_TEMPLATE = "        public static IntegerQueryColumn @property = new IntegerQueryColumn(\"@entityClass\", \"@property\");\n";
+    private static final String LONG_TEMPLATE = "        public static LongQueryColumn @property = new LongQueryColumn(\"@entityClass\", \"@property\");\n";
+    private static final String STRING_TEMPLATE = "        public static StringQueryColumn @property = new StringQueryColumn(\"@entityClass\", \"@property\");\n";
+    private static final String DOUBLE_TEMPLATE = "        public static DoubleQueryColumn @property = new DoubleQueryColumn(\"@entityClass\", \"@property\");\n";
+    private static final String DATE_TEMPLATE = "        public static DateQueryColumn @property = new DateQueryColumn(\"@entityClass\", \"@property\");\n";
+    private static final String TIME_TEMPLATE = "        public static TimeQueryColumn @property = new TimeQueryColumn(\"@entityClass\", \"@property\");\n";
+    private static final String DATE_TIME_TEMPLATE = "        public static DateTimeQueryColumn @property = new DateTimeQueryColumn(\"@entityClass\", \"@property\");\n";
+    private static final String DURATION_TEMPLATE = "        public static DurationQueryColumn @property = new DurationQueryColumn(\"@entityClass\", \"@property\");\n";
+    private static final String ENUM_TEMPLATE = "        public static EnumQueryColumn @property = new EnumQueryColumn(\"@entityClass\", \"@property\");\n";
+    private static final String MULTI_ENUM_TEMPLATE = "        public static MultiEnumQueryColumn @property = new MultiEnumQueryColumn(\"@entityClass\", \"@property\");\n";
+    private static final String BEAN_TEMPLATE = "        public static BeanQueryColumn @property = new BeanQueryColumn(\"@entityClass\", \"@property\");\n";
+    private static final String LIST_TEMPLATE = "        public static ListQueryColumn @property = new ListQueryColumn(\"@entityClass\", \"@property\");\n";
 
     public static String get(Element element, Types typeUtils) {
         String template = "";

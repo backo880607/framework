@@ -15,8 +15,11 @@
  */
 package com.pisces.framework.core.query;
 
+import com.pisces.framework.core.entity.BeanObject;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * 查询列，描述的是一张表的字段
@@ -24,26 +27,17 @@ import java.util.Objects;
  * @author jason
  * @date 2023/06/25
  */
+@Getter
+@Setter
 public class QueryTable implements Serializable {
-    protected String name;
+    protected Class<? extends BeanObject> beanClass;
 
-    public QueryTable() {
+    public QueryTable(Class<? extends BeanObject> beanClass) {
+        this.beanClass = beanClass;
     }
 
-    public QueryTable(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isSameTable(QueryTable table) {
-        return table != null && Objects.equals(name, table.name);
+    public boolean isSame(QueryTable table) {
+        return table != null && beanClass == table.beanClass;
     }
 
     public Object[] getValueArray() {

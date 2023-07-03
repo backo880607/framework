@@ -1,8 +1,8 @@
 package com.pisces.framework.core.query.column;
 
+import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.enums.CONDITION_TYPE;
-import com.pisces.framework.core.query.QueryCondition;
-import com.pisces.framework.core.query.TableDef;
+import com.pisces.framework.core.query.condition.QueryCondition;
 
 /**
  * 多选枚举查询列
@@ -12,8 +12,12 @@ import com.pisces.framework.core.query.TableDef;
  */
 public class MultiEnumQueryColumn extends QueryColumn {
 
-    public MultiEnumQueryColumn(TableDef tableDef, String name) {
-        super(tableDef, name);
+    public MultiEnumQueryColumn(String beanName, String fieldName) {
+        super(beanName, fieldName);
+    }
+
+    public MultiEnumQueryColumn bind(Class<? extends BeanObject> beanClass) {
+        return new MultiEnumQueryColumn(beanClass.getSimpleName(), getName());
     }
 
     public QueryCondition equal(Object value) {

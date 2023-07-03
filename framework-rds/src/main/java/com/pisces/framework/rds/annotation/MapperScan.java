@@ -7,6 +7,12 @@ import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
 
+/**
+ * 映射器扫描
+ *
+ * @author jason
+ * @date 2023/06/27
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Documented

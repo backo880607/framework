@@ -15,10 +15,11 @@
  */
 package com.pisces.framework.core.query.column;
 
+import com.pisces.framework.core.enums.VALUE_SORT_TYYPE;
 import com.pisces.framework.core.query.QueryOrderBy;
 import com.pisces.framework.core.query.QueryTable;
-import com.pisces.framework.core.query.TableDef;
 import com.pisces.framework.core.utils.lang.ColumnUtils;
+import com.pisces.framework.core.utils.lang.ObjectUtils;
 
 import java.io.Serializable;
 
@@ -28,22 +29,30 @@ import java.io.Serializable;
  * @author jason
  * @date 2023/06/25
  */
-public abstract class QueryColumn implements Serializable {
-    protected QueryTable table;
-    protected String name;
+public class QueryColumn implements Serializable {
+    private String beanName;
+    private volatile QueryTable table;
 
-    public QueryColumn(TableDef tableDef, String name) {
-        ColumnUtils.keepColumnSafely(name);
-        this.table = new QueryTable(tableDef.getTableName());
-        this.name = name;
+    private String name;
+
+    public QueryColumn() {
+    }
+
+    public QueryColumn(String beanName, String fieldName) {
+        ColumnUtils.keepColumnSafely(fieldName);
+        this.beanName = beanName;
+        this.name = fieldName;
     }
 
     public QueryTable getTable() {
+        if (table == null) {
+            synchronized (this) {
+                if (table == null) {
+                    table = new QueryTable(ObjectUtils.fetchBeanClass(beanName));
+                }
+            }
+        }
         return table;
-    }
-
-    public void setTable(QueryTable table) {
-        this.table = table;
     }
 
     public String getName() {
@@ -56,10 +65,10 @@ public abstract class QueryColumn implements Serializable {
 
     ////order by ////
     public QueryOrderBy asc() {
-        return new QueryOrderBy(this);
+        return new QueryOrderBy(this, VALUE_SORT_TYYPE.ASC);
     }
 
     public QueryOrderBy desc() {
-        return new QueryOrderBy(this, "DESC");
+        return new QueryOrderBy(this, VALUE_SORT_TYYPE.DESC);
     }
 }

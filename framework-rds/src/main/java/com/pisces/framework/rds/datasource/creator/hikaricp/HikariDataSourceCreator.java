@@ -16,10 +16,9 @@
 package com.pisces.framework.rds.datasource.creator.hikaricp;
 
 import com.pisces.framework.core.utils.lang.StringUtils;
-import com.pisces.framework.rds.config.RdsContext;
+import com.pisces.framework.rds.datasource.config.DataSourceProperty;
 import com.pisces.framework.rds.datasource.creator.ConfigMergeCreator;
 import com.pisces.framework.rds.datasource.creator.DataSourceCreator;
-import com.pisces.framework.rds.datasource.config.DataSourceProperty;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AllArgsConstructor;

@@ -15,6 +15,9 @@
  */
 package com.pisces.framework.core.query;
 
+import com.pisces.framework.core.query.condition.QueryCondition;
+import com.pisces.framework.core.query.condition.QueryConnector;
+
 /**
  * 括号
  *
@@ -44,15 +47,10 @@ public class Brackets extends QueryCondition {
         childCondition.connect(nextCondition, connector);
     }
 
-    @Override
-    public Object getValue() {
-        return null;
+//    @Override
+//    public Object getValue() {
 //        return checkEffective() ? WrapperUtil.getValues(childCondition) : null;
-    }
-
-    public QueryCondition getChildCondition() {
-        return childCondition;
-    }
+//    }
 
     @Override
     public boolean checkEffective() {
@@ -65,7 +63,7 @@ public class Brackets extends QueryCondition {
             if (condition.checkEffective()) {
                 return true;
             }
-            condition = condition.next;
+            condition = condition.getNext();
         }
         return false;
     }

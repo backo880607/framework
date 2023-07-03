@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pisces.framework.rds.datasource.dialect;
+package com.pisces.framework.rds.query.dialect;
 
 import com.pisces.framework.core.utils.lang.StringUtils;
 
 /**
  * 用于对数据库的关键字包装
+ *
+ * @author jason
+ * @date 2023/06/27
  */
 public class KeywordWrap {
 

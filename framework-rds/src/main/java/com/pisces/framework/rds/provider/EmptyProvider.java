@@ -31,6 +31,9 @@ import com.pisces.framework.rds.helper.MapperTemplate;
  * 空方法Mapper接口默认MapperTemplate
  * <p/>
  * 如BaseSelectMapper，接口纯继承，不包含任何方法
+ *
+ * @author jason
+ * @date 2023/07/02
  */
 public class EmptyProvider extends MapperTemplate {
 

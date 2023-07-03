@@ -18,7 +18,12 @@ public abstract class BaseController {
     @Autowired
     protected LanguageService lang;
 
+    protected void syncData() {
+
+    }
+
     private ResponseData result(boolean success, Object data, Enum<?> message, Object... arguments) {
+        syncData();
         ResponseData responseResult = new ResponseData();
         responseResult.setSuccess(success);
         if (message != null) {

@@ -1,6 +1,7 @@
 package com.pisces.framework.language.controller;
 
 import com.pisces.framework.language.bean.UserLanguage;
+import com.pisces.framework.language.bean.table.QUserLanguage;
 import com.pisces.framework.language.config.LanguageConstant;
 import com.pisces.framework.language.service.UserLanguageService;
 import com.pisces.framework.web.annotation.ExceptionMessage;
@@ -24,6 +25,7 @@ public class UserLanguageController extends BeanController<UserLanguage, UserLan
     @GetMapping("listByDataset")
     @ExceptionMessage(clazz = WebMessage.class, name = "Query")
     public ResponseData listByDataset(Long datasetId) {
+        UserLanguage language = getService().get(QUserLanguage.id.equal(1665763576129785856L));
         return success("", WebMessage.Query);
     }
 }

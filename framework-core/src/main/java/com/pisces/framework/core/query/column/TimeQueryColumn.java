@@ -1,8 +1,8 @@
 package com.pisces.framework.core.query.column;
 
+import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.enums.CONDITION_TYPE;
-import com.pisces.framework.core.query.QueryCondition;
-import com.pisces.framework.core.query.TableDef;
+import com.pisces.framework.core.query.condition.QueryCondition;
 
 import java.util.Collection;
 
@@ -14,8 +14,12 @@ import java.util.Collection;
  */
 public class TimeQueryColumn extends QueryColumn {
 
-    public TimeQueryColumn(TableDef tableDef, String name) {
-        super(tableDef, name);
+    public TimeQueryColumn(String beanName, String fieldName) {
+        super(beanName, fieldName);
+    }
+
+    public TimeQueryColumn bind(Class<? extends BeanObject> beanClass) {
+        return new TimeQueryColumn(beanClass.getSimpleName(), getName());
     }
 
     public QueryCondition equal(Object value) {

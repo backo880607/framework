@@ -17,7 +17,6 @@ package com.pisces.framework.rds.datasource.provider;
 
 import com.pisces.framework.rds.datasource.config.DataSourceProperty;
 import com.pisces.framework.rds.datasource.creator.DefaultDataSourceCreator;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -28,7 +27,6 @@ import java.util.Map;
  * @author TaoYu Kanyuxia
  * @since 1.0.0
  */
-@Slf4j
 public class YmlDynamicDataSourceProvider extends AbstractDataSourceProvider {
 
     /**

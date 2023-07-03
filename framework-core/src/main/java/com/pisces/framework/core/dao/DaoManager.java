@@ -2,8 +2,6 @@ package com.pisces.framework.core.dao;
 
 import com.pisces.framework.core.dao.impl.DaoImpl;
 import com.pisces.framework.core.entity.BeanObject;
-import com.pisces.framework.core.service.PropertyService;
-import com.pisces.framework.core.utils.AppUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 道经理
+ * Dao层管理器
  *
  * @author jason
  * @date 2022/12/07
@@ -20,24 +18,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DaoManager {
     private static final Map<String, UserData> USER_DATA_LIST = new ConcurrentHashMap<>();
     private static final List<BaseDao<? extends BeanObject>> DAO_LIST = new ArrayList<>();
-    private static final List<BaseDao<? extends BeanObject>> MEMORY_DAO = new ArrayList<>();
 
     protected DaoManager() {
     }
 
     public static void register(BaseDao<? extends BeanObject> dao) {
         DAO_LIST.add(dao);
-    }
-
-    public static void registerMemory(BaseDao<? extends BeanObject> dao) {
-        register(dao);
-        MEMORY_DAO.add(dao);
-    }
-
-    public static void sync() {
-        for (BaseDao<? extends BeanObject> dao : DAO_LIST) {
-            dao.sync();
-        }
     }
 
     private static UserData obtainUserData(String username) {
@@ -77,18 +63,18 @@ public class DaoManager {
             DaoImpl impl = userData.daoImpl.get(dao);
             dao.switchDaoImpl(impl);
         }
-        if (!userData.bInit) {
-            synchronized (DaoManager.class) {
-                if (!userData.bInit) {
-                    PropertyService propertyService = AppUtils.getBean(PropertyService.class);
-                    propertyService.getBaseDao().loadData();
-                    for (Map.Entry<BaseDao<? extends BeanObject>, DaoImpl> entry : userData.daoImpl.entrySet()) {
-                        entry.getKey().loadData();
-                    }
-                }
-                userData.bInit = true;
-            }
-        }
+//        if (!userData.bInit) {
+//            synchronized (DaoManager.class) {
+//                if (!userData.bInit) {
+//                    PropertyService propertyService = AppUtils.getBean(PropertyService.class);
+//                    propertyService.getBaseDao().loadData();
+//                    for (Map.Entry<BaseDao<? extends BeanObject>, DaoImpl> entry : userData.daoImpl.entrySet()) {
+//                        entry.getKey().loadData();
+//                    }
+//                }
+//                userData.bInit = true;
+//            }
+//        }
         return true;
     }
 

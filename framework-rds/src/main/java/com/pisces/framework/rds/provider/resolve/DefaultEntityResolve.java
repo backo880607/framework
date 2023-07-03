@@ -10,8 +10,8 @@ import com.pisces.framework.rds.helper.entity.EntityTable;
 import com.pisces.framework.rds.utils.MetaObjectUtil;
 import com.pisces.framework.rds.utils.SimpleTypeUtil;
 import com.pisces.framework.rds.utils.SqlReservedWords;
+import com.pisces.framework.type.annotation.TableMeta;
 import jakarta.persistence.Column;
-import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
@@ -32,11 +32,11 @@ public class DefaultEntityResolve implements EntityResolve {
     public EntityTable resolveEntity(Class<?> entityClass, Config config) {
         //创建并缓存EntityTable
         EntityTable entityTable = null;
-        if (entityClass.isAnnotationPresent(Table.class)) {
-            Table table = entityClass.getAnnotation(Table.class);
+        if (entityClass.isAnnotationPresent(TableMeta.class)) {
+            TableMeta table = entityClass.getAnnotation(TableMeta.class);
             if (!"".equals(table.name())) {
                 entityTable = new EntityTable(entityClass);
-                entityTable.setTable(table);
+                entityTable.setName(table.name());
             }
         }
         if (entityTable == null) {
@@ -48,8 +48,8 @@ public class DefaultEntityResolve implements EntityResolve {
             }
             entityTable.setName(tableName);
         }
-        entityTable.setEntityClassColumns(new LinkedHashSet<>());
-        entityTable.setEntityClassPKColumns(new LinkedHashSet<>());
+        entityTable.setBeanColumns(new LinkedHashSet<>());
+        entityTable.setBeanPKColumns(new LinkedHashSet<>());
         //处理所有列
         List<EntityField> fields = FieldHelper.getFields(entityClass);
         for (EntityField field : fields) {
@@ -64,8 +64,8 @@ public class DefaultEntityResolve implements EntityResolve {
             }
         }
         //当pk.size=0的时候使用所有列作为主键
-        if (entityTable.getEntityClassPKColumns().size() == 0) {
-            entityTable.setEntityClassPKColumns(entityTable.getEntityClassColumns());
+        if (entityTable.getBeanPKColumns().size() == 0) {
+            entityTable.setBeanPKColumns(entityTable.getBeanColumns());
         }
         entityTable.initPropertyMap();
         return entityTable;
@@ -128,9 +128,9 @@ public class DefaultEntityResolve implements EntityResolve {
         if (field.getJavaType().isPrimitive()) {
             log.warn("通用 Mapper 警告信息: <[" + entityColumn + "]> 使用了基本类型，基本类型在动态 SQL 中由于存在默认值，因此任何时候都不等于 null，建议修改基本类型为对应的包装类型!");
         }
-        entityTable.getEntityClassColumns().add(entityColumn);
+        entityTable.getBeanColumns().add(entityColumn);
         if (entityColumn.isId()) {
-            entityTable.getEntityClassPKColumns().add(entityColumn);
+            entityTable.getBeanPKColumns().add(entityColumn);
         }
     }
 }

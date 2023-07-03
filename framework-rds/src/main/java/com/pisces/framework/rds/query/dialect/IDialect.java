@@ -13,12 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pisces.framework.core.query;
+package com.pisces.framework.rds.query.dialect;
 
-import java.io.Serializable;
+import com.pisces.framework.core.query.QueryWrapper;
 
-@FunctionalInterface
-public interface LambdaGetter<T> extends Serializable {
-    Object get(T source);
+/**
+ * 方言接口
+ *
+ * @author jason
+ * @date 2023/06/27
+ */
+public interface IDialect {
+
+    public String wrap(String keyword);
+
+    String forHint(String hintString);
+
+    String forDeleteById(String tableName, String[] primaryKeys);
+
+    String forDeleteBatchByIds(String tableName, String[] primaryKeys, Object[] ids);
+
+    String buildSelectSql(QueryWrapper queryWrapper);
+
+    String buildDeleteSql(QueryWrapper queryWrapper);
 }
-

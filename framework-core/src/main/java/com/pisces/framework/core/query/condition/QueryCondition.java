@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pisces.framework.core.query;
+package com.pisces.framework.core.query.condition;
 
 import com.pisces.framework.core.enums.CONDITION_TYPE;
+import com.pisces.framework.core.query.Brackets;
 import com.pisces.framework.core.query.column.QueryColumn;
 
 import java.io.Serializable;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * 查询条件
@@ -29,17 +28,17 @@ import java.util.function.Supplier;
  * @date 2023/06/25
  */
 public class QueryCondition implements Serializable {
-    protected QueryColumn column;
-    protected CONDITION_TYPE type;
-    protected Object value;
-    protected boolean effective = true;
+    private QueryColumn column;
+    private CONDITION_TYPE type;
+    private Object value;
+    private boolean effective = true;
 
     //当前条件的上个条件
-    public QueryCondition before;
+    private QueryCondition before;
     //当前条件的上个下一个
-    public QueryCondition next;
+    private QueryCondition next;
     //两个条件直接的连接符
-    protected QueryConnector connector;
+    private QueryConnector connector;
 
     public static QueryCondition createEmpty() {
         return new QueryCondition().when(false);
@@ -84,29 +83,16 @@ public class QueryCondition implements Serializable {
         this.value = value;
     }
 
+    public QueryConnector getConnector() {
+        return connector;
+    }
+
+    public QueryCondition getNext() {
+        return next;
+    }
+
     public QueryCondition when(boolean effective) {
         this.effective = effective;
-        return this;
-    }
-
-    public void when(Supplier<Boolean> fn) {
-        Boolean effective = fn.get();
-        this.effective = (effective != null && effective);
-    }
-
-    public <T> QueryCondition when(Predicate<T> fn) {
-        Object val = this.value;
-        if (CONDITION_TYPE.CONTAINS.equals(type) && val instanceof String) {
-            String valStr = (String) val;
-            if (valStr.startsWith("%")) {
-                valStr = valStr.substring(1);
-            }
-            if (valStr.endsWith("%")) {
-                valStr = valStr.substring(0, valStr.length() - 1);
-            }
-            val = valStr;
-        }
-        this.effective = fn.test((T) val);
         return this;
     }
 
@@ -122,7 +108,7 @@ public class QueryCondition implements Serializable {
         return new Brackets(this).or(nextCondition);
     }
 
-    protected void connect(QueryCondition nextCondition, QueryConnector connector) {
+    public void connect(QueryCondition nextCondition, QueryConnector connector) {
         if (this.next != null) {
             this.next.connect(nextCondition, connector);
         } else {
@@ -132,7 +118,7 @@ public class QueryCondition implements Serializable {
         }
     }
 
-    protected QueryCondition getEffectiveBefore() {
+    public QueryCondition getEffectiveBefore() {
         if (before != null && before.checkEffective()) {
             return before;
         } else if (before != null) {

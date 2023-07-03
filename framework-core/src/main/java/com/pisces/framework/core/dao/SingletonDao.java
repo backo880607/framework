@@ -6,7 +6,6 @@ import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.utils.lang.ObjectUtils;
 import org.springframework.beans.BeanUtils;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,8 +16,8 @@ import java.util.List;
  * @date 2022/12/07
  */
 public class SingletonDao<T extends BeanObject> implements BaseDao<T> {
+    private final Class<T> beanClass = getBeanClass();
     private final ThreadLocal<SingletonDaoImpl<T>> impl = new ThreadLocal<>();
-    private final Class<T> objectClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
     public SingletonDao() {
         DaoManager.register(this);
@@ -99,18 +98,6 @@ public class SingletonDao<T extends BeanObject> implements BaseDao<T> {
     }
 
     @Override
-    public void loadData() {
-        this.impl.get().setRecord(BeanUtils.instantiateClass(objectClass));
-        this.impl.get().getRecord().init();
-//            this.impl.get().getRecord().setCreateBy(AppUtils.getUsername());
-//            this.impl.get().getRecord().setUpdateBy(AppUtils.getUsername());
-    }
-
-    @Override
-    public void sync() {
-    }
-
-    @Override
     public DaoImpl createDaoImpl() {
         return new SingletonDaoImpl<T>();
     }
@@ -119,6 +106,8 @@ public class SingletonDao<T extends BeanObject> implements BaseDao<T> {
     public void switchDaoImpl(DaoImpl value) {
         impl.remove();
         this.impl.set((SingletonDaoImpl<T>) value);
+        this.impl.get().setRecord(BeanUtils.instantiateClass(beanClass));
+        this.impl.get().getRecord().init();
     }
 
 }

@@ -39,7 +39,7 @@ public class CustomizeEntityResolve extends DefaultEntityResolve {
     }
 
     private void modifyColumns(Class<?> entityClass, EntityTable table) throws Exception {
-        Set<EntityColumn> columns = table.getEntityClassColumns();
+        Set<EntityColumn> columns = table.getBeanColumns();
         for (EntityColumn column : columns) {
             EntityField field = column.getEntityField();
             if (field.getJavaType() == Locale.class) {

@@ -13,26 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pisces.framework.core.query;
+package com.pisces.framework.core.query.column;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * sql连接器
+ * 不同查询列
  *
  * @author jason
- * @date 2023/06/25
+ * @date 2023/06/27
  */
-public enum QueryConnector {
-    AND(" AND "),
-    OR(" OR ");
+public class DistinctQueryColumn extends QueryColumn {
+    private final List<QueryColumn> queryColumns;
 
-    private final String value;
-
-    QueryConnector(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return value;
+    public DistinctQueryColumn(QueryColumn... queryColumns) {
+        this.queryColumns = Arrays.asList(queryColumns);
     }
 }

@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pisces.framework.rds.datasource.dialect;
+package com.pisces.framework.rds.query.dialect;
 
-import com.pisces.framework.rds.datasource.dialect.impl.CommonsDialectImpl;
-import com.pisces.framework.rds.datasource.dialect.impl.OracleDialect;
+import com.pisces.framework.core.utils.AppUtils;
+import com.pisces.framework.rds.datasource.DynamicRoutingDataSource;
+import com.pisces.framework.rds.datasource.support.DatabaseUtils;
+import com.pisces.framework.rds.enums.DatabaseType;
+import com.pisces.framework.rds.query.dialect.impl.CommonsDialectImpl;
+import com.pisces.framework.rds.query.dialect.impl.OracleDialect;
 import org.apache.ibatis.util.MapUtil;
 
+import javax.sql.DataSource;
 import java.util.EnumMap;
 import java.util.Map;
 
 /**
  * 方言工厂类，用于创建方言
+ *
+ * @author jason
+ * @date 2023/06/27
  */
 public class DialectFactory {
 
@@ -32,13 +40,15 @@ public class DialectFactory {
      * 比如，在 mybatis-flex 实现的方言中有 bug 或者 有自己的独立实现，可以添加自己的方言实现到
      * 此 map 中，用于覆盖系统的方言实现
      */
-    private static final Map<DbType, IDialect> dialectMap = new EnumMap<>(DbType.class);
+    private static final Map<DatabaseType, IDialect> DIALECT_MAP = new EnumMap<>(DatabaseType.class);
 
-    /**
-     * 通过设置当前线程的数据库类型，以达到在代码执行时随时切换方言的功能
-     */
-    private static final ThreadLocal<DbType> dbTypeThreadLocal = new ThreadLocal<>();
-
+    private static DatabaseType getDbType() {
+        DataSource dataSource = AppUtils.getBean(DataSource.class);
+        if (dataSource instanceof DynamicRoutingDataSource) {
+            return ((DynamicRoutingDataSource) dataSource).determineDatabaseType();
+        }
+        return DatabaseUtils.getType(dataSource);
+    }
 
     /**
      * 获取方言
@@ -46,49 +56,11 @@ public class DialectFactory {
      * @return IDialect
      */
     public static IDialect getDialect() {
-        DbType dbType = dbTypeThreadLocal.get();
-        return MapUtil.computeIfAbsent(dialectMap, dbType, DialectFactory::createDialect);
+        DatabaseType dbType = getDbType();
+        return MapUtil.computeIfAbsent(DIALECT_MAP, dbType, DialectFactory::createDialect);
     }
 
-    /**
-     * 设置当前线程的 dbType
-     *
-     * @param dbType
-     */
-    public static void setHintDbType(DbType dbType) {
-        dbTypeThreadLocal.set(dbType);
-    }
-
-    /**
-     * 获取当前线程的 dbType
-     *
-     * @return dbType
-     */
-    public static DbType getHintDbType() {
-        return dbTypeThreadLocal.get();
-    }
-
-
-    /**
-     * 清除当前线程的 dbType
-     */
-    public static void clearHintDbType() {
-        dbTypeThreadLocal.remove();
-    }
-
-
-    /**
-     * 可以为某个 dbType 注册（新增或覆盖）自己的方言
-     *
-     * @param dbType  数据库类型
-     * @param dialect 方言的实现
-     */
-    public static void registerDialect(DbType dbType, IDialect dialect) {
-        dialectMap.put(dbType, dialect);
-    }
-
-
-    private static IDialect createDialect(DbType dbType) {
+    private static IDialect createDialect(DatabaseType dbType) {
         return switch (dbType) {
             case MYSQL, H2, MARIADB, GBASE, OSCAR, XUGU, CLICK_HOUSE, OCEAN_BASE, CUBRID, GOLDILOCKS, CSIIDB ->
                     new CommonsDialectImpl(KeywordWrap.BACKQUOTE, LimitOffsetProcessor.MYSQL);

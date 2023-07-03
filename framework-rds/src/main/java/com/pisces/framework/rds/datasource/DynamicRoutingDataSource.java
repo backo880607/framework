@@ -21,6 +21,8 @@ import com.pisces.framework.core.utils.lang.StringUtils;
 import com.pisces.framework.rds.datasource.provider.DynamicDataSourceProvider;
 import com.pisces.framework.rds.datasource.strategy.DynamicDataSourceStrategy;
 import com.pisces.framework.rds.datasource.strategy.LoadBalanceDynamicDataSourceStrategy;
+import com.pisces.framework.rds.datasource.support.DatabaseUtils;
+import com.pisces.framework.rds.enums.DatabaseType;
 import io.seata.rm.datasource.DataSourceProxy;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +53,7 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource implemen
      * 所有数据库
      */
     private final Map<String, DataSource> dataSourceMap = new ConcurrentHashMap<>();
+    private final Map<String, DatabaseType> dbTypeMap = new ConcurrentHashMap<>();
     /**
      * 分组数据库
      */
@@ -92,24 +95,6 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource implemen
     }
 
     /**
-     * 获取所有的数据源
-     *
-     * @return 当前所有数据源
-     */
-    public Map<String, DataSource> getDataSources() {
-        return dataSourceMap;
-    }
-
-    /**
-     * 获取的所有的分组数据源
-     *
-     * @return 当前所有的分组数据源
-     */
-    public Map<String, GroupDataSource> getGroupDataSources() {
-        return groupDataSources;
-    }
-
-    /**
      * 获取数据源
      *
      * @param ds 数据源名称
@@ -131,6 +116,19 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource implemen
         return determinePrimaryDataSource();
     }
 
+    @Override
+    public DatabaseType determineDatabaseType() {
+        String dsKey = DynamicDataSourceContextHolder.peek();
+        return getDatabaseType(dsKey);
+    }
+
+    public DatabaseType getDatabaseType(String ds) {
+        if (StringUtils.isEmpty(ds)) {
+            ds = primary;
+        }
+        return dbTypeMap.get(ds);
+    }
+
     /**
      * 添加数据源
      *
@@ -145,6 +143,7 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource implemen
         if (oldDataSource != null) {
             closeDataSource(ds, oldDataSource);
         }
+        dbTypeMap.put(ds, DatabaseUtils.getType(dataSource));
         log.info("dynamic-datasource - add a datasource named [{}] success", ds);
     }
 

@@ -6,7 +6,8 @@ import com.pisces.framework.rds.helper.entity.EntityTable;
 /**
  * 解析实体类接口
  *
- * @author liuzh
+ * @author jason
+ * @date 2023/07/02
  */
 public interface EntityResolve {
 

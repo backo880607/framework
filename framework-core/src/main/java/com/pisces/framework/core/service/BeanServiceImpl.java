@@ -3,13 +3,21 @@ package com.pisces.framework.core.service;
 import com.pisces.framework.core.dao.BaseDao;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.locale.LanguageService;
-import org.springframework.beans.BeanUtils;
+import com.pisces.framework.core.query.QueryOrderBy;
+import com.pisces.framework.core.query.QueryWrapper;
+import com.pisces.framework.core.query.condition.QueryCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
-public class BeanServiceImpl<T extends BeanObject, D extends BaseDao<T>>  extends BaseServiceImpl implements BeanService<T> {
+/**
+ * bean对象服务实现
+ *
+ * @author jason
+ * @date 2023/06/27
+ */
+public class BeanServiceImpl<T extends BeanObject, D extends BaseDao<T>> extends BaseServiceImpl implements BeanService<T> {
     private final Class<T> beanClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     @Autowired
     protected LanguageService lang;
@@ -17,10 +25,12 @@ public class BeanServiceImpl<T extends BeanObject, D extends BaseDao<T>>  extend
     private D dao;
 
     public BeanServiceImpl() {
-        ServiceManager.register(beanClass, this);
+        ServiceManager.register(getBeanClass(), this);
     }
 
-    protected D getDao() { return dao; }
+    protected D getDao() {
+        return dao;
+    }
 
     @Override
     public Class<T> getBeanClass() {
@@ -34,9 +44,7 @@ public class BeanServiceImpl<T extends BeanObject, D extends BaseDao<T>>  extend
 
     @Override
     public T create() {
-        T entity = BeanUtils.instantiateClass(getBeanClass());
-        entity.init();
-        return entity;
+        return getDao().create(getBeanClass());
     }
 
     @Override
@@ -50,6 +58,12 @@ public class BeanServiceImpl<T extends BeanObject, D extends BaseDao<T>>  extend
     }
 
     @Override
+    public T get(QueryCondition condition) {
+        QueryWrapper qw = QueryWrapper.from(getBeanClass()).where(condition);
+        return getDao().fetchOne(qw);
+    }
+
+    @Override
     public List<T> list() {
         return getDao().list();
     }
@@ -57,6 +71,12 @@ public class BeanServiceImpl<T extends BeanObject, D extends BaseDao<T>>  extend
     @Override
     public List<T> listByIds(List<Long> ids) {
         return getDao().listByIds(ids);
+    }
+
+    @Override
+    public List<T> list(QueryCondition condition, QueryOrderBy... orderBys) {
+        QueryWrapper qw = QueryWrapper.from(getBeanClass()).where(condition).orderBy(orderBys);
+        return getDao().fetch(qw);
     }
 
     @Override
@@ -105,7 +125,7 @@ public class BeanServiceImpl<T extends BeanObject, D extends BaseDao<T>>  extend
     }
 
     @Override
-    public void clear() {
+    public void delete(QueryCondition condition) {
 
     }
 }

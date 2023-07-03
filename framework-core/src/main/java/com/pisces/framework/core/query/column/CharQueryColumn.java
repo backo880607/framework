@@ -1,8 +1,8 @@
 package com.pisces.framework.core.query.column;
 
+import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.enums.CONDITION_TYPE;
-import com.pisces.framework.core.query.QueryCondition;
-import com.pisces.framework.core.query.TableDef;
+import com.pisces.framework.core.query.condition.QueryCondition;
 
 import java.util.Collection;
 
@@ -14,8 +14,12 @@ import java.util.Collection;
  */
 public class CharQueryColumn extends QueryColumn {
 
-    public CharQueryColumn(TableDef tableDef, String name) {
-        super(tableDef, name);
+    public CharQueryColumn(String beanName, String fieldName) {
+        super(beanName, fieldName);
+    }
+
+    public CharQueryColumn bind(Class<? extends BeanObject> beanClass) {
+        return new CharQueryColumn(beanClass.getSimpleName(), getName());
     }
 
     public QueryCondition equal(Object value) {

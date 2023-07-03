@@ -29,6 +29,7 @@ import com.pisces.framework.core.utils.lang.StringUtils;
 import com.pisces.framework.rds.helper.entity.Config;
 import com.pisces.framework.rds.helper.entity.EntityTable;
 import com.pisces.framework.rds.utils.MetaObjectUtil;
+import com.pisces.framework.rds.utils.MsUtil;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.SqlSource;
@@ -46,9 +47,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static com.pisces.framework.rds.utils.MsUtil.getMapperClass;
-import static com.pisces.framework.rds.utils.MsUtil.getMethodName;
 
 /**
  * 通用Mapper模板类，扩展通用Mapper时需要继承该类
@@ -94,9 +92,9 @@ public abstract class MapperTemplate {
      * @return boolean
      */
     public boolean supportMethod(String msId) {
-        Class<?> mapperClass = getMapperClass(msId);
+        Class<?> mapperClass = MsUtil.getMapperClass(msId);
         if (this.mapperClass.isAssignableFrom(mapperClass)) {
-            String methodName = getMethodName(msId);
+            String methodName = MsUtil.getMethodName(msId);
             return methodMap.get(methodName) != null;
         }
         return false;
@@ -149,7 +147,7 @@ public abstract class MapperTemplate {
         if (entityClassMap.containsKey(msId)) {
             return entityClassMap.get(msId);
         } else {
-            Class<?> mapperClass = getMapperClass(msId);
+            Class<?> mapperClass = MsUtil.getMapperClass(msId);
             Type[] types = mapperClass.getGenericInterfaces();
             for (Type type : types) {
                 if (type instanceof ParameterizedType) {
@@ -201,10 +199,10 @@ public abstract class MapperTemplate {
      * @throws Exception 异常
      */
     public void setSqlSource(MappedStatement ms) throws Exception {
-        if (this.mapperClass == getMapperClass(ms.getId())) {
+        if (this.mapperClass == MsUtil.getMapperClass(ms.getId())) {
             throw new SystemException("请不要配置或扫描通用Mapper接口类：" + this.mapperClass);
         }
-        Method method = methodMap.get(getMethodName(ms));
+        Method method = methodMap.get(MsUtil.getMethodName(ms));
         try {
             //第一种，直接操作ms，不需要返回值
             if (method.getReturnType() == Void.TYPE) {

@@ -18,7 +18,6 @@ package com.pisces.framework.rds.datasource.provider;
 import com.pisces.framework.rds.datasource.config.DataSourceProperty;
 import com.pisces.framework.rds.datasource.creator.DefaultDataSourceCreator;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -27,7 +26,6 @@ import java.util.Map;
 /**
  * @author TaoYu
  */
-@Slf4j
 @AllArgsConstructor
 public abstract class AbstractDataSourceProvider implements DynamicDataSourceProvider {
 

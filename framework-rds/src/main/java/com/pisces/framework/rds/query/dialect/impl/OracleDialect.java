@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pisces.framework.rds.datasource.dialect.impl;
+package com.pisces.framework.rds.query.dialect.impl;
 
 import com.pisces.framework.core.utils.lang.StringUtils;
-import com.pisces.framework.rds.datasource.dialect.KeywordWrap;
-import com.pisces.framework.rds.datasource.dialect.LimitOffsetProcessor;
+import com.pisces.framework.rds.query.dialect.KeywordWrap;
+import com.pisces.framework.rds.query.dialect.LimitOffsetProcessor;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+/**
+ * Oracle方言
+ *
+ * @author jason
+ * @date 2023/06/27
+ */
 public class OracleDialect extends CommonsDialectImpl {
 
     private boolean caseSensitive;

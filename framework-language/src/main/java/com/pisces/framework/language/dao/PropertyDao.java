@@ -176,15 +176,6 @@ public class PropertyDao implements BaseDao<Property> {
     public void switchDaoImpl(DaoImpl impl) {
     }
 
-    @Override
-    public void loadData() {
-    }
-
-    @Override
-    public void sync() {
-
-    }
-
     private Property fillProperty(Property property) {
         if (!property.isInitialized()) {
             Property newItem = new Property();

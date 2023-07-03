@@ -15,43 +15,28 @@
  */
 package com.pisces.framework.core.query;
 
+import com.pisces.framework.core.enums.VALUE_SORT_TYYPE;
 import com.pisces.framework.core.query.column.QueryColumn;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
 /**
  * 排序字段
+ *
+ * @author jason
+ * @date 2023/06/27
  */
+@Getter
+@Setter
 public class QueryOrderBy implements Serializable {
 
-    private QueryColumn queryColumn;
+    private QueryColumn column;
+    private VALUE_SORT_TYYPE type;
 
-    private String orderType = "ASC"; //asc desc
-
-    private boolean nullsFirst = false;
-    private boolean nullsLast = false;
-
-    protected QueryOrderBy() {
-    }
-
-    public QueryOrderBy(QueryColumn queryColumn, String orderType) {
-        this.queryColumn = queryColumn;
-        this.orderType = orderType;
-    }
-
-    public QueryOrderBy(QueryColumn queryColumn) {
-        this.queryColumn = queryColumn;
-    }
-
-    public QueryOrderBy nullsFirst() {
-        this.nullsFirst = true;
-        this.nullsLast = false;
-        return this;
-    }
-
-    public QueryOrderBy nullsLast() {
-        this.nullsFirst = false;
-        this.nullsLast = true;
-        return this;
+    public QueryOrderBy(QueryColumn column, VALUE_SORT_TYYPE type) {
+        this.column = column;
+        this.type = type;
     }
 }

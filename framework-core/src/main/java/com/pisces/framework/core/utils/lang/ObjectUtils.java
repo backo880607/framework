@@ -62,6 +62,9 @@ public final class ObjectUtils {
     }
 
     public static Class<? extends BeanObject> fetchBeanClass(String name) {
+        if (StringUtils.isBlank(name)) {
+            throw new IllegalArgumentException("name must not be null or blank.");
+        }
         return FactoryManager.fetchBeanClass(name);
     }
 
@@ -439,29 +442,29 @@ public final class ObjectUtils {
         return editType;
     }
 
-    public static Object getValue(BeanObject entity, Property property) {
-        if (entity == null || property == null || property.getGetMethod() == null) {
+    public static Object getValue(BeanObject bean, Property property) {
+        if (bean == null || property == null || property.getGetMethod() == null) {
             return null;
         }
 
         Object value = null;
         try {
-            value = property.getGetMethod().invoke(entity, property.getPropertyCode());
+            value = property.getGetMethod().invoke(bean, property.getPropertyCode());
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ignored) {
         }
 
         return value;
     }
 
-    public static void setValue(BeanObject entity, Property property, Object value) {
-        if (entity == null || property == null || property.getSetMethod() == null) {
+    public static void setValue(BeanObject bean, Property property, Object value) {
+        if (bean == null || property == null || property.getSetMethod() == null) {
             return;
         } else if (value == null && property.getType() != PROPERTY_TYPE.BEAN) {
             return;
         }
 
         try {
-            property.getSetMethod().invoke(entity, property.getPropertyCode(), value);
+            property.getSetMethod().invoke(bean, property.getPropertyCode(), value);
         } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException ignored) {
         }
     }
@@ -485,17 +488,50 @@ public final class ObjectUtils {
         return mapper;
     }
 
-    private static final ThreadLocal<EntityMapper> defaultMapper = new ThreadLocal<>();
+    private static final ThreadLocal<EntityMapper> DEFAULT_MAPPER = new ThreadLocal<>();
 
-    public static EntityMapper defaultObjectMapper() {
-        if (defaultMapper.get() == null) {
+    public static EntityMapper defaultBeanMapper() {
+        if (DEFAULT_MAPPER.get() == null) {
             synchronized (ObjectUtils.class) {
-                if (defaultMapper.get() == null) {
-                    defaultMapper.set(createEntityMapper());
+                if (DEFAULT_MAPPER.get() == null) {
+                    DEFAULT_MAPPER.set(createEntityMapper());
                 }
             }
         }
-        return defaultMapper.get();
+        return DEFAULT_MAPPER.get();
+    }
+
+    public static <T extends BeanObject> T convertBean(Map<String, Object> data, Class<T> beanClass) {
+        T bean = ServiceManager.fetchService(beanClass).create();
+        assignBean(data, bean);
+        return bean;
+    }
+
+    public static <T extends BeanObject> List<T> convertBeanList(List<Map<String, Object>> dataList, Class<T> beanClass) {
+        List<T> beans = new ArrayList<>();
+        for (Map<String, Object> data : dataList) {
+            beans.add(convertBean(data, beanClass));
+        }
+        return beans;
+    }
+
+    public static <T extends BeanObject> void assignBean(Map<String, Object> data, T bean) {
+        for (Map.Entry<String, Object> entry : data.entrySet()) {
+            Object value = entry.getValue();
+            if (value == null) {
+                continue;
+            }
+            Property property = AppUtils.getBean(PropertyService.class).get(bean.getClass(), entry.getKey());
+            if (property == null) {
+                continue;
+            }
+
+            if (value instanceof String) {
+                defaultBeanMapper().setTextValue(bean, property, (String) value);
+            } else {
+                ObjectUtils.setValue(bean, property, value);
+            }
+        }
     }
 
     public static <T extends BeanObject> void copyIgnoreNull(T src, T target) {
@@ -548,7 +584,7 @@ public final class ObjectUtils {
                 return "";
             }
             try {
-                return value.getClass() == String.class ? value.toString() : defaultObjectMapper().writeValueAsString(value);
+                return value.getClass() == String.class ? value.toString() : defaultBeanMapper().writeValueAsString(value);
             } catch (JsonProcessingException ignored) {
             }
             return "";

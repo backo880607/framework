@@ -87,14 +87,4 @@ public class EmptyDao<T extends BeanObject> implements BaseDao<T> {
     public void switchDaoImpl(DaoImpl impl) {
         throw new UnsupportedOperationException("empty dao is not allowed");
     }
-
-    @Override
-    public void loadData() {
-        throw new UnsupportedOperationException("empty dao is not allowed");
-    }
-
-    @Override
-    public void sync() {
-        throw new UnsupportedOperationException("empty dao is not allowed");
-    }
 }

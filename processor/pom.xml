@@ -52,8 +52,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <!--Disable annotation processing for ourselves，关闭注解处理器-->
-                    <compilerArgument>-proc:none</compilerArgument>
+                    <proc>none</proc>
                     <source>${java.source.version}</source>
                     <target>${java.target.version}</target>
                     <encoding>UTF-8</encoding>

@@ -1,8 +1,8 @@
 package com.pisces.framework.core.query.column;
 
+import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.enums.CONDITION_TYPE;
-import com.pisces.framework.core.query.QueryCondition;
-import com.pisces.framework.core.query.TableDef;
+import com.pisces.framework.core.query.condition.QueryCondition;
 
 /**
  * 时间段查询列
@@ -12,8 +12,12 @@ import com.pisces.framework.core.query.TableDef;
  */
 public class DurationQueryColumn extends QueryColumn {
 
-    public DurationQueryColumn(TableDef tableDef, String name) {
-        super(tableDef, name);
+    public DurationQueryColumn(String beanName, String fieldName) {
+        super(beanName, fieldName);
+    }
+
+    public DurationQueryColumn bind(Class<? extends BeanObject> beanClass) {
+        return new DurationQueryColumn(beanClass.getSimpleName(), getName());
     }
 
     public QueryCondition equal(Object value) {

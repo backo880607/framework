@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pisces.framework.rds.datasource.dialect;
+package com.pisces.framework.core.query.condition;
 
-import com.pisces.framework.core.query.QueryWrapper;
+/**
+ * 操作类型的操作
+ * 示例1：and not ( id > 100 and name like %%)
+ */
+public class OperatorQueryCondition extends QueryCondition {
 
-public interface IDialect {
+    private final String operator;
+    private final QueryCondition child;
 
-    String wrap(String keyword);
-
-    String forHint(String hintString);
-
-    String forDeleteById(String tableName, String[] primaryKeys);
-
-    String forDeleteBatchByIds(String tableName, String[] primaryKeys, Object[] ids);
-
-    String buildSelectSql(QueryWrapper queryWrapper);
-
-    String buildDeleteSql(QueryWrapper queryWrapper);
+    public OperatorQueryCondition(String operator, QueryCondition child) {
+        this.operator = operator;
+        this.child = child;
+    }
 }
