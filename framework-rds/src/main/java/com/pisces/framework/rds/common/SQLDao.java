@@ -2,7 +2,6 @@ package com.pisces.framework.rds.common;
 
 import com.pisces.framework.core.dao.BaseDao;
 import com.pisces.framework.core.dao.impl.DaoImpl;
-import com.pisces.framework.core.dao.impl.MemoryModifyDaoImpl;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.entity.table.QBeanObject;
 import com.pisces.framework.core.query.QueryWrapper;
@@ -48,7 +47,7 @@ public class SQLDao<T extends BeanObject> extends SqlSessionDaoSupport implement
 
     @Override
     public T fetchOne(QueryWrapper qw) {
-        qw.and(QBeanObject.dataSetId.bind(beanClass).equal(0));
+        qw.and(QBeanObject.enabled.equal(true));
         return SqlExecutor.fetchOne(qw, beanClass);
     }
 
@@ -64,7 +63,7 @@ public class SQLDao<T extends BeanObject> extends SqlSessionDaoSupport implement
 
     @Override
     public List<T> fetch(QueryWrapper qw) {
-        qw.and(QBeanObject.dataSetId.bind(beanClass).equal(0));
+        qw.and(QBeanObject.enabled.equal(true));
         return SqlExecutor.fetch(qw, beanClass);
     }
 
@@ -115,7 +114,7 @@ public class SQLDao<T extends BeanObject> extends SqlSessionDaoSupport implement
 
     @Override
     public DaoImpl createDaoImpl() {
-        return new MemoryModifyDaoImpl<T>();
+        return null;
     }
 
     @Override

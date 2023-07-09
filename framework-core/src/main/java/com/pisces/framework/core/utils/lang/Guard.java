@@ -1,5 +1,6 @@
 package com.pisces.framework.core.utils.lang;
 
+import com.pisces.framework.core.exception.CommonException;
 import com.pisces.framework.core.exception.SystemException;
 import com.pisces.framework.type.Duration;
 
@@ -141,14 +142,60 @@ public final class Guard {
      *
      * @param condition 条件
      * @param msg       消息
-     * @param params    消息参数
+     * @param args      消息参数
      */
-    public static void assertTrue(boolean condition, String msg, Object... params) {
+    public static void assertTrue(boolean condition, String msg, Object... args) {
         if (!condition) {
-            throw new SystemException(msg, params);
+            throw new SystemException(msg, args);
         }
     }
 
+    /**
+     * 坚持正确
+     *
+     * @param condition 条件
+     * @param key       关键
+     * @param args      arg游戏
+     */
+    public static void assertTrue(boolean condition, Enum<?> key, Object... args) {
+        if (!condition) {
+            throw new CommonException(key, args);
+        }
+    }
+
+    /**
+     * 断言false
+     *
+     * @param condition 条件
+     * @param key       关键
+     * @param args      arg游戏
+     */
+    public static void assertFalse(boolean condition, Enum<?> key, Object... args) {
+        if (condition) {
+            throw new CommonException(key, args);
+        }
+    }
+
+    /**
+     * 断言传入的内容不能为 null
+     */
+    public static void assertNull(Object object, Enum<?> key, Object... args) {
+        assertTrue(object == null, key, args);
+    }
+
+    /**
+     * 断言传入的内容不能为 null
+     */
+    public static void assertNull(Object object, String msg, Object params) {
+        assertTrue(object == null, msg, params);
+    }
+
+    /**
+     * 断言传入的内容不能为 null
+     */
+    public static void assertNotNull(Object object, Enum<?> key, Object... args) {
+        assertTrue(object != null, key, args);
+    }
 
     /**
      * 断言传入的内容不能为 null
@@ -157,11 +204,16 @@ public final class Guard {
         assertTrue(object != null, msg, params);
     }
 
+    public static void assertNotEmpty(String value, Enum<?> key, Object... args) {
+        if (StringUtils.isEmpty(value)) {
+            throw new CommonException(key, args);
+        }
+    }
 
     /**
      * 断言传入的数组内容不能为 null 或者 空
      */
-    public static <T> void assertAreNotNull(T[] elements, String msg, Object params) {
+    public static <T> void assertArrayNotNull(T[] elements, String msg, Object params) {
         if (elements == null || elements.length == 0) {
             throw new SystemException(msg, params);
         }

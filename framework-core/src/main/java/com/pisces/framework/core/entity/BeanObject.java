@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pisces.framework.core.utils.IDGenerator;
 import com.pisces.framework.type.annotation.PropertyMeta;
 import com.pisces.framework.type.annotation.TableMeta;
-import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -30,8 +29,8 @@ public abstract class BeanObject implements Comparable<BeanObject> {
     private Date createDate;
     private String updateBy;
     private Date updateDate;
-    @Column(name = "DATA_SET_ID")
-    private Long dataSetId;
+    private Boolean enabled;
+    private Integer tenant;
 
     @JsonIgnore
     @PropertyMeta(property = false)
@@ -43,7 +42,8 @@ public abstract class BeanObject implements Comparable<BeanObject> {
         updateBy = "";
         createDate = new Date();
         updateDate = createDate;
-        dataSetId = 0L;
+        tenant = 0;
+        enabled = true;
         initialized = true;
     }
 

@@ -58,9 +58,11 @@
         <java.target.version>17</java.target.version>
 
         <mybatis.boot.version>3.0.1</mybatis.boot.version>
-        <querydsl.version>5.0.0</querydsl.version>
         <p6spy.version>3.9.1</p6spy.version>
         <seata.version>1.6.1</seata.version>
+
+        <java-jwt.version>4.4.0</java-jwt.version>
+        <jjwt.version>0.11.5</jjwt.version>
 
     </properties>
 
@@ -126,6 +128,26 @@
                         <groupId>com.alibaba</groupId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <!--            <dependency>-->
+            <!--                <groupId>com.auth0</groupId>-->
+            <!--                <artifactId>java-jwt</artifactId>-->
+            <!--                <version>${java-jwt.version}</version>-->
+            <!--            </dependency>-->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

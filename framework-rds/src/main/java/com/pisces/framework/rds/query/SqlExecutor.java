@@ -1,6 +1,7 @@
 package com.pisces.framework.rds.query;
 
 import com.pisces.framework.core.entity.BeanObject;
+import com.pisces.framework.core.entity.table.QBeanObject;
 import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.core.utils.AppUtils;
 import com.pisces.framework.core.utils.lang.ObjectUtils;
@@ -14,6 +15,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * sql执行程序
+ *
+ * @author jason
+ * @date 2023/07/09
+ */
 public class SqlExecutor {
 
     /**
@@ -39,7 +46,15 @@ public class SqlExecutor {
         SqlSessionUtils.closeSqlSession(sqlSession, getSqlSessionFactory());
     }
 
+    private static <T extends BeanObject> void bindTenant(QueryWrapper qw, Class<T> beanClass) {
+        long tenant = AppUtils.getTenant();
+        if (tenant != AppUtils.ROOT_TENANT) {
+            qw.and(QBeanObject.tenant.bind(beanClass).equal(tenant));
+        }
+    }
+
     public static <T extends BeanObject> T fetchOne(QueryWrapper qw, Class<T> beanClass) {
+        bindTenant(qw, beanClass);
         final String sql = SqlTools.toSql(qw);
         final Object[] args = SqlParams.getValueArray(qw);
         SqlSession sqlSession = sqlSession();
@@ -59,6 +74,7 @@ public class SqlExecutor {
     }
 
     public static <T extends BeanObject> List<T> fetch(QueryWrapper qw, Class<T> beanClass) {
+        bindTenant(qw, beanClass);
         final String sql = SqlTools.toSql(qw);
         final Object[] args = SqlParams.getValueArray(qw);
         SqlSession sqlSession = sqlSession();

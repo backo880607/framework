@@ -2,7 +2,9 @@ package com.pisces.framework.core.dao;
 
 import com.pisces.framework.core.dao.impl.DaoImpl;
 import com.pisces.framework.core.entity.BeanObject;
+import com.pisces.framework.core.query.QueryOrderBy;
 import com.pisces.framework.core.query.QueryWrapper;
+import com.pisces.framework.core.query.condition.QueryCondition;
 import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.ParameterizedType;
@@ -41,6 +43,23 @@ public interface BaseDao<T extends BeanObject> {
      */
     T getById(Long id);
 
+    /**
+     * 得到
+     *
+     * @param condition 条件
+     * @return {@link T}
+     */
+    default T get(QueryCondition condition) {
+        QueryWrapper qw = QueryWrapper.from(getBeanClass()).where(condition);
+        return fetchOne(qw);
+    }
+
+    /**
+     * 获取一个
+     *
+     * @param qw qw
+     * @return {@link T}
+     */
     default T fetchOne(QueryWrapper qw) {
         throw new UnsupportedOperationException("fetchOne is not allowed");
     }
@@ -59,6 +78,18 @@ public interface BaseDao<T extends BeanObject> {
      * @return {@link List}<{@link T}>
      */
     List<T> listByIds(List<Long> ids);
+
+    /**
+     * 列表
+     *
+     * @param condition 条件
+     * @param orderBys  订单
+     * @return {@link List}<{@link T}>
+     */
+    default List<T> list(QueryCondition condition, QueryOrderBy... orderBys) {
+        QueryWrapper qw = QueryWrapper.from(getBeanClass()).where(condition).orderBy(orderBys);
+        return fetch(qw);
+    }
 
     /**
      * 获取

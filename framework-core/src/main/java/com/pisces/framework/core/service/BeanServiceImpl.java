@@ -4,7 +4,6 @@ import com.pisces.framework.core.dao.BaseDao;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.locale.LanguageService;
 import com.pisces.framework.core.query.QueryOrderBy;
-import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.core.query.condition.QueryCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -59,8 +58,7 @@ public class BeanServiceImpl<T extends BeanObject, D extends BaseDao<T>> extends
 
     @Override
     public T get(QueryCondition condition) {
-        QueryWrapper qw = QueryWrapper.from(getBeanClass()).where(condition);
-        return getDao().fetchOne(qw);
+        return getDao().get(condition);
     }
 
     @Override
@@ -75,8 +73,7 @@ public class BeanServiceImpl<T extends BeanObject, D extends BaseDao<T>> extends
 
     @Override
     public List<T> list(QueryCondition condition, QueryOrderBy... orderBys) {
-        QueryWrapper qw = QueryWrapper.from(getBeanClass()).where(condition).orderBy(orderBys);
-        return getDao().fetch(qw);
+        return getDao().list(condition, orderBys);
     }
 
     @Override

@@ -1,9 +1,14 @@
 package com.pisces.framework.core.utils;
 
 import com.pisces.framework.core.Initializer;
+import com.pisces.framework.core.entity.AccountData;
+import com.pisces.framework.core.utils.lang.CollectionUtils;
+import com.pisces.framework.core.utils.lang.Guard;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,7 +18,9 @@ import java.util.Map;
  * @date 2022/12/07
  */
 public final class AppUtils {
+    public static final int ROOT_TENANT = 7;
     private static ApplicationContext context;
+    private static final ThreadLocal<AccountData> CUR_ACCOUNT_DATA = new ThreadLocal<>();
 
     private AppUtils() {
     }
@@ -41,5 +48,33 @@ public final class AppUtils {
 
     public static <T> Map<String, T> getBeansOfType(Class<T> clazz) {
         return context.getBeansOfType(clazz);
+    }
+
+    public static String getAccount() {
+        final AccountData userData = CUR_ACCOUNT_DATA.get();
+        return userData == null ? "system" : userData.getAccount();
+    }
+
+    public static int getTenant() {
+        final AccountData userData = CUR_ACCOUNT_DATA.get();
+        return userData == null ? 0 : Guard.value(userData.getTenant());
+    }
+
+    public static long getDataSet() {
+        final AccountData userData = CUR_ACCOUNT_DATA.get();
+        return userData == null ? 0 : Guard.value(userData.getDataSet());
+    }
+
+    public static List<String> getAuthorities() {
+        final AccountData userData = CUR_ACCOUNT_DATA.get();
+        return userData == null || CollectionUtils.isEmpty(userData.getAuthorities()) ? new ArrayList<>() : userData.getAuthorities();
+    }
+
+    public static void bindAccount(AccountData data) {
+        CUR_ACCOUNT_DATA.set(data);
+    }
+
+    public static void unbindAccount() {
+        CUR_ACCOUNT_DATA.remove();
     }
 }
