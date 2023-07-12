@@ -1,19 +1,18 @@
 package com.pisces.framework.language.dao;
 
 import com.pisces.framework.core.config.CoreMessage;
-import com.pisces.framework.core.dao.BaseDao;
 import com.pisces.framework.core.dao.DaoManager;
-import com.pisces.framework.core.dao.impl.DaoImpl;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.entity.Property;
+import com.pisces.framework.core.entity.table.QProperty;
 import com.pisces.framework.core.exception.ConfigurationException;
 import com.pisces.framework.core.exception.PropertyException;
+import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.core.utils.lang.ObjectUtils;
 import com.pisces.framework.core.utils.lang.StringUtils;
-import com.pisces.framework.language.dao.mapper.PropertyMapper;
+import com.pisces.framework.rds.common.SQLDao;
 import com.pisces.framework.type.PROPERTY_TYPE;
 import com.pisces.framework.type.annotation.PropertyMeta;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -28,9 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2022/12/07
  */
 @Component
-public class PropertyDao implements BaseDao<Property> {
-    @Resource
-    private PropertyMapper mapper;
+public class PropertyDao extends SQLDao<Property> {
     private final Map<Class<? extends BeanObject>, Map<String, Property>> DEFAULT_PROPERTIES = new ConcurrentHashMap<>();
 
     public PropertyDao() {
@@ -65,24 +62,9 @@ public class PropertyDao implements BaseDao<Property> {
     }
 
     @Override
-    public Property getById(Long id) {
-        return mapper.selectById(id);
-    }
-
-    @Override
-    public List<Property> listByIds(List<Long> ids) {
-        return mapper.selectByIds(ids);
-    }
-
-    @Override
-    public boolean exist(Long id) {
-        return mapper.existsById(id);
-    }
-
-    @Override
     public int insert(Property record) {
         record = fillProperty(record);
-        mapper.insert(record);
+        super.insert(record);
         return 1;
     }
 
@@ -92,7 +74,7 @@ public class PropertyDao implements BaseDao<Property> {
         for (Property property : recordList) {
             properties.add(fillProperty(property));
         }
-        mapper.insertBatch(properties);
+        super.insertBatch(properties);
         return recordList.size();
     }
 
@@ -107,7 +89,7 @@ public class PropertyDao implements BaseDao<Property> {
         }
 
         item = fillProperty(item);
-        mapper.update(item);
+        super.update(item);
         return 1;
     }
 
@@ -124,7 +106,7 @@ public class PropertyDao implements BaseDao<Property> {
             }
             properties.add(fillProperty(item));
         }
-        mapper.updateBatch(properties);
+        super.updateBatch(properties);
         return items.size();
     }
 
@@ -138,7 +120,7 @@ public class PropertyDao implements BaseDao<Property> {
             throw new UnsupportedOperationException("can`t delete a inherent property class:" + item.getBelongName() + " property:" + item.getPropertyCode());
         }
 
-        return mapper.deleteById(oldRecord.getId());
+        return super.deleteById(oldRecord.getId());
     }
 
     @Override
@@ -154,7 +136,7 @@ public class PropertyDao implements BaseDao<Property> {
             }
             properties.add(oldItem);
         }
-        return mapper.deleteBatch(properties);
+        return super.deleteBatch(properties);
     }
 
     @Override
@@ -165,15 +147,6 @@ public class PropertyDao implements BaseDao<Property> {
     @Override
     public int deleteIdBatch(List<Long> ids) {
         throw new UnsupportedOperationException("deleteByIds is not allowed");
-    }
-
-    @Override
-    public DaoImpl createDaoImpl() {
-        return null;
-    }
-
-    @Override
-    public void switchDaoImpl(DaoImpl impl) {
     }
 
     private Property fillProperty(Property property) {
@@ -282,35 +255,32 @@ public class PropertyDao implements BaseDao<Property> {
     }
 
     public List<Property> get(Class<? extends BeanObject> beanClass) {
-        return new ArrayList<>();
-//        Example example = new Example(Property.class);
-//        example.createCriteria().andEqualTo("dataSetId", AppUtils.getDataSetId()).andEqualTo("belongName", entityClass.getSimpleName());
-//        List<Property> properties = mapper.selectByExample(example);
-//        Map<String, Property> defaultProperties = getDefaultProperties(beanClass);
-//        if (properties == null) {
-//            properties = new ArrayList<>();
-//        } else {
-//            for (Property property : properties) {
-//                fillProperty(property);
-//                defaultProperties.remove(property.getPropertyCode());
-//            }
-//        }
-//        properties.addAll(defaultProperties.values());
-//        return properties;
+        QueryWrapper qw = QueryWrapper.from(Property.class);
+        qw.where(QProperty.belongName.equal(beanClass.getSimpleName()));
+        List<Property> properties = fetch(qw);
+        Map<String, Property> defaultProperties = getDefaultProperties(beanClass);
+        if (properties == null) {
+            properties = new ArrayList<>();
+        } else {
+            for (Property property : properties) {
+                fillProperty(property);
+                defaultProperties.remove(property.getPropertyCode());
+            }
+        }
+        properties.addAll(defaultProperties.values());
+        return properties;
     }
 
     public Property get(Class<? extends BeanObject> beanClass, String code) {
-        return null;
-//        Example example = new Example(Property.class);
-//        example.createCriteria().andEqualTo("dataSetId", AppUtils.getDataSetId())
-//                .andEqualTo("belongName", beanClass.getSimpleName()).andEqualTo("propertyCode", code);
-//        Property property = mapper.selectOneByExample(example);
-//        if (property == null) {
-//            property = getDefaultProperties(beanClass).get(code);
-//        } else {
-//            property = fillProperty(property);
-//        }
-//        return property;
+        QueryWrapper qw = QueryWrapper.from(Property.class);
+        qw.where(QProperty.belongName.equal(beanClass.getSimpleName()).and(QProperty.propertyCode.equal(code)));
+        Property property = fetchOne(qw);
+        if (property == null) {
+            property = getDefaultProperties(beanClass).get(code);
+        } else {
+            property = fillProperty(property);
+        }
+        return property;
     }
 
     public List<Property> getPrimaries(Class<? extends BeanObject> beanClass) {

@@ -14,7 +14,7 @@ import java.util.Map.Entry;
  * @date 2022/12/07
  */
 public class LocaleManager {
-    private static LanguageService languageService;
+    private static volatile LanguageService languageService;
 
     protected LocaleManager() {
     }
@@ -23,8 +23,8 @@ public class LocaleManager {
         if (languageService == null) {
             synchronized (LocaleManager.class) {
                 if (languageService == null) {
-                    Map<String, LanguageService> mgrs = AppUtils.getBeansOfType(LanguageService.class);
-                    for (Entry<String, LanguageService> entry : mgrs.entrySet()) {
+                    Map<String, LanguageService> mgr = AppUtils.getBeansOfType(LanguageService.class);
+                    for (Entry<String, LanguageService> entry : mgr.entrySet()) {
                         languageService = entry.getValue();
                         break;
                     }

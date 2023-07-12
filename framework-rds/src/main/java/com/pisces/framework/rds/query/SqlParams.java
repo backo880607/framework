@@ -1,8 +1,11 @@
 package com.pisces.framework.rds.query;
 
+import com.pisces.framework.core.query.Brackets;
 import com.pisces.framework.core.query.QueryTable;
 import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.core.query.column.QueryColumn;
+import com.pisces.framework.core.query.condition.OperatorQueryCondition;
+import com.pisces.framework.core.query.condition.OperatorSelectCondition;
 import com.pisces.framework.core.query.condition.QueryCondition;
 import com.pisces.framework.core.utils.lang.ClassUtils;
 import com.pisces.framework.core.utils.lang.CollectionUtils;
@@ -13,6 +16,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * sql参数
+ *
+ * @author jason
+ * @date 2023/07/12
+ */
 public class SqlParams {
 
     /**
@@ -20,16 +29,7 @@ public class SqlParams {
      * 在构建 sql 的时候，需要保证 where 在 having 的前面
      */
     public static Object[] getValueArray(QueryWrapper qw) {
-
         List<Object> withValues = null;
-//        if (with != null) {
-//            Object[] paramValues = with.getParamValues();
-//            if (CollectionUtils.isNotEmpty(paramValues)) {
-//                withValues = new ArrayList<>(Arrays.asList(paramValues));
-//
-//            }
-//        }
-
         List<Object> columnValues = null;
 //        List<QueryColumn> selectColumns = qw.getSelectColumns();
 //        if (CollectionUtils.isNotEmpty(selectColumns)) {
@@ -127,10 +127,21 @@ public class SqlParams {
             return;
         }
 
-        Object value = condition.getValue();
+        Object value = null;
+        if (condition instanceof Brackets brackets) {
+            if (brackets.checkEffective()) {
+                value = getValues(brackets.getChildCondition());
+            }
+        } else if (condition instanceof OperatorQueryCondition operator) {
+            value = getValues(operator.getChild());
+        } else if (condition instanceof OperatorSelectCondition operator) {
+            value = getValueArray(operator.getQueryWrapper());
+        } else {
+            value = condition.getValue();
+        }
+
         if (value == null
                 || value instanceof QueryColumn) {
-//                || value instanceof RawFragment) {
             getValues(condition.getNext(), params);
             return;
         }

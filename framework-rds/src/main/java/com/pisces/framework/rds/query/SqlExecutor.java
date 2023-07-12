@@ -4,6 +4,7 @@ import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.entity.table.QBeanObject;
 import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.core.utils.AppUtils;
+import com.pisces.framework.core.utils.lang.CollectionUtils;
 import com.pisces.framework.core.utils.lang.ObjectUtils;
 import org.apache.ibatis.jdbc.SqlRunner;
 import org.apache.ibatis.session.SqlSession;
@@ -54,23 +55,9 @@ public class SqlExecutor {
     }
 
     public static <T extends BeanObject> T fetchOne(QueryWrapper qw, Class<T> beanClass) {
-        bindTenant(qw, beanClass);
-        final String sql = SqlTools.toSql(qw);
-        final Object[] args = SqlParams.getValueArray(qw);
-        SqlSession sqlSession = sqlSession();
-        try (Connection connection = sqlSession.getConnection()) {
-            SqlRunner sqlRunner = new SqlRunner(connection);
-            Map<String, Object> data = sqlRunner.selectOne(sql, args);
-            if (data == null || data.isEmpty()) {
-                return null;
-            }
-            return ObjectUtils.convertBean(data, beanClass);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        } finally {
-            closeSqlSession(sqlSession);
-        }
-        return null;
+        qw.limit(1);
+        List<T> beanObjects = fetch(qw, beanClass);
+        return CollectionUtils.isEmpty(beanObjects) ? null : beanObjects.get(0);
     }
 
     public static <T extends BeanObject> List<T> fetch(QueryWrapper qw, Class<T> beanClass) {

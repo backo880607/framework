@@ -18,6 +18,9 @@ package com.pisces.framework.core.query.condition;
 /**
  * 操作类型的操作
  * 示例1：and not ( id > 100 and name like %%)
+ *
+ * @author jason
+ * @date 2023/07/12
  */
 public class OperatorQueryCondition extends QueryCondition {
 
@@ -27,5 +30,13 @@ public class OperatorQueryCondition extends QueryCondition {
     public OperatorQueryCondition(String operator, QueryCondition child) {
         this.operator = operator;
         this.child = child;
+    }
+
+    public String getOperator() {
+        return operator;
+    }
+
+    public QueryCondition getChild() {
+        return child;
     }
 }

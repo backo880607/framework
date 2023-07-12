@@ -31,6 +31,10 @@ public class Brackets extends QueryCondition {
         this.childCondition = childCondition;
     }
 
+    public QueryCondition getChildCondition() {
+        return childCondition;
+    }
+
     @Override
     public QueryCondition and(QueryCondition nextCondition) {
         connectToChild(nextCondition, QueryConnector.AND);

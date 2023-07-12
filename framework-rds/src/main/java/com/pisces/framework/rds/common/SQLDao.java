@@ -47,7 +47,7 @@ public class SQLDao<T extends BeanObject> extends SqlSessionDaoSupport implement
 
     @Override
     public T fetchOne(QueryWrapper qw) {
-        qw.and(QBeanObject.enabled.equal(true));
+        qw.and(QBeanObject.enabled.bind(beanClass).equal(true));
         return SqlExecutor.fetchOne(qw, beanClass);
     }
 
@@ -63,7 +63,7 @@ public class SQLDao<T extends BeanObject> extends SqlSessionDaoSupport implement
 
     @Override
     public List<T> fetch(QueryWrapper qw) {
-        qw.and(QBeanObject.enabled.equal(true));
+        qw.and(QBeanObject.enabled.bind(beanClass).equal(true));
         return SqlExecutor.fetch(qw, beanClass);
     }
 

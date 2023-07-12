@@ -27,5 +27,6 @@ public enum WebMessage {
     NOT_EXISTED,
     EXISTED,
     INVALIDATION_ENTITY_PROPERTY,
+    UNAUTHORIZED,
     NOT_ACCESS
 }

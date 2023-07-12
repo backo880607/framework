@@ -1,5 +1,11 @@
 package com.pisces.framework.web.context;
 
+/**
+ * 双鱼座反应
+ *
+ * @author jason
+ * @date 2023/07/10
+ */
 public interface PiscesResponse {
     /**
      * 指定前端可以获取到哪些响应头时使用的参数名

@@ -21,6 +21,9 @@ import com.pisces.framework.core.query.QueryWrapper;
  * 操作类型的操作
  * 示例1：and EXISTS (select 1 from ... where ....)
  * 示例2：and not EXISTS (select ... from ... where ....)
+ *
+ * @author jason
+ * @date 2023/07/12
  */
 public class OperatorSelectCondition extends QueryCondition {
     //操作符，例如 exist, not exist
@@ -30,6 +33,14 @@ public class OperatorSelectCondition extends QueryCondition {
     public OperatorSelectCondition(String operator, QueryWrapper queryWrapper) {
         this.operator = operator;
         this.queryWrapper = queryWrapper;
+    }
+
+    public String getOperator() {
+        return operator;
+    }
+
+    public QueryWrapper getQueryWrapper() {
+        return queryWrapper;
     }
 
     @Override

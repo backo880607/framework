@@ -118,32 +118,32 @@ public final class StringUtils {
     /**
      * 第一个字符转换为小写
      *
-     * @param string
+     * @param value
      */
-    public static String firstCharToLowerCase(String string) {
-        char firstChar = string.charAt(0);
+    public static String firstToLowerCase(String value) {
+        char firstChar = value.charAt(0);
         if (firstChar >= 'A' && firstChar <= 'Z') {
-            char[] arr = string.toCharArray();
+            char[] arr = value.toCharArray();
             arr[0] += ('a' - 'A');
             return new String(arr);
         }
-        return string;
+        return value;
     }
 
 
     /**
      * 第一个字符转换为大写
      *
-     * @param string
+     * @param value
      */
-    public static String firstCharToUpperCase(String string) {
-        char firstChar = string.charAt(0);
+    public static String firstToUpperCase(String value) {
+        char firstChar = value.charAt(0);
         if (firstChar >= 'a' && firstChar <= 'z') {
-            char[] arr = string.toCharArray();
+            char[] arr = value.toCharArray();
             arr[0] -= ('a' - 'A');
             return new String(arr);
         }
-        return string;
+        return value;
     }
 
     /**
@@ -336,7 +336,7 @@ public final class StringUtils {
         }
         // allowSigns is true iff the val ends in 'E'
         // found digit it to make sure weird stuff like '.' and '1E-' doesn't pass
-        return false == allowSigns && foundDigit;
+        return !allowSigns && foundDigit;
     }
 
     /**
@@ -732,7 +732,7 @@ public final class StringUtils {
      * @param padChar 补充的字符
      * @return 补充后的字符串
      */
-    public static String padPre(CharSequence str, int length, char padChar) {
+    public static String padPrev(CharSequence str, int length, char padChar) {
         if (null == str) {
             return null;
         }
@@ -845,20 +845,7 @@ public final class StringUtils {
     public static boolean equalsAnyIgnoreCase(CharSequence str1, CharSequence... strs) {
         return equalsAny(str1, true, strs);
     }
-
-    /**
-     * 给定字符串是否与提供的中任一字符串相同，相同则返回{@code true}，没有相同的返回{@code false}<br>
-     * 如果参与比对的字符串列表为空，返回{@code false}
-     *
-     * @param str1 给定需要检查的字符串
-     * @param strs 需要参与比对的字符串列表
-     * @return 是否相同
-     * @since 4.3.2
-     */
-    public static boolean equalsAny(CharSequence str1, CharSequence... strs) {
-        return equalsAny(str1, false, strs);
-    }
-
+    
     /**
      * 给定字符串是否与提供的中任一字符串相同，相同则返回{@code true}，没有相同的返回{@code false}<br>
      * 如果参与比对的字符串列表为空，返回{@code false}
@@ -883,18 +870,6 @@ public final class StringUtils {
     }
 
     /**
-     * 查找指定字符串是否包含指定字符串列表中的任意一个字符串
-     *
-     * @param str      指定字符串
-     * @param testStrs 需要检查的字符串数组
-     * @return 是否包含任意一个字符串
-     * @since 3.2.0
-     */
-    public static boolean containsAny(CharSequence str, CharSequence... testStrs) {
-        return null != getContainsStr(str, testStrs);
-    }
-
-    /**
      * 查找指定字符串是否包含指定字符列表中的任意一个字符
      *
      * @param str       指定字符串
@@ -914,100 +889,6 @@ public final class StringUtils {
             }
         }
         return false;
-    }
-
-    /**
-     * 给定字符串是否包含空白符（空白符包括空格、制表符、全角空格和不间断空格）<br>
-     * 如果给定字符串为null或者""，则返回false
-     *
-     * @param str 字符串
-     * @return 是否包含空白符
-     * @since 4.0.8
-     */
-    public static boolean containsBlank(CharSequence str) {
-        if (null == str) {
-            return false;
-        }
-        final int length = str.length();
-        if (0 == length) {
-            return false;
-        }
-
-        for (int i = 0; i < length; i += 1) {
-            if (CharUtils.isBlankChar(str.charAt(i))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 查找指定字符串是否包含指定字符串列表中的任意一个字符串，如果包含返回找到的第一个字符串
-     *
-     * @param str      指定字符串
-     * @param testStrs 需要检查的字符串数组
-     * @return 被包含的第一个字符串
-     * @since 3.2.0
-     */
-    public static String getContainsStr(CharSequence str, CharSequence... testStrs) {
-        if (isEmpty(str) || testStrs == null || testStrs.length == 0) {
-            return null;
-        }
-        for (CharSequence checkStr : testStrs) {
-            if (str.toString().contains(checkStr)) {
-                return checkStr.toString();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 是否包含特定字符，忽略大小写，如果给定两个参数都为{@code null}，返回true
-     *
-     * @param str     被检测字符串
-     * @param testStr 被测试是否包含的字符串
-     * @return 是否包含
-     */
-    public static boolean containsIgnoreCase(CharSequence str, CharSequence testStr) {
-        if (null == str) {
-            // 如果被监测字符串和
-            return null == testStr;
-        }
-        return str.toString().toLowerCase().contains(testStr.toString().toLowerCase());
-    }
-
-    /**
-     * 查找指定字符串是否包含指定字符串列表中的任意一个字符串<br>
-     * 忽略大小写
-     *
-     * @param str      指定字符串
-     * @param testStrs 需要检查的字符串数组
-     * @return 是否包含任意一个字符串
-     * @since 3.2.0
-     */
-    public static boolean containsAnyIgnoreCase(CharSequence str, CharSequence... testStrs) {
-        return null != getContainsStrIgnoreCase(str, testStrs);
-    }
-
-    /**
-     * 查找指定字符串是否包含指定字符串列表中的任意一个字符串，如果包含返回找到的第一个字符串<br>
-     * 忽略大小写
-     *
-     * @param str      指定字符串
-     * @param testStrs 需要检查的字符串数组
-     * @return 被包含的第一个字符串
-     * @since 3.2.0
-     */
-    public static String getContainsStrIgnoreCase(CharSequence str, CharSequence... testStrs) {
-        if (isEmpty(str) || testStrs == null || testStrs.length == 0) {
-            return null;
-        }
-        for (CharSequence testStr : testStrs) {
-            if (containsIgnoreCase(str, testStr)) {
-                return testStr.toString();
-            }
-        }
-        return null;
     }
 
     /**
@@ -1093,23 +974,10 @@ public final class StringUtils {
             return false;
         }
         for (int i = value.length(); --i >= 0; ) {
-            if (false == matcher.match(value.charAt(i))) {
+            if (!matcher.match(value.charAt(i))) {
                 return false;
             }
         }
         return true;
-    }
-
-    public static boolean endsWithAny(String str, String... suffixes) {
-        if (isBlank(str) || suffixes == null || suffixes.length == 0) {
-            return false;
-        }
-
-        for (String suffix : suffixes) {
-            if (str.endsWith(suffix)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

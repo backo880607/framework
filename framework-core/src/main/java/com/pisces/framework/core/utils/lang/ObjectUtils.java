@@ -469,7 +469,7 @@ public final class ObjectUtils {
         }
     }
 
-    public static EntityMapper createEntityMapper() {
+    public static EntityMapper createBeanMapper() {
         EntityMapper mapper = new EntityMapper();
         SimpleModule module = new SimpleModule();
         module.addSerializer(Long.TYPE, ToStringSerializer.instance);
@@ -494,7 +494,7 @@ public final class ObjectUtils {
         if (DEFAULT_MAPPER.get() == null) {
             synchronized (ObjectUtils.class) {
                 if (DEFAULT_MAPPER.get() == null) {
-                    DEFAULT_MAPPER.set(createEntityMapper());
+                    DEFAULT_MAPPER.set(createBeanMapper());
                 }
             }
         }

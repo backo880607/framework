@@ -43,8 +43,8 @@ public class BaseQueryWrapper implements Serializable {
     private QueryCondition havingQueryCondition;
     private List<QueryOrderBy> orderBys;
 
-    protected Integer limitOffset;
-    protected Integer limitRows;
+    private Integer limitOffset;
+    private Integer limitRows;
 
     protected Map<String, Object> context;
 

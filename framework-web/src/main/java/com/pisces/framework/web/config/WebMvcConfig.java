@@ -19,6 +19,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -49,11 +50,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         final MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.setObjectMapper(ObjectUtils.createEntityMapper());
+        converter.setObjectMapper(ObjectUtils.createBeanMapper());
         converter.setPrettyPrint(false);
         List<MediaType> mediaTypes = new ArrayList<>();
         mediaTypes.add(MediaType.APPLICATION_JSON);
         converter.setSupportedMediaTypes(mediaTypes);
+        converter.setDefaultCharset(StandardCharsets.UTF_8);
         // 放到第一个
         converters.add(0, converter);
     }

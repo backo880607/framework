@@ -53,6 +53,9 @@ public class PiscesEntityProcessor extends AbstractProcessor {
         }
         System.out.println("mybatis flex processor run start...");
         roundEnv.getElementsAnnotatedWith(TableMeta.class).forEach((Consumer<Element>) beanClassElement -> {
+            if (beanClassElement.getSimpleName().toString().equals("ProductionLine")) {
+                int num = 0;
+            }
             String beanClassName = beanClassElement.toString();
             StringBuilder guessPackage = new StringBuilder();
             if (!beanClassName.contains(".")) {

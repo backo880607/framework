@@ -1,10 +1,13 @@
 package com.pisces.framework.rds.query;
 
 import com.pisces.framework.core.enums.CONDITION_TYPE;
+import com.pisces.framework.core.query.Brackets;
 import com.pisces.framework.core.query.QueryOrderBy;
 import com.pisces.framework.core.query.QueryTable;
 import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.core.query.column.QueryColumn;
+import com.pisces.framework.core.query.condition.OperatorQueryCondition;
+import com.pisces.framework.core.query.condition.OperatorSelectCondition;
 import com.pisces.framework.core.query.condition.QueryCondition;
 import com.pisces.framework.core.utils.lang.ClassUtils;
 import com.pisces.framework.core.utils.lang.CollectionUtils;
@@ -94,11 +97,7 @@ public class SqlTools {
         return wrap(tableName, getColumnName(queryColumn), dialect);
     }
 
-    public static String toSql(QueryTable queryTable, IDialect dialect) {
-        return dialect.wrap(getTableName(queryTable));
-    }
-
-    public static String toSql(List<QueryTable> queryTables, QueryCondition condition, IDialect dialect) {
+    public static String toQueryConditionSql(List<QueryTable> queryTables, QueryCondition condition, IDialect dialect) {
         StringBuilder sql = new StringBuilder();
         //检测是否生效
         if (condition.checkEffective()) {
@@ -133,6 +132,98 @@ public class SqlTools {
         }
 
         return sql.toString();
+    }
+
+    public static String toBracketsSql(List<QueryTable> queryTables, Brackets condition, IDialect dialect) {
+        String sqlNext = condition.getNext() == null ? null : toSql(queryTables, condition.getNext(), dialect);
+
+        StringBuilder sql = new StringBuilder();
+        if (condition.checkEffective()) {
+            String childSql = toSql(queryTables, condition.getChildCondition(), dialect);
+            if (StringUtils.isNotBlank(childSql)) {
+                QueryCondition prevEffectiveCondition = condition.getEffectiveBefore();
+                if (prevEffectiveCondition != null) {
+                    childSql = prevEffectiveCondition.getConnector() + "(" + childSql + ")";
+                } else if (StringUtils.isNotBlank(sqlNext)) {
+                    childSql = "(" + childSql + ")";
+                }
+                sql.append(childSql);
+            } else {
+                //all child conditions are not effective
+                condition.when(false);
+            }
+        }
+
+        return sqlNext != null ? sql + sqlNext : sql.toString();
+    }
+
+    public static String toOperatorQuerySql(List<QueryTable> queryTables, OperatorQueryCondition condition, IDialect dialect) {
+        StringBuilder sql = new StringBuilder();
+
+        //检测是否生效
+        if (condition.checkEffective()) {
+            String childSql = toSql(queryTables, condition.getChild(), dialect);
+            if (StringUtils.isNotBlank(childSql)) {
+                QueryCondition prevEffectiveCondition = condition.getEffectiveBefore();
+                if (prevEffectiveCondition != null) {
+                    sql.append(prevEffectiveCondition.getConnector());
+                }
+                sql.append(condition.getOperator())
+                        .append(RdsConstant.BRACKET_LEFT)
+                        .append(childSql)
+                        .append(RdsConstant.BRACKET_RIGHT);
+            }
+        }
+
+        if (condition.getNext() != null) {
+            return sql + toSql(queryTables, condition.getNext(), dialect);
+        }
+
+        return sql.toString();
+    }
+
+    public static String toOperatorSelectSql(List<QueryTable> queryTables, OperatorSelectCondition condition, IDialect dialect) {
+        StringBuilder sql = new StringBuilder();
+
+        //检测是否生效
+        if (condition.checkEffective()) {
+            String childSql = dialect.buildSelectSql(condition.getQueryWrapper());
+            if (StringUtils.isNotBlank(childSql)) {
+
+                QueryCondition prevEffectiveCondition = condition.getEffectiveBefore();
+                if (prevEffectiveCondition != null) {
+                    sql.append(prevEffectiveCondition.getConnector());
+                }
+                sql.append(condition.getOperator())
+                        .append(RdsConstant.BRACKET_LEFT)
+                        .append(childSql)
+                        .append(RdsConstant.BRACKET_RIGHT);
+            }
+        }
+
+        if (condition.getNext() != null) {
+            return sql + toSql(queryTables, condition.getNext(), dialect);
+        }
+
+        return sql.toString();
+    }
+
+    public static String toSql(QueryTable queryTable, IDialect dialect) {
+        return dialect.wrap(getTableName(queryTable));
+    }
+
+    public static String toSql(List<QueryTable> queryTables, QueryCondition condition, IDialect dialect) {
+        String whereSql;
+        if (condition instanceof Brackets brackets) {
+            whereSql = toBracketsSql(queryTables, brackets, dialect);
+        } else if (condition instanceof OperatorQueryCondition operator) {
+            whereSql = toOperatorQuerySql(queryTables, operator, dialect);
+        } else if (condition instanceof OperatorSelectCondition operator) {
+            whereSql = toOperatorSelectSql(queryTables, operator, dialect);
+        } else {
+            whereSql = toQueryConditionSql(queryTables, condition, dialect);
+        }
+        return whereSql;
     }
 
     public static String toSql(List<QueryTable> queryTables, QueryOrderBy orderBy, IDialect dialect) {

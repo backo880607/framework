@@ -11,6 +11,7 @@ import com.pisces.framework.core.entity.Property;
 import com.pisces.framework.core.service.PropertyService;
 import com.pisces.framework.core.utils.AppUtils;
 import com.pisces.framework.type.PROPERTY_TYPE;
+import org.springframework.beans.BeanUtils;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -77,22 +78,29 @@ public class EntityDeserializerModifier extends BeanDeserializerModifier {
 
     private Object deserializeDefault(Property property, String text) {
         switch (property.getType()) {
-            case BOOLEAN:
+            case BOOLEAN -> {
                 return Boolean.valueOf(text);
-            case SHORT:
+            }
+            case SHORT -> {
                 return Short.valueOf(text);
-            case INTEGER:
+            }
+            case INTEGER -> {
                 return Integer.valueOf(text);
-            case LONG:
+            }
+            case LONG -> {
                 return Long.valueOf(text);
-            case DOUBLE:
+            }
+            case DOUBLE -> {
                 return Double.valueOf(text);
-            case ENUM:
+            }
+            case ENUM -> {
                 return Enum.valueOf((Class<? extends Enum>) property.getTypeClass(), text);
-            case STRING:
+            }
+            case STRING -> {
                 return text;
-            default:
-                break;
+            }
+            default -> {
+            }
         }
 
         throw new UnsupportedOperationException(property.getType().name() + " type not support deserialize");
@@ -105,18 +113,16 @@ public class EntityDeserializerModifier extends BeanDeserializerModifier {
         }
 
         PropertyService propertyService = AppUtils.getBean(PropertyService.class);
-        Class<BeanObject> entityClass = (Class<BeanObject>) beanDesc.getBeanClass();
+        Class<BeanObject> beanClass = (Class<BeanObject>) beanDesc.getBeanClass();
         Iterator<SettableBeanProperty> iter = builder.getProperties();
         while (iter.hasNext()) {
             SettableBeanProperty setProperty = iter.next();
-            Property property = propertyService.get(entityClass, setProperty.getName());
+            Property property = propertyService.get(beanClass, setProperty.getName());
             BaseDeserializer<Object> deserializer = getDeserializer(property);
             if (deserializer != null) {
-//                try {
-//                    deserializer = (BaseDeserializer<Object>) BeanUtils.cloneBean(deserializer);
-//                } catch (IllegalAccessException | InstantiationException | InvocationTargetException |
-//                         NoSuchMethodException ignored) {
-//                }
+                BaseDeserializer<Object> copy = BeanUtils.instantiateClass(deserializer.getClass());
+                BeanUtils.copyProperties(deserializer, copy);
+                deserializer = copy;
                 deserializer.property = property;
                 setProperty = setProperty.withValueDeserializer(deserializer);
                 builder.addOrReplaceProperty(setProperty, true);

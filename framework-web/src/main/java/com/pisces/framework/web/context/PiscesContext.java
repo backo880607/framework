@@ -1,5 +1,11 @@
 package com.pisces.framework.web.context;
 
+/**
+ * 双鱼座上下文
+ *
+ * @author jason
+ * @date 2023/07/10
+ */
 public interface PiscesContext {
     /**
      * 获取当前请求的 [Request] 对象

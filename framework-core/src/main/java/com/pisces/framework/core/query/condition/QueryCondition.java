@@ -119,12 +119,9 @@ public class QueryCondition implements Serializable {
     }
 
     public QueryCondition getEffectiveBefore() {
-        if (before != null && before.checkEffective()) {
-            return before;
-        } else if (before != null) {
-            return before.getEffectiveBefore();
-        } else {
+        if (before == null) {
             return null;
         }
+        return before.checkEffective() ? before : before.getEffectiveBefore();
     }
 }
