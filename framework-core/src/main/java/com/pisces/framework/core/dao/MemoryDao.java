@@ -59,7 +59,7 @@ public class MemoryDao<T extends BeanObject> implements BaseDao<T> {
 
     @Override
     public int insert(T item) {
-        if (!item.isInitialized()) {
+        if (!item.getInitialized()) {
             T newItem = create(beanClass);
             ObjectUtils.copyIgnoreNull(item, newItem);
             item = newItem;

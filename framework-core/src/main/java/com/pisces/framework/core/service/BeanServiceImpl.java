@@ -3,6 +3,7 @@ package com.pisces.framework.core.service;
 import com.pisces.framework.core.dao.BaseDao;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.locale.LanguageService;
+import com.pisces.framework.core.query.PageParam;
 import com.pisces.framework.core.query.QueryOrderBy;
 import com.pisces.framework.core.query.condition.QueryCondition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,11 @@ public class BeanServiceImpl<T extends BeanObject, D extends BaseDao<T>> extends
     @Override
     public List<T> list(QueryCondition condition, QueryOrderBy... orderBys) {
         return getDao().list(condition, orderBys);
+    }
+
+    @Override
+    public List<T> list(PageParam param) {
+        return getDao().list(param);
     }
 
     @Override

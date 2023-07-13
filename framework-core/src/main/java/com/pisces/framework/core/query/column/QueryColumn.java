@@ -15,6 +15,7 @@
  */
 package com.pisces.framework.core.query.column;
 
+import com.pisces.framework.core.entity.Property;
 import com.pisces.framework.core.enums.VALUE_SORT_TYYPE;
 import com.pisces.framework.core.query.QueryOrderBy;
 import com.pisces.framework.core.query.QueryTable;
@@ -70,5 +71,33 @@ public class QueryColumn implements Serializable {
 
     public QueryOrderBy desc() {
         return new QueryOrderBy(this, VALUE_SORT_TYYPE.DESC);
+    }
+
+    public static QueryColumn getQueryColumn(Property property) {
+        if (property == null) {
+            return null;
+        }
+        
+        QueryColumn column = null;
+        switch (property.getType()) {
+            case NONE -> {
+            }
+            case BOOLEAN -> column = new BooleanQueryColumn(property.getBelongName(), property.getPropertyCode());
+            case CHAR -> column = new CharQueryColumn(property.getBelongName(), property.getPropertyCode());
+            case SHORT -> column = new ShortQueryColumn(property.getBelongName(), property.getPropertyCode());
+            case INTEGER -> column = new IntegerQueryColumn(property.getBelongName(), property.getPropertyCode());
+            case LONG -> column = new LongQueryColumn(property.getBelongName(), property.getPropertyCode());
+            case DOUBLE -> column = new DoubleQueryColumn(property.getBelongName(), property.getPropertyCode());
+            case DATE -> column = new DateQueryColumn(property.getBelongName(), property.getPropertyCode());
+            case TIME -> column = new TimeQueryColumn(property.getBelongName(), property.getPropertyCode());
+            case DATE_TIME -> column = new DateTimeQueryColumn(property.getBelongName(), property.getPropertyCode());
+            case DURATION -> column = new DurationQueryColumn(property.getBelongName(), property.getPropertyCode());
+            case ENUM -> column = new EnumQueryColumn(property.getBelongName(), property.getPropertyCode());
+            case MULTI_ENUM -> column = new MultiEnumQueryColumn(property.getBelongName(), property.getPropertyCode());
+            case STRING -> column = new StringQueryColumn(property.getBelongName(), property.getPropertyCode());
+            case BEAN -> column = new BeanQueryColumn(property.getBelongName(), property.getPropertyCode());
+            case LIST -> column = new ListQueryColumn(property.getBelongName(), property.getPropertyCode());
+        }
+        return column;
     }
 }

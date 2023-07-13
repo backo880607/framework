@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pisces.framework.core.query;
-
-import com.pisces.framework.core.query.condition.QueryCondition;
-import com.pisces.framework.core.query.condition.QueryConnector;
+package com.pisces.framework.core.query.condition;
 
 /**
  * 括号

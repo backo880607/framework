@@ -16,7 +16,6 @@
 package com.pisces.framework.core.query.condition;
 
 import com.pisces.framework.core.enums.CONDITION_TYPE;
-import com.pisces.framework.core.query.Brackets;
 import com.pisces.framework.core.query.column.QueryColumn;
 
 import java.io.Serializable;

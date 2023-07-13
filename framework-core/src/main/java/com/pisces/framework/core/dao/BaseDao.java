@@ -2,6 +2,7 @@ package com.pisces.framework.core.dao;
 
 import com.pisces.framework.core.dao.impl.DaoImpl;
 import com.pisces.framework.core.entity.BeanObject;
+import com.pisces.framework.core.query.PageParam;
 import com.pisces.framework.core.query.QueryOrderBy;
 import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.core.query.condition.QueryCondition;
@@ -88,6 +89,14 @@ public interface BaseDao<T extends BeanObject> {
      */
     default List<T> list(QueryCondition condition, QueryOrderBy... orderBys) {
         QueryWrapper qw = QueryWrapper.from(getBeanClass()).where(condition).orderBy(orderBys);
+        return fetch(qw);
+    }
+
+    default List<T> list(PageParam param) {
+        QueryWrapper qw = QueryWrapper.from(getBeanClass());
+//        if (StringUtils.isNotBlank(param.getFilter())) {
+//            qw.where(param.getFilter().trim());
+//        }
         return fetch(qw);
     }
 

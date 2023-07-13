@@ -1,8 +1,7 @@
 package com.pisces.framework.web.controller;
 
 import com.pisces.framework.core.entity.BeanObject;
-import com.pisces.framework.core.exception.BaseException;
-import com.pisces.framework.core.locale.LocaleManager;
+import com.pisces.framework.core.query.PageParam;
 import com.pisces.framework.core.service.BeanService;
 import com.pisces.framework.core.validator.group.InsertGroup;
 import com.pisces.framework.core.validator.group.UpdateGroup;
@@ -66,17 +65,17 @@ public abstract class BeanController<T extends BeanObject, S extends BeanService
         return success(this.service.listByIds(ids), WebMessage.Query);
     }
 
-//    @GetMapping(value = "getByPage")
-//    @ExceptionMessage(clazz = WebMessage.class, name = "Query")
-//    public ResponseData getByPage(@RequestParam int pageNum, @RequestParam int pageSize,
-//                                  @RequestParam String orderBy, @RequestParam String filter) {
-//        PageParam param = new PageParam();
-//        param.setPageNum(pageNum);
-//        param.setPageSize(pageSize);
-//        param.setOrderBy(orderBy);
-//        param.setFilter(filter);
-//        return success(this.service.get(param), WebMessage.Query);
-//    }
+    @GetMapping(value = "listByPage")
+    @ExceptionMessage(clazz = WebMessage.class, name = "Query")
+    public ResponseData listByPage(@RequestParam int pageNum, @RequestParam int pageSize,
+                                   @RequestParam String orderBy, @RequestParam String filter) {
+        PageParam param = new PageParam();
+        param.setPageNum(pageNum);
+        param.setPageSize(pageSize);
+        param.setOrderBy(orderBy);
+        param.setFilter(filter);
+        return success(this.service.list(param), WebMessage.Query);
+    }
 
     @PostMapping("insert")
     @ExceptionMessage(clazz = WebMessage.class, name = "Insert")

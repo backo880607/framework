@@ -13,6 +13,7 @@ import org.mybatis.spring.SqlSessionUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +70,7 @@ public class SqlExecutor {
             SqlRunner sqlRunner = new SqlRunner(connection);
             List<Map<String, Object>> data = sqlRunner.selectAll(sql, args);
             if (data == null || data.isEmpty()) {
-                return null;
+                return new ArrayList<>();
             }
             return ObjectUtils.convertBeanList(data, beanClass);
         } catch (SQLException ex) {

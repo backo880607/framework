@@ -2,6 +2,7 @@ package com.pisces.framework.core.service;
 
 import com.pisces.framework.core.dao.BaseDao;
 import com.pisces.framework.core.entity.BeanObject;
+import com.pisces.framework.core.query.PageParam;
 import com.pisces.framework.core.query.QueryOrderBy;
 import com.pisces.framework.core.query.condition.QueryCondition;
 
@@ -81,6 +82,12 @@ public interface BeanService<T extends BeanObject> extends BaseService {
      * @return {@link List}<{@link T}>
      */
     List<T> list(QueryCondition condition, QueryOrderBy... orderBys);
+
+    /**
+     * @param param 查询参数
+     * @return {@link List}<{@link T}>
+     */
+    List<T> list(PageParam param);
 
     /**
      * 存在

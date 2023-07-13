@@ -121,30 +121,7 @@ public final class DateUtils {
         return DateUtils.parse(s);
     }
 
-    public static Date parseDate(Object value) {
-        if (value instanceof Number) {
-            return new Date(((Number) value).longValue());
-        }
-        if (value instanceof Timestamp) {
-            return new Date(((Timestamp) value).getTime());
-        }
-        if (value instanceof LocalDate) {
-            return DateUtils.toDate((LocalDate) value);
-        }
-        if (value instanceof LocalDateTime) {
-            return DateUtils.toDate((LocalDateTime) value);
-        }
-        if (value instanceof LocalTime) {
-            return DateUtils.toDate((LocalTime) value);
-        }
-        String s = value.toString();
-        if (StringUtils.isNumber(s)) {
-            return new Date(Long.parseLong(s));
-        }
-        return DateUtils.parseDate(s);
-    }
-
-    public static Date parseDate(String dateString) {
+    public static Date parse(String dateString) {
         if (StringUtils.isBlank(dateString)) {
             return null;
         }
@@ -157,19 +134,19 @@ public final class DateUtils {
                 //2022-10-23 00:00:00.0
                 int lastIndexOf = dateString.lastIndexOf(".");
                 if (lastIndexOf == 19) {
-                    return parseDate(dateString.substring(0, lastIndexOf));
+                    return parse(dateString.substring(0, lastIndexOf));
                 }
 
                 //2022-10-23 00:00:00,0
                 lastIndexOf = dateString.lastIndexOf(",");
                 if (lastIndexOf == 19) {
-                    return parseDate(dateString.substring(0, lastIndexOf));
+                    return parse(dateString.substring(0, lastIndexOf));
                 }
 
                 //2022-10-23 00:00:00 000123
                 lastIndexOf = dateString.lastIndexOf(" ");
                 if (lastIndexOf == 19) {
-                    return parseDate(dateString.substring(0, lastIndexOf));
+                    return parse(dateString.substring(0, lastIndexOf));
                 }
 
                 if (dateString.contains(".") || dateString.contains("/")) {

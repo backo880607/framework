@@ -86,9 +86,9 @@ public class EntitySerializerModifier extends BeanSerializerModifier {
                                                      List<BeanPropertyWriter> beanProperties) {
         if (BeanObject.class.isAssignableFrom(beanDesc.getBeanClass())) {
             PropertyService propertyService = AppUtils.getBean(PropertyService.class);
-            Class<BeanObject> entityClass = (Class<BeanObject>) beanDesc.getBeanClass();
+            Class<BeanObject> beanClass = (Class<BeanObject>) beanDesc.getBeanClass();
             for (BeanPropertyWriter writer : beanProperties) {
-                Property property = propertyService.get(entityClass, writer.getName());
+                Property property = propertyService.get(beanClass, writer.getName());
                 BaseSerializer<Object> serializer = getSerializer(property);
                 if (serializer != null) {
                     serializer.property = property;

@@ -150,7 +150,7 @@ public class PropertyDao extends SQLDao<Property> {
     }
 
     private Property fillProperty(Property property) {
-        if (!property.isInitialized()) {
+        if (!property.getInitialized()) {
             Property newItem = new Property();
             newItem.init();
             ObjectUtils.copyIgnoreNull(property, newItem);
@@ -272,6 +272,9 @@ public class PropertyDao extends SQLDao<Property> {
     }
 
     public Property get(Class<? extends BeanObject> beanClass, String code) {
+        if (StringUtils.isEmpty(code)) {
+            return null;
+        }
         QueryWrapper qw = QueryWrapper.from(Property.class);
         qw.where(QProperty.belongName.equal(beanClass.getSimpleName()).and(QProperty.propertyCode.equal(code)));
         Property property = fetchOne(qw);

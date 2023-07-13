@@ -6,8 +6,6 @@ import com.pisces.framework.type.annotation.PropertyMeta;
 import com.pisces.framework.type.annotation.TableMeta;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Date;
 
@@ -17,8 +15,6 @@ import java.util.Date;
  * @author jason
  * @date 2023/06/23
  */
-@Getter
-@Setter
 @MappedSuperclass
 @TableMeta
 public abstract class BeanObject implements Comparable<BeanObject> {
@@ -32,9 +28,9 @@ public abstract class BeanObject implements Comparable<BeanObject> {
     private Boolean enabled;
     private Integer tenant;
 
-    @JsonIgnore
     @PropertyMeta(property = false)
-    private transient boolean initialized = false;
+    @JsonIgnore
+    private transient Boolean initialized = false;
 
     public void init() {
         id = IDGenerator.instance.getID();
@@ -45,6 +41,72 @@ public abstract class BeanObject implements Comparable<BeanObject> {
         tenant = 0;
         enabled = true;
         initialized = true;
+    }
+
+    public final Long getId() {
+        return id;
+    }
+
+    public final void setId(Long value) {
+        this.id = value;
+    }
+
+    @JsonIgnore
+    public final boolean getInitialized() {
+        return initialized;
+    }
+
+    @JsonIgnore
+    public final void setInitialized(boolean value) {
+        this.initialized = value;
+    }
+
+    public final String getCreateBy() {
+        return createBy;
+    }
+
+    public final void setCreateBy(String value) {
+        this.createBy = value;
+    }
+
+    public final String getUpdateBy() {
+        return updateBy;
+    }
+
+    public final void setUpdateBy(String value) {
+        this.updateBy = value;
+    }
+
+    public final Date getCreateDate() {
+        return createDate;
+    }
+
+    public final void setCreateDate(Date value) {
+        this.createDate = value;
+    }
+
+    public final Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public final void setUpdateDate(Date value) {
+        this.updateDate = value;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Integer getTenant() {
+        return tenant;
+    }
+
+    public void setTenant(Integer tenant) {
+        this.tenant = tenant;
     }
 
     @Override
