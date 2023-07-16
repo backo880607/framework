@@ -36,6 +36,9 @@ import java.util.Set;
 
 /**
  * 参考 org.apache.ibatis.type.SimpleTypeRegistry
+ *
+ * @author jason
+ * @date 2023/07/15
  */
 public class SimpleTypeUtil {
     public static final String[] JAVA8_DATE_TIME = {

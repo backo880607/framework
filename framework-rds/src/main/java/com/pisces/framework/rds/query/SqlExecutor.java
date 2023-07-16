@@ -2,6 +2,7 @@ package com.pisces.framework.rds.query;
 
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.entity.table.QBeanObject;
+import com.pisces.framework.core.query.QueryTable;
 import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.core.utils.AppUtils;
 import com.pisces.framework.core.utils.lang.CollectionUtils;
@@ -48,36 +49,68 @@ public class SqlExecutor {
         SqlSessionUtils.closeSqlSession(sqlSession, getSqlSessionFactory());
     }
 
-    private static <T extends BeanObject> void bindTenant(QueryWrapper qw, Class<T> beanClass) {
+    private static void bindTenant(QueryWrapper qw) {
         long tenant = AppUtils.getTenant();
         if (tenant != AppUtils.ROOT_TENANT) {
-            qw.and(QBeanObject.tenant.bind(beanClass).equal(tenant));
+            List<QueryTable> allTables = qw.getAllTables();
+            for (QueryTable table : allTables) {
+                qw.and(QBeanObject.tenant.bind(table.getBeanClass()).equal(tenant));
+            }
+        }
+    }
+
+    public static void bindEnabled(QueryWrapper qw) {
+        List<QueryTable> allTables = qw.getAllTables();
+        for (QueryTable table : allTables) {
+            qw.and(QBeanObject.enabled.bind(table.getBeanClass()).equal(true));
         }
     }
 
     public static <T extends BeanObject> T fetchOne(QueryWrapper qw, Class<T> beanClass) {
         qw.limit(1);
         List<T> beanObjects = fetch(qw, beanClass);
-        return CollectionUtils.isEmpty(beanObjects) ? null : beanObjects.get(0);
+        return beanObjects.isEmpty() ? null : beanObjects.get(0);
     }
 
     public static <T extends BeanObject> List<T> fetch(QueryWrapper qw, Class<T> beanClass) {
-        bindTenant(qw, beanClass);
+        List<Map<String, Object>> data = fetchRaw(qw);
+        return ObjectUtils.convertBeanList(data, beanClass);
+    }
+
+    public static long fetchCount(QueryWrapper qw) {
+        qw.setFetchCount(true);
+        List<Map<String, Object>> data = fetchRaw(qw);
+        qw.setFetchCount(false);
+        if (data.isEmpty()) {
+            return 0;
+        }
+        Map<String, Object> value = data.get(0);
+        if (CollectionUtils.isEmpty(value)) {
+            return 0;
+        }
+        return (long) value.values().iterator().next();
+    }
+
+    public static Map<String, Object> fetchOneRaw(QueryWrapper qw) {
+        qw.limit(1);
+        List<Map<String, Object>> data = fetchRaw(qw);
+        return data.isEmpty() ? null : data.get(0);
+    }
+
+    public static List<Map<String, Object>> fetchRaw(QueryWrapper qw) {
+        List<Map<String, Object>> data = null;
+        bindTenant(qw);
         final String sql = SqlTools.toSql(qw);
         final Object[] args = SqlParams.getValueArray(qw);
         SqlSession sqlSession = sqlSession();
         try (Connection connection = sqlSession.getConnection()) {
             SqlRunner sqlRunner = new SqlRunner(connection);
-            List<Map<String, Object>> data = sqlRunner.selectAll(sql, args);
-            if (data == null || data.isEmpty()) {
-                return new ArrayList<>();
-            }
-            return ObjectUtils.convertBeanList(data, beanClass);
+            data = sqlRunner.selectAll(sql, args);
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
             closeSqlSession(sqlSession);
         }
-        return null;
+        return CollectionUtils.isEmpty(data) ? new ArrayList<>() : data;
     }
 }

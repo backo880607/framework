@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * sqlprovider
+ * sql provider
  *
  * @author jason
  * @date 2022/12/07
@@ -18,7 +18,7 @@ import java.util.Map;
 public abstract class SQLProvider {
 
     /**
-     * 得到sqltype
+     * 得到sql type
      *
      * @param jdbcType jdbc类型
      * @return {@link String}
@@ -33,50 +33,19 @@ public abstract class SQLProvider {
     public static JdbcType getJdbcType(PROPERTY_TYPE type, boolean large) {
         JdbcType jdbcType = JdbcType.OTHER;
         switch (type) {
-            case BOOLEAN:
-                jdbcType = JdbcType.BIT;
-                break;
-            case SHORT:
-                jdbcType = JdbcType.SMALLINT;
-                break;
-            case INTEGER:
-                jdbcType = JdbcType.INTEGER;
-                break;
-            case LONG:
-                jdbcType = JdbcType.BIGINT;
-                break;
-            case DOUBLE:
-                jdbcType = JdbcType.DOUBLE;
-                break;
-            case DATE:
-                jdbcType = JdbcType.DATE;
-                break;
-            case TIME:
-                jdbcType = JdbcType.TIME;
-                break;
-            case DATE_TIME:
-                jdbcType = JdbcType.TIMESTAMP;
-                break;
-            case DURATION:
-                jdbcType = JdbcType.VARCHAR;
-                break;
-            case ENUM:
-                jdbcType = JdbcType.VARCHAR;
-                break;
-            case MULTI_ENUM:
-                jdbcType = JdbcType.VARCHAR;
-                break;
-            case STRING:
-                jdbcType = large ? JdbcType.LONGVARCHAR : JdbcType.VARCHAR;
-                break;
-            case BEAN:
-                jdbcType = JdbcType.LONGVARCHAR;
-                break;
-            case LIST:
-                jdbcType = JdbcType.LONGVARCHAR;
-                break;
-            default:
-                break;
+            case BOOLEAN -> jdbcType = JdbcType.BIT;
+            case SHORT -> jdbcType = JdbcType.SMALLINT;
+            case INTEGER -> jdbcType = JdbcType.INTEGER;
+            case LONG -> jdbcType = JdbcType.BIGINT;
+            case DOUBLE -> jdbcType = JdbcType.DOUBLE;
+            case DATE -> jdbcType = JdbcType.DATE;
+            case TIME -> jdbcType = JdbcType.TIME;
+            case DATE_TIME -> jdbcType = JdbcType.TIMESTAMP;
+            case DURATION, ENUM, MULTI_ENUM -> jdbcType = JdbcType.VARCHAR;
+            case STRING -> jdbcType = large ? JdbcType.LONGVARCHAR : JdbcType.VARCHAR;
+            case BEAN, LIST -> jdbcType = JdbcType.LONGVARCHAR;
+            default -> {
+            }
         }
         if (jdbcType == JdbcType.OTHER) {
             throw new UnsupportedOperationException("not support property type: " + type.name());

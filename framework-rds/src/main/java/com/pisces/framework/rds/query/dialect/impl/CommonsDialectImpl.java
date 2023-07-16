@@ -15,13 +15,16 @@
  */
 package com.pisces.framework.rds.query.dialect.impl;
 
+import com.pisces.framework.core.query.QueryMethods;
 import com.pisces.framework.core.query.QueryOrderBy;
 import com.pisces.framework.core.query.QueryTable;
 import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.core.query.column.QueryColumn;
 import com.pisces.framework.core.query.condition.QueryCondition;
 import com.pisces.framework.core.utils.lang.CollectionUtils;
+import com.pisces.framework.core.utils.lang.Guard;
 import com.pisces.framework.core.utils.lang.StringUtils;
+import com.pisces.framework.rds.config.RdsConstant;
 import com.pisces.framework.rds.query.SqlTools;
 import com.pisces.framework.rds.query.dialect.IDialect;
 import com.pisces.framework.rds.query.dialect.KeywordWrap;
@@ -132,7 +135,7 @@ public class CommonsDialectImpl implements IDialect {
 
         List<QueryColumn> selectColumns = queryWrapper.getSelectColumns();
 
-        StringBuilder sqlBuilder = buildSelectColumnSql(allTables, selectColumns, queryWrapper.getHint());
+        StringBuilder sqlBuilder = buildSelectColumnSql(allTables, selectColumns, queryWrapper.getHint(), queryWrapper.getFetchCount());
         sqlBuilder.append(" FROM ").append(StringUtils.join(queryTables, ", ", queryTable -> SqlTools.toSql(queryTable, this)));
 
         buildJoinSql(sqlBuilder, queryWrapper, allTables);
@@ -150,17 +153,23 @@ public class CommonsDialectImpl implements IDialect {
         return sqlBuilder.toString();
     }
 
-    private StringBuilder buildSelectColumnSql(List<QueryTable> queryTables, List<QueryColumn> selectColumns, String hint) {
+    private StringBuilder buildSelectColumnSql(List<QueryTable> queryTables, List<QueryColumn> selectColumns, String hint, Boolean fetchCount) {
         StringBuilder sqlBuilder = new StringBuilder("SELECT ");
         sqlBuilder.append(forHint(hint));
-        if (CollectionUtils.isEmpty(selectColumns)) {
+        if (Guard.value(fetchCount)) {
+            sqlBuilder.append(SqlTools.toSelectSql(queryTables, QueryMethods.count(), this));
+        } else if (CollectionUtils.isEmpty(selectColumns)) {
             sqlBuilder.append("*");
         } else {
+            int index = 0;
             for (QueryColumn selectColumn : selectColumns) {
+                if (index > 0) {
+                    sqlBuilder.append(RdsConstant.DELIMITER);
+                }
                 String selectColumnSql = SqlTools.toSelectSql(queryTables, selectColumn, this);
                 sqlBuilder.append(selectColumnSql);
+                index++;
             }
-            sqlBuilder.deleteCharAt(sqlBuilder.length() - 1);
         }
         return sqlBuilder;
     }
@@ -181,6 +190,11 @@ public class CommonsDialectImpl implements IDialect {
         buildHavingSql(sqlBuilder, queryWrapper, allTables);
 
         return sqlBuilder.toString();
+    }
+
+    @Override
+    public String getAsKeyWord() {
+        return RdsConstant.AS;
     }
 
     protected void buildJoinSql(StringBuilder sqlBuilder, QueryWrapper queryWrapper, List<QueryTable> queryTables) {

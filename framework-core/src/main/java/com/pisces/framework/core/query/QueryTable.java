@@ -32,6 +32,9 @@ import java.io.Serializable;
 public class QueryTable implements Serializable {
     protected Class<? extends BeanObject> beanClass;
 
+    public QueryTable() {
+    }
+
     public QueryTable(Class<? extends BeanObject> beanClass) {
         this.beanClass = beanClass;
     }

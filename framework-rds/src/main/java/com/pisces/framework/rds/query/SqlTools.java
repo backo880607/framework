@@ -4,6 +4,8 @@ import com.pisces.framework.core.enums.CONDITION_TYPE;
 import com.pisces.framework.core.query.QueryOrderBy;
 import com.pisces.framework.core.query.QueryTable;
 import com.pisces.framework.core.query.QueryWrapper;
+import com.pisces.framework.core.query.column.ContentQueryColumn;
+import com.pisces.framework.core.query.column.FunctionQueryColumn;
 import com.pisces.framework.core.query.column.QueryColumn;
 import com.pisces.framework.core.query.condition.Brackets;
 import com.pisces.framework.core.query.condition.OperatorQueryCondition;
@@ -87,9 +89,30 @@ public class SqlTools {
         }
     }
 
+    static String withAlias(String sql, String alias, IDialect dialect) {
+        String result = RdsConstant.BRACKET_LEFT + sql + RdsConstant.BRACKET_RIGHT;
+        if (StringUtils.isNotEmpty(alias)) {
+            result += dialect.getAsKeyWord() + alias;
+        }
+        return result;
+    }
+
     public static String toSelectSql(List<QueryTable> queryTables, QueryColumn queryColumn, IDialect dialect) {
+        if (queryColumn instanceof FunctionQueryColumn functionQueryColumn) {
+            return toSelectFunctionSql(queryTables, functionQueryColumn, dialect);
+        } else if (queryColumn instanceof ContentQueryColumn contentQueryColumn) {
+            return contentQueryColumn.getContent();
+        }
         String tableName = getColumnTableName(queryTables, queryColumn.getTable());
         return wrap(tableName, getColumnName(queryColumn), dialect);
+    }
+
+    public static String toSelectFunctionSql(List<QueryTable> queryTables, FunctionQueryColumn queryColumn, IDialect dialect) {
+        String sql = toSelectSql(queryTables, queryColumn.getColumn(), dialect);
+        if (StringUtils.isBlank(sql)) {
+            return RdsConstant.EMPTY;
+        }
+        return queryColumn.getFnName() + withAlias(sql, "", dialect);
     }
 
     public static String toConditionSql(List<QueryTable> queryTables, QueryColumn queryColumn, IDialect dialect) {
@@ -272,48 +295,22 @@ public class SqlTools {
     public static String getStringCondition(CONDITION_TYPE type) {
         String value = "";
         switch (type) {
-            case CONTAINS, START_WITH -> {
-                value = RdsConstant.LIKE;
-            }
-            case NOT_CONTAINS -> {
-                value = RdsConstant.NOT_LIKE;
-            }
-            case EQUAL -> {
-                value = RdsConstant.EQUALS;
-            }
-            case NOT_EQUAL -> {
-                value = RdsConstant.NOT_EQUALS;
-            }
-            case LESS -> {
-                value = RdsConstant.LT;
-            }
-            case LESS_EQUAL -> {
-                value = RdsConstant.LE;
-            }
-            case GREATER -> {
-                value = RdsConstant.GT;
-            }
-            case GREATER_EQUAL -> {
-                value = RdsConstant.GE;
-            }
-            case BETWEEN -> {
-            }
-            case NOT_BETWEEN -> {
-            }
-            case NOT_START_WITH -> {
-            }
-            case END_WITH -> {
-            }
-            case NOT_END_WITH -> {
-            }
+            case CONTAINS, START_WITH, END_WITH -> value = RdsConstant.LIKE;
+            case NOT_CONTAINS, NOT_START_WITH, NOT_END_WITH -> value = RdsConstant.NOT_LIKE;
+            case EQUAL -> value = RdsConstant.EQUALS;
+            case NOT_EQUAL -> value = RdsConstant.NOT_EQUALS;
+            case LESS -> value = RdsConstant.LT;
+            case LESS_EQUAL -> value = RdsConstant.LE;
+            case GREATER -> value = RdsConstant.GT;
+            case GREATER_EQUAL -> value = RdsConstant.GE;
+            case BETWEEN -> value = RdsConstant.BETWEEN;
+            case NOT_BETWEEN -> value = RdsConstant.NOT_BETWEEN;
             case EMPTY -> {
             }
             case NOT_EMPTY -> {
             }
-            case IN_RANGE -> {
-            }
-            case NOT_IN_RANGE -> {
-            }
+            case IN_RANGE -> value = RdsConstant.IN;
+            case NOT_IN_RANGE -> value = RdsConstant.NOT_IN;
         }
         return value;
     }

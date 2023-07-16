@@ -221,13 +221,18 @@ public final class ObjectUtils {
         if (meta != null && !meta.property()) {
             return null;
         }
+        Class<?> propertyClass = field.getType();
+        PROPERTY_TYPE propertyType = getPropertyType(propertyClass);
+        if (propertyType == PROPERTY_TYPE.LIST) {
+            return null;
+        }
         Property property = new Property();
         property.init();
+        property.setInherent(true);
         property.setBelongName(belongClass.getSimpleName());
         property.setPropertyCode(field.getName());
 
-        Class<?> propertyClass = field.getType();
-        property.setType(getPropertyType(propertyClass));
+        property.setType(propertyType);
         property.setTypeName(propertyClass.getSimpleName());
         property.setTypeFullName(propertyClass.getName());
 
@@ -618,5 +623,29 @@ public final class ObjectUtils {
             int value = c.compare(o1, o2);
             return value != 0 ? value : o1.compareTo(o2);
         });
+    }
+
+    /**
+     * map转对象
+     *
+     * @param map       地图
+     * @param beanClass bean类
+     * @return {@link T}
+     * @throws Exception 异常
+     */
+    public static <T> T mapToBean(Map<String, Object> map, Class<T> beanClass) throws Exception {
+        T object = BeanUtils.instantiateClass(beanClass);
+        Field[] fields = object.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            int mod = field.getModifiers();
+            if (Modifier.isStatic(mod) || Modifier.isFinal(mod)) {
+                continue;
+            }
+            field.setAccessible(true);
+            if (map.containsKey(field.getName())) {
+                field.set(object, map.get(field.getName()));
+            }
+        }
+        return object;
     }
 }

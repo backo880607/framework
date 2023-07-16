@@ -2,6 +2,7 @@ package com.pisces.framework.web.token;
 
 import com.pisces.framework.core.entity.AccountData;
 import com.pisces.framework.core.utils.AppUtils;
+import com.pisces.framework.core.utils.lang.ObjectUtils;
 import com.pisces.framework.web.config.WebProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -12,6 +13,7 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * jwt标记辅助
@@ -74,12 +76,15 @@ public class JwtTokenHelper {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
-    public static JwtTokenHelper parseToken(String token) {
+    public static JwtTokenHelper parseToken(String token) throws Exception {
         final Claims claims = getClaimsFromToken(token);
 
         JwtTokenHelper helper = new JwtTokenHelper();
         helper.subject = claims.getSubject();
-        helper.accountData = claims.get(CLAIM_KEY_ACCOUNT_DATA, AccountData.class);
+        Map<String, Object> data = claims.get(CLAIM_KEY_ACCOUNT_DATA, Map.class);
+        if (data != null) {
+            helper.accountData = ObjectUtils.mapToBean(data, AccountData.class);
+        }
         helper.expiration = claims.getExpiration().before(new Date());
         return helper;
     }

@@ -1,5 +1,6 @@
 package com.pisces.framework.rds.query;
 
+import com.pisces.framework.core.enums.CONDITION_TYPE;
 import com.pisces.framework.core.query.QueryTable;
 import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.core.query.column.QueryColumn;
@@ -140,14 +141,24 @@ public class SqlParams {
             value = condition.getValue();
         }
 
-        if (value == null
-                || value instanceof QueryColumn) {
+        if (value == null || value instanceof QueryColumn) {
             getValues(condition.getNext(), params);
             return;
         }
-
+        value = wrapValue(value, condition.getType());
         addParam(params, value);
         getValues(condition.getNext(), params);
+    }
+
+    private static Object wrapValue(Object value, CONDITION_TYPE type) {
+        if (type != null) {
+            switch (type) {
+                case CONTAINS, NOT_CONTAINS -> value = "%" + value + "%";
+                case START_WITH, NOT_START_WITH -> value = value + "%";
+                case END_WITH, NOT_END_WITH -> value = "%" + value;
+            }
+        }
+        return value;
     }
 
     private static void addParam(List<Object> paras, Object value) {
@@ -171,6 +182,5 @@ public class SqlParams {
         } else {
             paras.add(value);
         }
-
     }
 }

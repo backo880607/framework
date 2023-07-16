@@ -18,6 +18,7 @@ package com.pisces.framework.core.query;
 import com.pisces.framework.core.query.column.QueryColumn;
 import com.pisces.framework.core.query.condition.QueryCondition;
 import com.pisces.framework.core.query.condition.QueryConnector;
+import com.pisces.framework.core.utils.lang.CollectionUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,8 +46,13 @@ public class BaseQueryWrapper implements Serializable {
 
     private Integer limitOffset;
     private Integer limitRows;
+    private Boolean fetchCount;
 
     protected Map<String, Object> context;
+
+    public List<QueryTable> getAllTables() {
+        return CollectionUtils.merge(queryTables, joinTables);
+    }
 
     protected void addSelectColumn(QueryColumn queryColumn) {
         if (selectColumns == null) {

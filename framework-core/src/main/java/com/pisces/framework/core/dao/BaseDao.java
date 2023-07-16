@@ -110,6 +110,10 @@ public interface BaseDao<T extends BeanObject> {
         throw new UnsupportedOperationException("fetchOne is not allowed");
     }
 
+    default long fetchCount(QueryWrapper qw) {
+        throw new UnsupportedOperationException("fetchOne is not allowed");
+    }
+
     /**
      * 存在
      *

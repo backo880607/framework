@@ -97,7 +97,7 @@ public class EntityTable {
                     throw new SystemException(e);
                 }
             }
-            List<ResultFlag> flags = new ArrayList<ResultFlag>();
+            List<ResultFlag> flags = new ArrayList<>();
             if (entityColumn.isId()) {
                 flags.add(ResultFlag.ID);
             }

@@ -85,4 +85,9 @@ public class OracleDialect extends CommonsDialectImpl {
         }
         return keyword;
     }
+
+    @Override
+    public String getAsKeyWord() {
+        return "";
+    }
 }

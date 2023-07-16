@@ -3,7 +3,6 @@ package com.pisces.framework.rds.common;
 import com.pisces.framework.core.dao.BaseDao;
 import com.pisces.framework.core.dao.impl.DaoImpl;
 import com.pisces.framework.core.entity.BeanObject;
-import com.pisces.framework.core.entity.table.QBeanObject;
 import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.rds.query.SqlExecutor;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -47,7 +46,7 @@ public class SQLDao<T extends BeanObject> extends SqlSessionDaoSupport implement
 
     @Override
     public T fetchOne(QueryWrapper qw) {
-        qw.and(QBeanObject.enabled.bind(beanClass).equal(true));
+        SqlExecutor.bindEnabled(qw);
         return SqlExecutor.fetchOne(qw, beanClass);
     }
 
@@ -63,8 +62,13 @@ public class SQLDao<T extends BeanObject> extends SqlSessionDaoSupport implement
 
     @Override
     public List<T> fetch(QueryWrapper qw) {
-        qw.and(QBeanObject.enabled.bind(beanClass).equal(true));
+        SqlExecutor.bindEnabled(qw);
         return SqlExecutor.fetch(qw, beanClass);
+    }
+
+    @Override
+    public long fetchCount(QueryWrapper qw) {
+        return SqlExecutor.fetchCount(qw);
     }
 
     @Override

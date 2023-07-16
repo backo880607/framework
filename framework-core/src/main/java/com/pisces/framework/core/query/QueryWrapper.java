@@ -55,6 +55,10 @@ public class QueryWrapper extends BaseQueryWrapper {
         return this;
     }
 
+    public QueryWrapper from(QueryWrapper queryWrapper) {
+        return from(new SelectQueryTable(queryWrapper));
+    }
+
     public QueryWrapper where(QueryCondition queryCondition) {
         this.setWhereQueryCondition(queryCondition);
         return this;

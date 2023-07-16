@@ -18,15 +18,14 @@ import java.util.Date;
 @MappedSuperclass
 @TableMeta
 public abstract class BeanObject implements Comparable<BeanObject> {
-
-    @Id
-    private Long id;
     private String createBy;
     private Date createDate;
     private String updateBy;
     private Date updateDate;
     private Boolean enabled;
     private Integer tenant;
+    @Id
+    private Long id;
 
     @PropertyMeta(property = false)
     @JsonIgnore

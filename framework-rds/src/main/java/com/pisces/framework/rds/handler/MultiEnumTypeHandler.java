@@ -17,10 +17,10 @@ import java.sql.SQLException;
  * @date 2022/12/07
  */
 public class MultiEnumTypeHandler extends BaseTypeHandler<MultiEnum<?>> {
-    private final Class<? extends MultiEnum<?>> type;
+    private final Class<? extends MultiEnum<?>> classType;
 
-    public MultiEnumTypeHandler(Class<? extends MultiEnum<?>> clazz) {
-        this.type = clazz;
+    public MultiEnumTypeHandler(Class<? extends MultiEnum<?>> classType) {
+        this.classType = classType;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class MultiEnumTypeHandler extends BaseTypeHandler<MultiEnum<?>> {
             return null;
         }
 
-        MultiEnum<?> result = BeanUtils.instantiateClass(type);
+        MultiEnum<?> result = BeanUtils.instantiateClass(classType);
         result.setValue(value);
         return result;
     }
@@ -47,7 +47,7 @@ public class MultiEnumTypeHandler extends BaseTypeHandler<MultiEnum<?>> {
             return null;
         }
 
-        MultiEnum<?> result = BeanUtils.instantiateClass(type);
+        MultiEnum<?> result = BeanUtils.instantiateClass(classType);
         result.setValue(value);
         return result;
     }
@@ -59,7 +59,7 @@ public class MultiEnumTypeHandler extends BaseTypeHandler<MultiEnum<?>> {
             return null;
         }
 
-        MultiEnum<?> result = BeanUtils.instantiateClass(type);
+        MultiEnum<?> result = BeanUtils.instantiateClass(classType);
         result.setValue(value);
         return result;
     }

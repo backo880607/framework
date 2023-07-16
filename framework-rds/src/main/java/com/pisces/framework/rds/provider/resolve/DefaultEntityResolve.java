@@ -2,6 +2,7 @@ package com.pisces.framework.rds.provider.resolve;
 
 import com.pisces.framework.core.utils.lang.StringUtils;
 import com.pisces.framework.rds.annotation.ColumnType;
+import com.pisces.framework.rds.handler.JacksonTypeHandler;
 import com.pisces.framework.rds.helper.FieldHelper;
 import com.pisces.framework.rds.helper.entity.Config;
 import com.pisces.framework.rds.helper.entity.EntityColumn;
@@ -131,6 +132,12 @@ public class DefaultEntityResolve implements EntityResolve {
         entityTable.getBeanColumns().add(entityColumn);
         if (entityColumn.isId()) {
             entityTable.getBeanPKColumns().add(entityColumn);
+        }
+        if (entityColumn.getTypeHandler() == null) {
+            if (!SimpleTypeUtil.isSimpleType(field.getJavaType())
+                    && !Enum.class.isAssignableFrom(field.getJavaType())) {
+                entityColumn.setTypeHandler(JacksonTypeHandler.class);
+            }
         }
     }
 }

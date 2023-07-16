@@ -27,6 +27,12 @@ import java.util.List;
 @RestController
 @RequestMapping(LanguageConstant.IDENTIFY + "/Property")
 public class PropertyController extends BeanController<Property, PropertyService> {
+    
+    @GetMapping("/listByBean")
+    public ResponseData listByBean(String beanName) {
+        return success(getService().get(ObjectUtils.fetchBeanClass(beanName)));
+    }
+
     @GetMapping("/getByCode")
     public ResponseData getByCode(String beanName, String code) {
         return success(getService().get(ObjectUtils.fetchBeanClass(beanName), code));

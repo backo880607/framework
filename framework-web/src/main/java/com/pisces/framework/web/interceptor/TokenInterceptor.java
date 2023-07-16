@@ -42,6 +42,7 @@ public class TokenInterceptor implements HandlerInterceptor {
                 if (array.length == 2) {
                     String username = array[0];
                     String password = array[1];
+                    LocaleManager.setLocale(request.getHeader("Accept-Language"));
                     return true;
                 }
             }

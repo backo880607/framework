@@ -36,4 +36,6 @@ public interface IDialect {
     String buildSelectSql(QueryWrapper queryWrapper);
 
     String buildDeleteSql(QueryWrapper queryWrapper);
+
+    String getAsKeyWord();
 }

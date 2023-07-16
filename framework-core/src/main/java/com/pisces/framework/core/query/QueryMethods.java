@@ -15,6 +15,7 @@
  */
 package com.pisces.framework.core.query;
 
+import com.pisces.framework.core.query.column.ContentQueryColumn;
 import com.pisces.framework.core.query.column.DistinctQueryColumn;
 import com.pisces.framework.core.query.column.FunctionQueryColumn;
 import com.pisces.framework.core.query.column.QueryColumn;
@@ -29,6 +30,11 @@ import com.pisces.framework.core.query.condition.QueryCondition;
  * @date 2023/06/27
  */
 public class QueryMethods {
+
+    /////count
+    public static FunctionQueryColumn count() {
+        return new FunctionQueryColumn("COUNT", new ContentQueryColumn("*"));
+    }
 
     public static FunctionQueryColumn count(String column) {
         return new FunctionQueryColumn("COUNT", column);
@@ -86,4 +92,9 @@ public class QueryMethods {
         return new OperatorQueryCondition(" NOT ", childCondition);
     }
 
+    public static QueryWrapper selectCount() {
+        QueryWrapper qw = new QueryWrapper();
+        qw.select(count());
+        return qw;
+    }
 }
