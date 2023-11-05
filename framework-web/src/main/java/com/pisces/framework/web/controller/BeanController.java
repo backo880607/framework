@@ -1,12 +1,13 @@
 package com.pisces.framework.web.controller;
 
 import com.pisces.framework.core.entity.BeanObject;
-import com.pisces.framework.core.query.PageParam;
+import com.pisces.framework.core.query.BeanQuery;
 import com.pisces.framework.core.service.BeanService;
 import com.pisces.framework.core.validator.group.InsertGroup;
 import com.pisces.framework.core.validator.group.UpdateGroup;
 import com.pisces.framework.web.annotation.ExceptionMessage;
 import com.pisces.framework.web.config.WebMessage;
+import com.pisces.framework.web.controller.request.PagerRequest;
 import jakarta.validation.groups.Default;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -65,16 +66,12 @@ public abstract class BeanController<T extends BeanObject, S extends BeanService
         return success(this.service.listByIds(ids), WebMessage.Query);
     }
 
-    @GetMapping(value = "listByPage")
+    @PostMapping(value = "listByPage")
     @ExceptionMessage(clazz = WebMessage.class, name = "Query")
-    public ResponseData listByPage(@RequestParam int pageNum, @RequestParam int pageSize,
-                                   @RequestParam String orderBy, @RequestParam String filter) {
-        PageParam param = new PageParam();
-        param.setPageNum(pageNum);
-        param.setPageSize(pageSize);
-        param.setOrderBy(orderBy);
-        param.setFilter(filter);
-        return success(this.service.list(param), WebMessage.Query);
+    public ResponseData listByPage(@RequestBody PagerRequest request) {
+        BeanQuery query = request.convert();
+        this.service.list(query);
+        return success(query, WebMessage.Query);
     }
 
     @PostMapping("insert")

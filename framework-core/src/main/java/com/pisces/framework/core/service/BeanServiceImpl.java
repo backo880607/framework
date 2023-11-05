@@ -3,9 +3,9 @@ package com.pisces.framework.core.service;
 import com.pisces.framework.core.dao.BaseDao;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.locale.LanguageService;
-import com.pisces.framework.core.query.PageParam;
-import com.pisces.framework.core.query.QueryOrderBy;
+import com.pisces.framework.core.query.BeanQuery;
 import com.pisces.framework.core.query.condition.QueryCondition;
+import com.pisces.framework.core.query.condition.QueryOrderBy;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.ParameterizedType;
@@ -78,11 +78,6 @@ public class BeanServiceImpl<T extends BeanObject, D extends BaseDao<T>> extends
     }
 
     @Override
-    public List<T> list(PageParam param) {
-        return getDao().list(param);
-    }
-
-    @Override
     public boolean exist(long id) {
         return getDao().exist(id);
     }
@@ -131,4 +126,12 @@ public class BeanServiceImpl<T extends BeanObject, D extends BaseDao<T>> extends
     public void delete(QueryCondition condition) {
 
     }
+
+    /* ************************* Expression Begin ************************* */
+    @Override
+    public void list(BeanQuery query) {
+        getDao().list(query);
+    }
+
+    /* ************************* Expression end ************************* */
 }

@@ -54,7 +54,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author liuzh
  */
 public abstract class MapperTemplate {
-    private static final XMLLanguageDriver languageDriver = new XMLLanguageDriver();
+    private static final XMLLanguageDriver LANGUAGE_DRIVER = new XMLLanguageDriver();
     protected Map<String, Method> methodMap = new ConcurrentHashMap<>();
     protected Map<String, Class<?>> entityClassMap = new ConcurrentHashMap<>();
     protected Class<?> mapperClass;
@@ -133,7 +133,7 @@ public abstract class MapperTemplate {
      * @return {@link SqlSource}
      */
     public SqlSource createSqlSource(MappedStatement ms, String xmlSql) {
-        return languageDriver.createSqlSource(ms.getConfiguration(), "<script>\n\t" + xmlSql + "</script>", null);
+        return LANGUAGE_DRIVER.createSqlSource(ms.getConfiguration(), "<script>\n\t" + xmlSql + "</script>", null);
     }
 
     /**

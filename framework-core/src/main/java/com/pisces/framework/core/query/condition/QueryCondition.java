@@ -17,6 +17,7 @@ package com.pisces.framework.core.query.condition;
 
 import com.pisces.framework.core.enums.CONDITION_TYPE;
 import com.pisces.framework.core.query.column.QueryColumn;
+import lombok.Getter;
 
 import java.io.Serializable;
 
@@ -26,6 +27,7 @@ import java.io.Serializable;
  * @author jason
  * @date 2023/06/25
  */
+@Getter
 public class QueryCondition implements Serializable {
     private QueryColumn column;
     private CONDITION_TYPE type;
@@ -34,7 +36,7 @@ public class QueryCondition implements Serializable {
 
     //当前条件的上个条件
     private QueryCondition before;
-    //当前条件的上个下一个
+    //当前条件的下个条件
     private QueryCondition next;
     //两个条件直接的连接符
     private QueryConnector connector;
@@ -58,16 +60,8 @@ public class QueryCondition implements Serializable {
     public QueryCondition() {
     }
 
-    public QueryColumn getColumn() {
-        return column;
-    }
-
     public void setColumn(QueryColumn column) {
         this.column = column;
-    }
-
-    public CONDITION_TYPE getType() {
-        return type;
     }
 
     public void setType(CONDITION_TYPE type) {
@@ -80,14 +74,6 @@ public class QueryCondition implements Serializable {
 
     public void setValue(Object value) {
         this.value = value;
-    }
-
-    public QueryConnector getConnector() {
-        return connector;
-    }
-
-    public QueryCondition getNext() {
-        return next;
     }
 
     public QueryCondition when(boolean effective) {

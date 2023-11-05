@@ -18,8 +18,8 @@ public class AccountData {
     /**
      * 租户的编码
      */
-    private Integer tenant;
-    private Long dataSet;
     private String account;
+    private Long tenant;
+    private Long dataSet;
     private List<String> authorities = new ArrayList<>();
 }

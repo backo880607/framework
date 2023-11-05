@@ -28,9 +28,29 @@ public enum CoreMessage {
      */
     NotSupportOperation,
     /**
-     * 日期时间错误
+     * 文本格式错误
+     */
+    TextError,
+    /**
+     * 浮点数格式错误
+     */
+    DoubleError,
+    /**
+     * 日期时间格式错误
      */
     DateTimeError,
+    /**
+     * 枚举类型错误
+     */
+    EnumTypeError,
+    /**
+     * 枚举项错误
+     */
+    EnumItemError,
+    /**
+     * 等号格式错误
+     */
+    EqualTypeError,
     /**
      * 无效函数名
      */

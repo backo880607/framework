@@ -1,9 +1,11 @@
 package com.pisces.framework.core.utils;
 
 import com.pisces.framework.core.Initializer;
+import com.pisces.framework.core.config.BaseConfiguration;
 import com.pisces.framework.core.entity.AccountData;
 import com.pisces.framework.core.utils.lang.CollectionUtils;
 import com.pisces.framework.core.utils.lang.Guard;
+import lombok.Getter;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
@@ -17,16 +19,13 @@ import java.util.Map;
  * @author jason
  * @date 2022/12/07
  */
+@Getter
 public final class AppUtils {
-    public static final int ROOT_TENANT = 7;
+    public static final long ROOT_TENANT = 7;
     private static ApplicationContext context;
     private static final ThreadLocal<AccountData> CUR_ACCOUNT_DATA = new ThreadLocal<>();
 
     private AppUtils() {
-    }
-
-    public static ApplicationContext getContext() {
-        return context;
     }
 
     public static void setContext(ApplicationContext context) {
@@ -55,9 +54,9 @@ public final class AppUtils {
         return userData == null ? "system" : userData.getAccount();
     }
 
-    public static int getTenant() {
+    public static long getTenant() {
         final AccountData userData = CUR_ACCOUNT_DATA.get();
-        return userData == null ? 0 : Guard.value(userData.getTenant());
+        return userData == null ? 0L : Guard.value(userData.getTenant());
     }
 
     public static long getDataSet() {
@@ -72,6 +71,10 @@ public final class AppUtils {
 
     public static void bindAccount(AccountData data) {
         CUR_ACCOUNT_DATA.set(data);
+        Map<String, BaseConfiguration> modelConfigurations = AppUtils.getBeansOfType(BaseConfiguration.class);
+        for (Map.Entry<String, BaseConfiguration> entry : modelConfigurations.entrySet()) {
+            entry.getValue().bindAccount(data);
+        }
     }
 
     public static void unbindAccount() {

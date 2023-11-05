@@ -1,11 +1,11 @@
 package com.pisces.framework.core.dao;
 
-import com.pisces.framework.core.dao.impl.DaoImpl;
 import com.pisces.framework.core.entity.BeanObject;
-import com.pisces.framework.core.query.PageParam;
-import com.pisces.framework.core.query.QueryOrderBy;
+import com.pisces.framework.core.query.BeanQuery;
 import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.core.query.condition.QueryCondition;
+import com.pisces.framework.core.query.condition.QueryOrderBy;
+import com.pisces.framework.core.query.expression.Expression;
 import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.ParameterizedType;
@@ -89,14 +89,6 @@ public interface BaseDao<T extends BeanObject> {
      */
     default List<T> list(QueryCondition condition, QueryOrderBy... orderBys) {
         QueryWrapper qw = QueryWrapper.from(getBeanClass()).where(condition).orderBy(orderBys);
-        return fetch(qw);
-    }
-
-    default List<T> list(PageParam param) {
-        QueryWrapper qw = QueryWrapper.from(getBeanClass());
-//        if (StringUtils.isNotBlank(param.getFilter())) {
-//            qw.where(param.getFilter().trim());
-//        }
         return fetch(qw);
     }
 
@@ -186,17 +178,39 @@ public interface BaseDao<T extends BeanObject> {
      */
     int deleteIdBatch(List<Long> ids);
 
-    /**
-     * 创建刀impl
-     *
-     * @return {@link DaoImpl}
-     */
-    DaoImpl createDaoImpl();
+    /* ************************* Expression Begin ************************* */
 
     /**
-     * 换刀impl
+     * 获取布尔
      *
-     * @param impl impl
+     * @return boolean
      */
-    void switchDaoImpl(DaoImpl impl);
+    default boolean getBoolean(Expression expression) {
+        return false;
+    }
+
+    /**
+     * 获取布尔
+     *
+     * @param bean 实体
+     * @return boolean
+     */
+    default boolean getBoolean(Expression expression, BeanObject bean) {
+        return false;
+    }
+
+    /**
+     * 获取条数
+     *
+     * @param filter
+     * @return int
+     */
+    default int getCount(Expression filter) {
+        return 0;
+    }
+
+    default void list(BeanQuery query) {
+    }
+
+    /* ************************* Expression End ************************* */
 }

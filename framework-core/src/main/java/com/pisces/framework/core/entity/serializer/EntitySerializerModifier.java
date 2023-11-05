@@ -102,25 +102,13 @@ public class EntitySerializerModifier extends BeanSerializerModifier {
     private JsonSerializer<Object> getJacksonSerializer(PROPERTY_TYPE type) {
         JsonSerializer<Object> serializer = null;
         switch (type) {
-            case BOOLEAN:
-                serializer = new BooleanSerializer(false);
-                break;
-            case CHAR:
-                break;
-            case SHORT:
-                serializer = new NumberSerializers.ShortSerializer();
-                break;
-            case INTEGER:
-                serializer = new NumberSerializers.IntegerSerializer(Integer.class);
-                break;
-            case LONG:
-                serializer = new NumberSerializers.LongSerializer(Long.class);
-                break;
-            case STRING:
-                serializer = new StringSerializer();
-                break;
-            default:
-                break;
+            case BOOLEAN -> serializer = new BooleanSerializer(false);
+            case SHORT -> serializer = new NumberSerializers.ShortSerializer();
+            case INTEGER -> serializer = new NumberSerializers.IntegerSerializer(Integer.class);
+            case LONG -> serializer = new NumberSerializers.LongSerializer(Long.class);
+            case STRING -> serializer = new StringSerializer();
+            default -> {
+            }
         }
         return serializer;
     }

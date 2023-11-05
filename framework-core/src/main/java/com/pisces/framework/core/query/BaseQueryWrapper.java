@@ -18,6 +18,7 @@ package com.pisces.framework.core.query;
 import com.pisces.framework.core.query.column.QueryColumn;
 import com.pisces.framework.core.query.condition.QueryCondition;
 import com.pisces.framework.core.query.condition.QueryConnector;
+import com.pisces.framework.core.query.condition.QueryOrderBy;
 import com.pisces.framework.core.utils.lang.CollectionUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,9 +40,9 @@ public class BaseQueryWrapper implements Serializable {
 
     protected List<QueryColumn> selectColumns;
     private List<QueryTable> joinTables;
-    private QueryCondition whereQueryCondition;
+    private QueryCondition whereCondition;
     private List<QueryColumn> groupByColumns;
-    private QueryCondition havingQueryCondition;
+    private QueryCondition havingCondition;
     private List<QueryOrderBy> orderBys;
 
     private Integer limitOffset;
@@ -62,22 +63,22 @@ public class BaseQueryWrapper implements Serializable {
         selectColumns.add(queryColumn);
     }
 
-    protected void setWhereQueryCondition(QueryCondition queryCondition) {
-        if (whereQueryCondition != null) {
-            queryCondition.connect(whereQueryCondition, QueryConnector.AND);
+    protected void setWhereCondition(QueryCondition queryCondition) {
+        if (whereCondition != null) {
+            queryCondition.connect(whereCondition, QueryConnector.AND);
         }
 
-        whereQueryCondition = queryCondition;
+        whereCondition = queryCondition;
     }
 
     public void addWhereQueryCondition(QueryCondition queryCondition, QueryConnector connector) {
         if (queryCondition == null) {
             return;
         }
-        if (whereQueryCondition == null) {
-            whereQueryCondition = queryCondition;
+        if (whereCondition == null) {
+            whereCondition = queryCondition;
         } else {
-            whereQueryCondition.connect(queryCondition, connector);
+            whereCondition.connect(queryCondition, connector);
         }
     }
 
@@ -90,10 +91,10 @@ public class BaseQueryWrapper implements Serializable {
     }
 
     protected void addHavingQueryCondition(QueryCondition queryCondition, QueryConnector connector) {
-        if (havingQueryCondition == null) {
-            havingQueryCondition = queryCondition;
+        if (havingCondition == null) {
+            havingCondition = queryCondition;
         } else {
-            havingQueryCondition.connect(queryCondition, connector);
+            havingCondition.connect(queryCondition, connector);
         }
     }
 

@@ -3,7 +3,7 @@ package com.pisces.framework.core.entity.serializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.entity.Property;
-import com.pisces.framework.core.utils.lang.ObjectUtils;
+import com.pisces.framework.core.entity.factory.FactoryManager;
 import com.pisces.framework.type.PROPERTY_TYPE;
 
 import java.io.Serial;
@@ -54,8 +54,8 @@ public class EntityMapper extends ObjectMapper {
         entityDeserializers.put(fieldName, (BaseDeserializer<Object>) deserializer);
     }
 
-    public String getTextValue(BeanObject entity, Property property) {
-        Object value = ObjectUtils.getValue(entity, property);
+    public String getTextValue(BeanObject bean, Property property) {
+        Object value = FactoryManager.fetchFactory(bean.getClass()).getValue(bean, property);
         if (value == null) {
             return "";
         }
@@ -63,8 +63,8 @@ public class EntityMapper extends ObjectMapper {
         return this.serModifier.serialize(property, value);
     }
 
-    public void setTextValue(BeanObject entity, Property property, String text) {
-        ObjectUtils.setValue(entity, property, convertTextValue(property, text));
+    public void setTextValue(BeanObject bean, Property property, String text) {
+        FactoryManager.fetchFactory(bean.getClass()).setValue(bean, property, convertTextValue(property, text));
     }
 
     public Object convertTextValue(Property property, String text) {

@@ -128,15 +128,13 @@ public class RdsProvider extends BaseProvider {
         final Class<?> beanClass = getEntityClass(ms);
         //修改返回值类型为实体类型
         setResultType(ms, beanClass);
-        StringBuilder sql = new StringBuilder();
-        sql.append(SqlHelper.selectAllColumns(beanClass));
-        sql.append(SqlHelper.fromTable(beanClass, tableName(beanClass)));
+        return SqlHelper.selectAllColumns(beanClass) +
+                SqlHelper.fromTable(beanClass, tableName(beanClass)) +
 
-        // 逻辑删除的未删除查询条件
-        sql.append("<where>");
-        sql.append(SqlHelper.whereLogicDelete(beanClass, false));
-        sql.append("</where>");
-        return sql.toString();
+                // 逻辑删除的未删除查询条件
+                "<where>" +
+                SqlHelper.whereLogicDelete(beanClass, false) +
+                "</where>";
     }
 
     /**
@@ -346,21 +344,16 @@ public class RdsProvider extends BaseProvider {
         if (this.getConfig().isSafeDelete()) {
             sql.append(SqlHelper.notAllNullParameterCheck("_parameter", EntityHelper.getColumns(beanClass)));
         }
-        sql.append(SqlHelper.deleteFromTable(beanClass, tableName(beanClass)) +
-                "WHERE ID IN " +
-                "<foreach item=\"item\" index=\"index\" collection=\"list\" open=\"(\" separator=\",\" close=\")\">" +
-                "#{item}" +
-                "</foreach>");
+        sql.append(SqlHelper.deleteFromTable(beanClass, tableName(beanClass))).append("WHERE ID IN ").append("<foreach item=\"item\" index=\"index\" collection=\"list\" open=\"(\" separator=\",\" close=\")\">").append("#{item}").append("</foreach>");
         return sql.toString();
     }
 
     public String deleteBatch(MappedStatement ms) {
         final Class<?> beanClass = getEntityClass(ms);
-        String sql = SqlHelper.deleteFromTable(beanClass, tableName(beanClass)) +
+        return SqlHelper.deleteFromTable(beanClass, tableName(beanClass)) +
                 " WHERE id IN " +
                 "<foreach item=\"item\" index=\"index\" collection=\"list\" open=\"(\" separator=\",\" close=\")\">" +
                 "#{item.id}" +
                 "</foreach>";
-        return sql;
     }
 }

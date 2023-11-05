@@ -3,7 +3,6 @@ package com.pisces.framework.core.utils.lang;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -14,24 +13,21 @@ import com.pisces.framework.core.converter.SqlDateSerializer;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.entity.Property;
 import com.pisces.framework.core.entity.factory.AbstractFactory;
+import com.pisces.framework.core.entity.factory.AbstractFactoryCreator;
 import com.pisces.framework.core.entity.factory.FactoryManager;
 import com.pisces.framework.core.entity.serializer.EntityDeserializerModifier;
 import com.pisces.framework.core.entity.serializer.EntityMapper;
 import com.pisces.framework.core.exception.ConfigurationException;
 import com.pisces.framework.core.service.BeanService;
-import com.pisces.framework.core.service.PropertyService;
 import com.pisces.framework.core.service.ServiceManager;
-import com.pisces.framework.core.utils.AppUtils;
 import com.pisces.framework.core.validator.constraints.PrimaryKey;
 import com.pisces.framework.type.Duration;
 import com.pisces.framework.type.EDIT_TYPE;
-import com.pisces.framework.type.MultiEnum;
 import com.pisces.framework.type.PROPERTY_TYPE;
 import com.pisces.framework.type.annotation.PropertyMeta;
 import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -51,7 +47,7 @@ public final class ObjectUtils {
         try {
             FactoryManager.init();
             checkProperty();
-            checkEntity();
+            checkBeanObject();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -222,7 +218,7 @@ public final class ObjectUtils {
             return null;
         }
         Class<?> propertyClass = field.getType();
-        PROPERTY_TYPE propertyType = getPropertyType(propertyClass);
+        PROPERTY_TYPE propertyType = ClassUtils.getPropertyType(propertyClass);
         if (propertyType == PROPERTY_TYPE.LIST) {
             return null;
         }
@@ -269,7 +265,7 @@ public final class ObjectUtils {
         property.setPropertyCode(code);
 
         Class<?> propertyClass = method.getReturnType();
-        property.setType(getPropertyType(propertyClass));
+        property.setType(ClassUtils.getPropertyType(propertyClass));
         property.setTypeName(propertyClass.getSimpleName());
         property.setTypeFullName(propertyClass.getName());
 
@@ -300,7 +296,14 @@ public final class ObjectUtils {
                 if (Modifier.isTransient(field.getModifiers())) {
                     continue;
                 }
+
                 if (Modifier.isStatic(field.getModifiers())) {
+                    for (AbstractFactoryCreator factoryCreator : FactoryManager.getFactoryCreators()) {
+                        if (factoryCreator.checkProperty(beanClass, field)) {
+                            fieldCache.put(field.getName(), field);
+                            break;
+                        }
+                    }
                     continue;
                 }
 
@@ -309,9 +312,8 @@ public final class ObjectUtils {
                     continue;
                 }
 
-                PROPERTY_TYPE type;
                 Class<?> fieldClass;
-                type = getPropertyType(field.getType());
+                PROPERTY_TYPE type = ClassUtils.getPropertyType(field.getType());
                 fieldClass = field.getType();
                 Method getMethod = null;
                 Method setMethod = null;
@@ -334,20 +336,20 @@ public final class ObjectUtils {
                 fieldCache.put(field.getName(), field);
             }
 
-//            PrimaryKey primaryKey = beanClass.getAnnotation(PrimaryKey.class);
-//            if (primaryKey != null) {
-//                String[] primaryFields = primaryKey.fields();
-//                for (String primaryField : primaryFields) {
-//                    Field field = fieldCache.get(primaryField);
-//                    if (field == null) {
-//                        throw new ConfigurationException(beanClass.getName() + " config primary key has error field name: " + primaryField);
-//                    }
-//                }
-//            }
+            PrimaryKey primaryKey = beanClass.getAnnotation(PrimaryKey.class);
+            if (primaryKey != null) {
+                String[] primaryFields = primaryKey.fields();
+                for (String primaryField : primaryFields) {
+                    Field field = fieldCache.get(primaryField);
+                    if (field == null) {
+                        throw new ConfigurationException(beanClass.getName() + " config primary key has error field name: " + primaryField);
+                    }
+                }
+            }
         }
     }
 
-    public static void checkEntity() throws Exception {
+    public static void checkBeanObject() throws Exception {
         for (Class<? extends BeanObject> beanClass : getBeanClasses()) {
             if (Modifier.isAbstract(beanClass.getModifiers())) {
                 continue;
@@ -355,16 +357,16 @@ public final class ObjectUtils {
             if ("Property".equals(beanClass.getSimpleName()) || "BaseObject".equals(beanClass.getSimpleName())) {
                 continue;
             }
-            BeanObject entity = BeanUtils.instantiateClass(beanClass);
-            entity.init();
+            BeanObject bean = BeanUtils.instantiateClass(beanClass);
+            bean.init();
             Field[] fields = beanClass.getDeclaredFields();
             for (Field field : fields) {
                 if (Modifier.isStatic(field.getModifiers()) || Modifier.isTransient(field.getModifiers())) {
                     continue;
                 }
-                boolean isAccessible = field.canAccess(entity);
+                boolean isAccessible = field.canAccess(bean);
                 field.setAccessible(true);
-                if (field.get(entity) == null) {
+                if (field.get(bean) == null) {
                     throw new NullPointerException(beanClass.getName() + "`s field " + field.getName() + " has not default value.");
                 }
                 field.setAccessible(isAccessible);
@@ -394,38 +396,6 @@ public final class ObjectUtils {
         return typeClass;
     }
 
-    public static PROPERTY_TYPE getPropertyType(Class<?> clazz) {
-        PROPERTY_TYPE type;
-        if (clazz == Boolean.class || clazz == boolean.class) {
-            type = PROPERTY_TYPE.BOOLEAN;
-        } else if (clazz == Short.class || clazz == short.class) {
-            type = PROPERTY_TYPE.SHORT;
-        } else if (clazz == Integer.class || clazz == int.class) {
-            type = PROPERTY_TYPE.INTEGER;
-        } else if (clazz == Long.class || clazz == long.class) {
-            type = PROPERTY_TYPE.LONG;
-        } else if (clazz == Double.class || clazz == double.class) {
-            type = PROPERTY_TYPE.DOUBLE;
-        } else if (clazz == String.class) {
-            type = PROPERTY_TYPE.STRING;
-        } else if (clazz == Date.class) {
-            type = PROPERTY_TYPE.DATE_TIME;
-        } else if (clazz == Duration.class) {
-            type = PROPERTY_TYPE.DURATION;
-        } else if (Enum.class.isAssignableFrom(clazz)) {
-            type = PROPERTY_TYPE.ENUM;
-        } else if (MultiEnum.class.isAssignableFrom(clazz)) {
-            type = PROPERTY_TYPE.MULTI_ENUM;
-        } else if (BeanObject.class.isAssignableFrom(clazz)) {
-            type = PROPERTY_TYPE.BEAN;
-        } else if (Collection.class.isAssignableFrom(clazz)) {
-            type = PROPERTY_TYPE.LIST;
-        } else {
-            throw new UnsupportedOperationException("not support type: " + clazz.getName());
-        }
-        return type;
-    }
-
     public static EDIT_TYPE getEditType(PROPERTY_TYPE type) {
         EDIT_TYPE editType = EDIT_TYPE.TEXT;
         switch (type) {
@@ -445,33 +415,6 @@ public final class ObjectUtils {
             }
         }
         return editType;
-    }
-
-    public static Object getValue(BeanObject bean, Property property) {
-        if (bean == null || property == null || property.getGetMethod() == null) {
-            return null;
-        }
-
-        Object value = null;
-        try {
-            value = property.getGetMethod().invoke(bean, property.getPropertyCode());
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ignored) {
-        }
-
-        return value;
-    }
-
-    public static void setValue(BeanObject bean, Property property, Object value) {
-        if (bean == null || property == null || property.getSetMethod() == null) {
-            return;
-        } else if (value == null && property.getType() != PROPERTY_TYPE.BEAN) {
-            return;
-        }
-
-        try {
-            property.getSetMethod().invoke(bean, property.getPropertyCode(), value);
-        } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException ignored) {
-        }
     }
 
     public static EntityMapper createBeanMapper() {
@@ -506,107 +449,17 @@ public final class ObjectUtils {
         return DEFAULT_MAPPER.get();
     }
 
-    public static <T extends BeanObject> T convertBean(Map<String, Object> data, Class<T> beanClass) {
-        T bean = ServiceManager.fetchService(beanClass).create();
-        assignBean(data, bean);
-        return bean;
-    }
-
-    public static <T extends BeanObject> List<T> convertBeanList(List<Map<String, Object>> dataList, Class<T> beanClass) {
-        List<T> beans = new ArrayList<>();
-        for (Map<String, Object> data : dataList) {
-            beans.add(convertBean(data, beanClass));
-        }
-        return beans;
-    }
-
-    public static <T extends BeanObject> void assignBean(Map<String, Object> data, T bean) {
-        for (Map.Entry<String, Object> entry : data.entrySet()) {
-            Object value = entry.getValue();
-            if (value == null) {
-                continue;
-            }
-            Property property = AppUtils.getBean(PropertyService.class).get(bean.getClass(), entry.getKey());
-            if (property == null) {
-                continue;
-            }
-
-            if (value instanceof String) {
-                defaultBeanMapper().setTextValue(bean, property, (String) value);
-            } else {
-                ObjectUtils.setValue(bean, property, value);
-            }
-        }
-    }
-
-    public static <T extends BeanObject> void copyIgnoreNull(T src, T target) {
-        if (src.getClass() != target.getClass()) {
-            return;
-        }
-
-        List<Property> properties = AppUtils.getBean(PropertyService.class).get(src.getClass());
-        for (Property property : properties) {
-            Object srcValue = getValue(src, property);
-            if (property.getType() == PROPERTY_TYPE.BEAN) {
-                if (srcValue != null) {
-                    final long relationId = ((BeanObject) srcValue).getId();
-                    if (relationId < 0) {
-                        continue;
-                    }
-                    srcValue = ServiceManager.fetchService((Class<? extends BeanObject>) property.getTypeClass()).getById(relationId);
-                }
-            } else if (srcValue == null) {
-                continue;
-            }
-
-            setValue(target, property, srcValue);
-        }
-    }
-
-    public static void cloneEntity(BeanObject origin, BeanObject target) {
-        List<Property> properties = AppUtils.getBean(PropertyService.class).get(origin.getClass());
-        for (Property property : properties) {
-            if ("id".equals(property.getPropertyCode())) {
-                continue;
-            }
-            if (property.getType() == PROPERTY_TYPE.LIST) {
-                continue;
-            }
-            Object entityValue = ObjectUtils.getValue(origin, property);
-            ObjectUtils.setValue(target, property, entityValue);
-        }
-    }
-
-    public static String getPrimaryValue(BeanObject entity) {
-        if (entity == null) {
-            return "";
-        }
-
-        List<Property> properties = AppUtils.getBean(PropertyService.class).getPrimaries(entity.getClass());
-        return StringUtils.join(properties, ",", (Property property) -> {
-            Object value = getValue(entity, property);
-            if (value == null) {
-                return "";
-            }
-            try {
-                return value.getClass() == String.class ? value.toString() : defaultBeanMapper().writeValueAsString(value);
-            } catch (JsonProcessingException ignored) {
-            }
-            return "";
-        });
-    }
-
-    public static <T extends BeanObject> boolean isAll(Collection<T> entities, Predicate<T> fun) {
-        for (T entity : entities) {
+    public static <T extends BeanObject> boolean isAll(Collection<T> beans, Predicate<T> fun) {
+        for (T entity : beans) {
             if (!fun.test(entity)) {
                 return false;
             }
         }
-        return !entities.isEmpty();
+        return !beans.isEmpty();
     }
 
-    public static <T extends BeanObject> boolean isAny(Collection<T> entities, Predicate<T> fun) {
-        for (T entity : entities) {
+    public static <T extends BeanObject> boolean isAny(Collection<T> beans, Predicate<T> fun) {
+        for (T entity : beans) {
             if (fun.test(entity)) {
                 return true;
             }
@@ -614,12 +467,12 @@ public final class ObjectUtils {
         return false;
     }
 
-    public static <T extends BeanObject> boolean isNone(Collection<T> entities, Predicate<T> fun) {
-        return !isAny(entities, fun);
+    public static <T extends BeanObject> boolean isNone(Collection<T> beans, Predicate<T> fun) {
+        return !isAny(beans, fun);
     }
 
-    public static <T extends BeanObject> void sort(List<T> entities, Comparator<T> c) {
-        entities.sort((o1, o2) -> {
+    public static <T extends BeanObject> void sort(List<T> beans, Comparator<T> c) {
+        beans.sort((o1, o2) -> {
             int value = c.compare(o1, o2);
             return value != 0 ? value : o1.compareTo(o2);
         });
@@ -628,13 +481,13 @@ public final class ObjectUtils {
     /**
      * map转对象
      *
-     * @param map       地图
-     * @param beanClass bean类
+     * @param map         地图
+     * @param objectClass bean类
      * @return {@link T}
      * @throws Exception 异常
      */
-    public static <T> T mapToBean(Map<String, Object> map, Class<T> beanClass) throws Exception {
-        T object = BeanUtils.instantiateClass(beanClass);
+    public static <T> T mapToBean(Map<String, Object> map, Class<T> objectClass) throws Exception {
+        T object = BeanUtils.instantiateClass(objectClass);
         Field[] fields = object.getClass().getDeclaredFields();
         for (Field field : fields) {
             int mod = field.getModifiers();

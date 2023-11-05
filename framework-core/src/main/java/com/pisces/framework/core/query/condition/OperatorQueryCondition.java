@@ -15,6 +15,8 @@
  */
 package com.pisces.framework.core.query.condition;
 
+import lombok.Getter;
+
 /**
  * 操作类型的操作
  * 示例1：and not ( id > 100 and name like %%)
@@ -22,6 +24,7 @@ package com.pisces.framework.core.query.condition;
  * @author jason
  * @date 2023/07/12
  */
+@Getter
 public class OperatorQueryCondition extends QueryCondition {
 
     private final String operator;
@@ -32,11 +35,4 @@ public class OperatorQueryCondition extends QueryCondition {
         this.child = child;
     }
 
-    public String getOperator() {
-        return operator;
-    }
-
-    public QueryCondition getChild() {
-        return child;
-    }
 }

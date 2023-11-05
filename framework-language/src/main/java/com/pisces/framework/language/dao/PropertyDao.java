@@ -1,9 +1,9 @@
 package com.pisces.framework.language.dao;
 
 import com.pisces.framework.core.config.CoreMessage;
-import com.pisces.framework.core.dao.DaoManager;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.entity.Property;
+import com.pisces.framework.core.entity.factory.FactoryManager;
 import com.pisces.framework.core.entity.table.QProperty;
 import com.pisces.framework.core.exception.ConfigurationException;
 import com.pisces.framework.core.exception.PropertyException;
@@ -32,7 +32,6 @@ public class PropertyDao extends SQLDao<Property> {
     private final Map<Class<? extends BeanObject>, Map<String, Property>> DEFAULT_PROPERTIES = new ConcurrentHashMap<>();
 
     public PropertyDao() {
-        DaoManager.register(this);
     }
 
     private Map<String, Property> getDefaultProperties(Class<? extends BeanObject> beanClass) {
@@ -154,7 +153,7 @@ public class PropertyDao extends SQLDao<Property> {
         if (!property.getInitialized()) {
             Property newItem = new Property();
             newItem.init();
-            ObjectUtils.copyIgnoreNull(property, newItem);
+            FactoryManager.fetchFactory(Property.class).copyIgnoreNull(property, newItem);
             property = newItem;
         }
         if (property.getBelongClass() == null) {

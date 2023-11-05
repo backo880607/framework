@@ -1,6 +1,5 @@
 package com.pisces.framework.core.dao;
 
-import com.pisces.framework.core.dao.impl.DaoImpl;
 import com.pisces.framework.core.entity.BeanObject;
 
 import java.util.List;
@@ -76,15 +75,5 @@ public class EmptyDao<T extends BeanObject> implements BaseDao<T> {
     @Override
     public int deleteIdBatch(List<Long> ids) {
         throw new UnsupportedOperationException("deleteByIds empty dao is not allowed");
-    }
-
-    @Override
-    public DaoImpl createDaoImpl() {
-        throw new UnsupportedOperationException("empty dao is not allowed");
-    }
-
-    @Override
-    public void switchDaoImpl(DaoImpl impl) {
-        throw new UnsupportedOperationException("empty dao is not allowed");
     }
 }

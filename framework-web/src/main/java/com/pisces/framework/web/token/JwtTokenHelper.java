@@ -13,7 +13,6 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * jwt标记辅助
@@ -50,8 +49,11 @@ public class JwtTokenHelper {
 
     public static String generateToken(AccountData accountData) {
         Claims claims = Jwts.claims().setSubject(accountData.getAccount());
-        claims.put(CLAIM_KEY_ACCOUNT_DATA, accountData);
-        claims.put(CLAIM_KEY_CREATED, new Date());
+        try {
+            claims.put(CLAIM_KEY_ACCOUNT_DATA, ObjectUtils.defaultBeanMapper().writeValueAsString(accountData));
+            claims.put(CLAIM_KEY_CREATED, new Date());
+        } catch (Exception ignore) {
+        }
         return generateToken(claims);
     }
 
@@ -81,10 +83,7 @@ public class JwtTokenHelper {
 
         JwtTokenHelper helper = new JwtTokenHelper();
         helper.subject = claims.getSubject();
-        Map<String, Object> data = claims.get(CLAIM_KEY_ACCOUNT_DATA, Map.class);
-        if (data != null) {
-            helper.accountData = ObjectUtils.mapToBean(data, AccountData.class);
-        }
+        helper.accountData = ObjectUtils.defaultBeanMapper().readValue(claims.get(CLAIM_KEY_ACCOUNT_DATA, String.class), AccountData.class);
         helper.expiration = claims.getExpiration().before(new Date());
         return helper;
     }

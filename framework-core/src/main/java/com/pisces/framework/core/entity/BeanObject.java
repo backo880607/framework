@@ -23,7 +23,7 @@ public abstract class BeanObject implements Comparable<BeanObject> {
     private String updateBy;
     private Date updateDate;
     private Boolean enabled;
-    private Integer tenant;
+    private Long tenant;
     @Id
     private Long id;
 
@@ -37,7 +37,7 @@ public abstract class BeanObject implements Comparable<BeanObject> {
         updateBy = "";
         createDate = new Date();
         updateDate = createDate;
-        tenant = 0;
+        tenant = 0L;
         enabled = true;
         initialized = true;
     }
@@ -100,11 +100,11 @@ public abstract class BeanObject implements Comparable<BeanObject> {
         this.enabled = enabled;
     }
 
-    public Integer getTenant() {
+    public Long getTenant() {
         return tenant;
     }
 
-    public void setTenant(Integer tenant) {
+    public void setTenant(Long tenant) {
         this.tenant = tenant;
     }
 

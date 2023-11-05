@@ -87,10 +87,10 @@ public class SqlParams {
 //        }
 
         //where 参数
-        Object[] whereValues = getValues(qw.getWhereQueryCondition());
+        Object[] whereValues = getValues(qw.getWhereCondition());
 
         //having 参数
-        Object[] havingValues = getValues(qw.getHavingQueryCondition());
+        Object[] havingValues = getValues(qw.getHavingCondition());
 
         Object[] paramValues = CollectionUtils.concat(whereValues, havingValues);
 

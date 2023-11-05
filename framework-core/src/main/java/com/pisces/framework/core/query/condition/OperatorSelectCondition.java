@@ -16,6 +16,7 @@
 package com.pisces.framework.core.query.condition;
 
 import com.pisces.framework.core.query.QueryWrapper;
+import lombok.Getter;
 
 /**
  * 操作类型的操作
@@ -25,6 +26,7 @@ import com.pisces.framework.core.query.QueryWrapper;
  * @author jason
  * @date 2023/07/12
  */
+@Getter
 public class OperatorSelectCondition extends QueryCondition {
     //操作符，例如 exist, not exist
     private final String operator;
@@ -33,14 +35,6 @@ public class OperatorSelectCondition extends QueryCondition {
     public OperatorSelectCondition(String operator, QueryWrapper queryWrapper) {
         this.operator = operator;
         this.queryWrapper = queryWrapper;
-    }
-
-    public String getOperator() {
-        return operator;
-    }
-
-    public QueryWrapper getQueryWrapper() {
-        return queryWrapper;
     }
 
     @Override

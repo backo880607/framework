@@ -1,7 +1,6 @@
 package com.pisces.framework.rds.common;
 
 import com.pisces.framework.core.dao.BaseDao;
-import com.pisces.framework.core.dao.impl.DaoImpl;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.rds.query.SqlExecutor;
@@ -36,7 +35,8 @@ public class SQLDao<T extends BeanObject> extends SqlSessionDaoSupport implement
 
     @Override
     public T get() {
-        throw new UnsupportedOperationException("select one is not allowed");
+        QueryWrapper qw = QueryWrapper.from(beanClass);
+        return SqlExecutor.fetchOne(qw, beanClass);
     }
 
     @Override
@@ -114,14 +114,5 @@ public class SQLDao<T extends BeanObject> extends SqlSessionDaoSupport implement
     @Override
     public int deleteIdBatch(List<Long> ids) {
         return mapper.deleteBatchByIds(ids, 0);
-    }
-
-    @Override
-    public DaoImpl createDaoImpl() {
-        return null;
-    }
-
-    @Override
-    public void switchDaoImpl(DaoImpl impl) {
     }
 }

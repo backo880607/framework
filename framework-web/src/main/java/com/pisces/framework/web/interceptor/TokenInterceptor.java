@@ -25,9 +25,14 @@ import java.util.Base64;
  * @date 2023/07/04
  */
 public class TokenInterceptor implements HandlerInterceptor {
+//    private final static String LOGIN_URL = "user/Account/login";
 
     @Override
     public boolean preHandle(HttpServletRequest request, @Nonnull HttpServletResponse response, @Nonnull Object handler) throws Exception {
+//        if (LOGIN_URL.equals(request.getServletPath())) {
+//            return true;
+//        }
+
         String authorization = request.getHeader("Authorization");
         if (!StringUtils.hasText(authorization)) {
             return notAuthorization(response);

@@ -1,7 +1,6 @@
 package com.pisces.framework.rds.common;
 
 import com.pisces.framework.core.dao.BaseDao;
-import com.pisces.framework.core.dao.impl.DaoImpl;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.rds.query.SqlExecutor;
@@ -107,14 +106,5 @@ public class SQLSingletonDao<T extends BeanObject> extends SqlSessionDaoSupport 
     @Override
     public int deleteIdBatch(List<Long> ids) {
         throw new UnsupportedOperationException("delete Singleton bean is not allowed");
-    }
-
-    @Override
-    public DaoImpl createDaoImpl() {
-        return null;
-    }
-
-    @Override
-    public void switchDaoImpl(DaoImpl impl) {
     }
 }

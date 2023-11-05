@@ -15,21 +15,20 @@
  */
 package com.pisces.framework.core.query.condition;
 
+import lombok.Getter;
+
 /**
  * 括号
  *
  * @author jason
  * @date 2023/06/25
  */
+@Getter
 public class Brackets extends QueryCondition {
     private final QueryCondition childCondition;
 
     public Brackets(QueryCondition childCondition) {
         this.childCondition = childCondition;
-    }
-
-    public QueryCondition getChildCondition() {
-        return childCondition;
     }
 
     @Override

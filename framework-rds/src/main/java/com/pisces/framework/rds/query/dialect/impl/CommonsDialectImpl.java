@@ -16,11 +16,11 @@
 package com.pisces.framework.rds.query.dialect.impl;
 
 import com.pisces.framework.core.query.QueryMethods;
-import com.pisces.framework.core.query.QueryOrderBy;
 import com.pisces.framework.core.query.QueryTable;
 import com.pisces.framework.core.query.QueryWrapper;
 import com.pisces.framework.core.query.column.QueryColumn;
 import com.pisces.framework.core.query.condition.QueryCondition;
+import com.pisces.framework.core.query.condition.QueryOrderBy;
 import com.pisces.framework.core.utils.lang.CollectionUtils;
 import com.pisces.framework.core.utils.lang.Guard;
 import com.pisces.framework.core.utils.lang.StringUtils;
@@ -210,7 +210,7 @@ public class CommonsDialectImpl implements IDialect {
     }
 
     protected void buildWhereSql(StringBuilder sqlBuilder, QueryWrapper queryWrapper, List<QueryTable> queryTables, boolean allowNoCondition) {
-        QueryCondition whereQueryCondition = queryWrapper.getWhereQueryCondition();
+        QueryCondition whereQueryCondition = queryWrapper.getWhereCondition();
         if (whereQueryCondition != null) {
             String whereSql = SqlTools.toSql(queryTables, whereQueryCondition, this);
             if (StringUtils.isNotBlank(whereSql)) {
@@ -238,7 +238,7 @@ public class CommonsDialectImpl implements IDialect {
     }
 
     protected void buildHavingSql(StringBuilder sqlBuilder, QueryWrapper queryWrapper, List<QueryTable> queryTables) {
-        QueryCondition havingQueryCondition = queryWrapper.getHavingQueryCondition();
+        QueryCondition havingQueryCondition = queryWrapper.getHavingCondition();
         if (havingQueryCondition != null) {
             String havingSql = SqlTools.toSql(queryTables, havingQueryCondition, this);
             if (StringUtils.isNotBlank(havingSql)) {

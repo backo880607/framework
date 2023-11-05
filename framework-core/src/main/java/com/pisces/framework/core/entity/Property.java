@@ -1,6 +1,7 @@
 package com.pisces.framework.core.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pisces.framework.type.EDIT_TYPE;
 import com.pisces.framework.type.PROPERTY_TYPE;
 import com.pisces.framework.type.annotation.PropertyMeta;
 import com.pisces.framework.type.annotation.TableMeta;
@@ -32,6 +33,11 @@ public class Property extends BeanObject {
      * 属性类型简称
      */
     private String typeName;
+    /**
+     * 属性取值表达式
+     */
+    @PropertyMeta(editType = EDIT_TYPE.EXPRESSION)
+    private String expression;
     /**
      * 是否能编辑
      */
@@ -143,6 +149,7 @@ public class Property extends BeanObject {
         this.primaryKey = false;
         this.hide = false;
         this.precis = 2;
+        this.expression = "";
         this.modify = true;
         this.notEmpty = false;
         this.popDisplay = false;

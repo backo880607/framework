@@ -16,9 +16,9 @@
 package com.pisces.framework.core.query.column;
 
 import com.pisces.framework.core.entity.Property;
-import com.pisces.framework.core.enums.VALUE_SORT_TYYPE;
-import com.pisces.framework.core.query.QueryOrderBy;
+import com.pisces.framework.core.enums.VALUE_SORT_TYPE;
 import com.pisces.framework.core.query.QueryTable;
+import com.pisces.framework.core.query.condition.QueryOrderBy;
 import com.pisces.framework.core.utils.lang.ColumnUtils;
 import com.pisces.framework.core.utils.lang.ObjectUtils;
 
@@ -66,18 +66,18 @@ public class QueryColumn implements Serializable {
 
     ////order by ////
     public QueryOrderBy asc() {
-        return new QueryOrderBy(this, VALUE_SORT_TYYPE.ASC);
+        return new QueryOrderBy(this, VALUE_SORT_TYPE.ASC);
     }
 
     public QueryOrderBy desc() {
-        return new QueryOrderBy(this, VALUE_SORT_TYYPE.DESC);
+        return new QueryOrderBy(this, VALUE_SORT_TYPE.DESC);
     }
 
     public static QueryColumn getQueryColumn(Property property) {
         if (property == null) {
             return null;
         }
-        
+
         QueryColumn column = null;
         switch (property.getType()) {
             case NONE -> {

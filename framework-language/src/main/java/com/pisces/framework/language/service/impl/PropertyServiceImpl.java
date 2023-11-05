@@ -3,6 +3,7 @@ package com.pisces.framework.language.service.impl;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.entity.EnumDto;
 import com.pisces.framework.core.entity.Property;
+import com.pisces.framework.core.entity.factory.FactoryManager;
 import com.pisces.framework.core.service.BeanServiceImpl;
 import com.pisces.framework.core.service.PropertyService;
 import com.pisces.framework.core.utils.lang.ObjectUtils;
@@ -11,6 +12,7 @@ import com.pisces.framework.type.PROPERTY_TYPE;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -41,11 +43,11 @@ class PropertyServiceImpl extends BeanServiceImpl<Property, PropertyDao> impleme
     public List<Property> getForUi(Class<? extends BeanObject> beanClass) {
         List<Property> result = new ArrayList<>();
         List<Property> properties = get(beanClass);
-//        EntityUtils.sort(properties, Comparator.comparing(Property::getOrderNumber));
+        ObjectUtils.sort(properties, Comparator.comparing(Property::getOrderNumber));
         properties.removeIf(Property::getSystem);
         for (Property property : properties) {
             Property newProperty = create();
-            ObjectUtils.cloneEntity(property, newProperty);
+            FactoryManager.fetchFactory(Property.class).cloneEntity(property, newProperty);
             if (newProperty.getPropertyName().isEmpty()) {
                 newProperty.setPropertyName(lang.get(beanClass, newProperty.getPropertyCode()));
             }

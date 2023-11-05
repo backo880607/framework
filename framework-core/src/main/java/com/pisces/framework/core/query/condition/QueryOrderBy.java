@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pisces.framework.core.query;
+package com.pisces.framework.core.query.condition;
 
-import com.pisces.framework.core.enums.VALUE_SORT_TYYPE;
+import com.pisces.framework.core.enums.VALUE_SORT_TYPE;
 import com.pisces.framework.core.query.column.QueryColumn;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,9 +33,9 @@ import java.io.Serializable;
 public class QueryOrderBy implements Serializable {
 
     private QueryColumn column;
-    private VALUE_SORT_TYYPE type;
+    private VALUE_SORT_TYPE type;
 
-    public QueryOrderBy(QueryColumn column, VALUE_SORT_TYYPE type) {
+    public QueryOrderBy(QueryColumn column, VALUE_SORT_TYPE type) {
         this.column = column;
         this.type = type;
     }

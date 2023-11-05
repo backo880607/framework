@@ -4,6 +4,7 @@ import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.query.column.QueryColumn;
 import com.pisces.framework.core.query.condition.QueryCondition;
 import com.pisces.framework.core.query.condition.QueryConnector;
+import com.pisces.framework.core.query.condition.QueryOrderBy;
 import com.pisces.framework.core.utils.lang.CollectionUtils;
 import com.pisces.framework.core.utils.lang.ObjectUtils;
 
@@ -60,7 +61,7 @@ public class QueryWrapper extends BaseQueryWrapper {
     }
 
     public QueryWrapper where(QueryCondition queryCondition) {
-        this.setWhereQueryCondition(queryCondition);
+        this.setWhereCondition(queryCondition);
         return this;
     }
 

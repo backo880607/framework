@@ -1,5 +1,7 @@
 package com.pisces.framework.core.config;
 
+import com.pisces.framework.core.entity.AccountData;
+
 /**
  * 基本配置
  *
@@ -8,5 +10,9 @@ package com.pisces.framework.core.config;
  */
 public abstract class BaseConfiguration {
     public void init() {
+    }
+
+    public void bindAccount(AccountData data) {
+
     }
 }

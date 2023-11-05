@@ -6,7 +6,7 @@ package com.pisces.framework.core.enums;
  * @author jason
  * @date 2023/06/28
  */
-public enum VALUE_SORT_TYYPE {
+public enum VALUE_SORT_TYPE {
     /**
      * 升序
      */

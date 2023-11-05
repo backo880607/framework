@@ -1,7 +1,6 @@
 package com.pisces.framework.rds.common;
 
 import com.pisces.framework.core.dao.BaseDao;
-import com.pisces.framework.core.dao.DaoManager;
 import com.pisces.framework.core.entity.BeanObject;
 import com.pisces.framework.core.exception.SystemException;
 
@@ -19,7 +18,6 @@ public class SQLDaoManager {
     private static final Set<Class<? extends BeanObject>> DAO_CLASS = new HashSet<>();
 
     public static void register(BaseDao<? extends BeanObject> dao) {
-        DaoManager.register(dao);
         DAO_CLASS.add(dao.getBeanClass());
     }
 

@@ -1,12 +1,10 @@
 package com.pisces.framework.rds.common;
 
 import com.pisces.framework.core.dao.BaseDao;
-import com.pisces.framework.core.dao.DaoManager;
-import com.pisces.framework.core.dao.impl.DaoImpl;
-import com.pisces.framework.core.dao.impl.SingletonModifyDaoImpl;
 import com.pisces.framework.core.entity.BeanAccount;
 import com.pisces.framework.core.entity.table.QBeanAccount;
 import com.pisces.framework.core.query.QueryWrapper;
+import com.pisces.framework.core.utils.AppUtils;
 import com.pisces.framework.rds.query.SqlExecutor;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.support.SqlSessionDaoSupport;
@@ -39,12 +37,11 @@ public class SQLAccountDao<T extends BeanAccount> extends SqlSessionDaoSupport i
 
     @Override
     protected void initDao() {
-        DaoManager.register(this);
     }
 
     @Override
     public T get() {
-        String account = "";
+        String account = AppUtils.getAccount();
         QueryWrapper qw = QueryWrapper.from(beanClass).where(QBeanAccount.account.bind(beanClass).equal(account));
         T item = SqlExecutor.fetchOne(qw, beanClass);
         if (item == null) {
@@ -62,7 +59,7 @@ public class SQLAccountDao<T extends BeanAccount> extends SqlSessionDaoSupport i
 
     @Override
     public T fetchOne(QueryWrapper qw) {
-        String account = "";
+        String account = AppUtils.getAccount();
         qw.and(QBeanAccount.account.bind(beanClass).equal(account));
         return SqlExecutor.fetchOne(qw, beanClass);
     }
@@ -81,7 +78,7 @@ public class SQLAccountDao<T extends BeanAccount> extends SqlSessionDaoSupport i
 
     @Override
     public List<T> fetch(QueryWrapper qw) {
-        String account = "";
+        String account = AppUtils.getAccount();
         qw.and(QBeanAccount.account.bind(beanClass).equal(account));
         return SqlExecutor.fetch(qw, beanClass);
     }
@@ -133,14 +130,5 @@ public class SQLAccountDao<T extends BeanAccount> extends SqlSessionDaoSupport i
     @Override
     public int deleteIdBatch(List<Long> ids) {
         throw new UnsupportedOperationException("delete Singleton bean is not allowed");
-    }
-
-    @Override
-    public DaoImpl createDaoImpl() {
-        return new SingletonModifyDaoImpl<>();
-    }
-
-    @Override
-    public void switchDaoImpl(DaoImpl impl) {
     }
 }

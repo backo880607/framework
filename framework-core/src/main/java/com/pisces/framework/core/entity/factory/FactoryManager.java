@@ -34,6 +34,10 @@ public final class FactoryManager {
         FACTORY_CREATORS.add(creator);
     }
 
+    public static List<AbstractFactoryCreator> getFactoryCreators() {
+        return FACTORY_CREATORS;
+    }
+
     private static AbstractFactory createFactory(Class<? extends BeanObject> beanClass) {
         for (AbstractFactoryCreator creator : FACTORY_CREATORS) {
             AbstractFactory factory = creator.create(beanClass);
